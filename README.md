@@ -4,6 +4,7 @@
 A modern UI replacement for World of Warcraft Classic (1.12) inspired by the Dragonflight UI.
 
 ## Features
+![Logo](https://i.ibb.co/QvsbLW2C/menu2-prev.png)
 
 - Redesigned action bars with modern styling
 - Enhanced player and target frames
