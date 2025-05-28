@@ -1,0 +1,1018 @@
+DFRL:SetDefaults("actionbars", {
+    enabled = {true},
+    movable = {true},
+    hidden = {false},
+
+    -- key = { value, index, elementType, category, Tooltip text}
+    darkMode = {false, 1, "checkbox", "appearance", "Enable dark mode for action bars"},
+    MultiBarOneScale = {0.95, 37, "slider", {0.2, 2}, "multibar one", "Adjusts scale of bottom left action bar"},
+    MultiBarOneSpacing = {6, 2, "slider", {0.1, 20}, "multibar one", "Adjusts spacing between bottom left action bar buttons"},
+    MultiBarOneAlpha = {1, 3, "slider", {0.1, 1}, "multibar one", "Adjusts transparency of bottom left action bar"},
+
+    MultiBarTwoScale = {0.9, 4, "slider", {0.2, 2}, "multibar two", "Adjusts scale of bottom right action bar"},
+    MultiBarTwoSpacing = {6, 5, "slider", {0.1, 20}, "multibar two", "Adjusts spacing between bottom right action bar buttons"},
+    MultiBarTwoAlpha = {1, 6, "slider", {0.1, 1}, "multibar two", "Adjusts transparency of bottom right action bar"},
+
+    MultiBarLeftScale = {0.8, 7, "slider", {0.2, 2}, "multibar left", "Adjusts scale of left action bar"},
+    MultiBarLeftSpacing = {6, 8, "slider", {0.1, 20}, "multibar left", "Adjusts spacing between left action bar buttons"},
+    MultiBarLeftAlpha = {1, 9, "slider", {0.1, 1}, "multibar left", "Adjusts transparency of left action bar"},
+
+    MultiBarRightScale = {0.8, 10, "slider", {0.2, 2}, "multibar right", "Adjusts scale of right action bar"},
+    MultiBarRightSpacing = {6, 11, "slider", {0.1, 20}, "multibar right", "Adjusts spacing between right action bar buttons"},
+    MultiBarRightAlpha = {1, 12, "slider", {0.1, 1}, "multibar right", "Adjusts transparency of right action bar"},
+
+    gryphoonShow = {true, 15, "checkbox", "gryphons", "Show or hide the gryphon/wyvern decorations"},
+    gryphoonScale = {1, 36, "slider", {0.2, 2}, "gryphons", "Adjusts the size of the gryphon/wyvern decorations"},
+    gryphoonX = {-48, 17, "slider", {-200, 200}, "gryphons", "Adjusts horizontal position of gryphon/wyvern decorations"},
+    gryphoonY = {10, 18, "slider", {-200, 200}, "gryphons", "Adjusts vertical position of gryphon/wyvern decorations"},
+    gryphoonFlip = {false, 16, "checkbox", "gryphons", "Flip the gryphon/wyvern textures."},
+    gryphoonAlt = {false, 14, "checkbox", "gryphons", "Use the alternative gryphon/wyvern textures."},
+
+    pagingShow = {true, 19, "checkbox", "appearance", "Show or hide the action bar paging buttons"},
+    pagingSwap = {true, 45, "checkbox", "appearance", "Swap the anchorpoint of the paging buttons."},
+    pagingX = {15, 46, "slider", {0, 150}, "appearance", "Adjusts horizontal position of paging buttons"},
+
+    hotkeyColour = {{1, 0.82, 0}, 21, "colourslider", "hotkeys", "Changes the colour of keybind text on action buttons"},
+    hotkeyShow = {true, 20, "checkbox", "hotkeys", "Show or hide keybind text on action buttons"},
+    hotkeyScale = {1, 22, "slider", {0.5, 2}, "hotkeys", "Adjusts the size of keybind text on action buttons"},
+    hotkeyX = {0, 23, "slider", {-50, 50}, "hotkeys", "Adjusts horizontal position of keybind text"},
+    hotkeyY = {-2, 24, "slider", {-50, 50}, "hotkeys", "Adjusts vertical position of keybind text"},
+
+    macroColour = {{1, 1, 1}, 26, "colourslider", "macros", "Changes the colour of macro text on action buttons"},
+    macroShow = {true, 25, "checkbox", "macros", "Show or hide macro text on action buttons"},
+    macroScale = {1, 27, "slider", {0.5, 2}, "macros", "Adjusts the size of macro text on action buttons"},
+    macroX = {0, 28, "slider", {-50, 50}, "macros", "Adjusts horizontal position of macro text"},
+    macroY = {2, 29, "slider", {-50, 50}, "macros", "Adjusts vertical position of macro text"},
+
+    petbarScale = {0.8, 30, "slider", {0.2, 2}, "extra bar", "Adjusts the scale of the pet action bar"},
+    shapeshiftScale = {0.8, 31, "slider", {0.2, 2}, "extra bar", "Adjusts the scale of the stance/shapeshift bar"},
+    petbarSpacing = {6, 32, "slider", {0.1, 20}, "extra bar", "Adjusts spacing between pet action bar buttons"},
+    petbarAlpha = {1, 33, "slider", {0.1, 1}, "extra bar", "Adjusts transparency of pet action bar"},
+    shapeshiftSpacing = {6, 34, "slider", {0.1, 20}, "extra bar", "Adjusts spacing between stance/shapeshift buttons"},
+    shapeshiftAlpha = {1, 35, "slider", {0.1, 1}, "extra bar", "Adjusts transparency of stance/shapeshift bar"},
+
+})
+
+DFRL:RegisterModule("actionbars", 1, function()
+    d.DebugPrint("BOOTING")
+
+    -- hide stuff
+    do
+        HideFrameTextures(MainMenuBar)
+        HideFrameTextures(MainMenuBarArtFrame)
+        HideFrameTextures(PetActionBarFrame)
+
+        MainMenuBar:EnableMouse(false)
+        MainMenuBarArtFrame:EnableMouse(false)
+        PetActionBarFrame:EnableMouse(false)
+
+        ---@diagnostic disable-next-line: undefined-field
+        KillFrame(_G.ExhaustionTick)
+
+        SlidingActionBarTexture0:SetTexture(nil)
+        SlidingActionBarTexture1:SetTexture(nil)
+
+        BonusActionBarTexture0:Hide()
+        BonusActionBarTexture1:Hide()
+
+        ShapeshiftBarLeft:Hide()
+        ShapeshiftBarMiddle:Hide()
+        ShapeshiftBarRight:Hide()
+        ShapeshiftBarLeft:SetAlpha(0)
+        ShapeshiftBarMiddle:SetAlpha(0)
+        ShapeshiftBarRight:SetAlpha(0)
+
+        -- hide ShapeshiftButton bg
+        for i = 1, 10 do
+            local button = _G["ShapeshiftButton"..i]
+            if button then
+                local name = button:GetName()
+                local background = _G[name.."Background"]
+                local normalTexture = _G[name.."NormalTexture"]
+                if background then background:Hide() end
+                if normalTexture then normalTexture:Hide() end
+            end
+        end
+
+    end
+
+    -- reposition bars
+    do
+        UIPARENT_MANAGED_FRAME_POSITIONS["FramerateLabel"] = nil
+        UIPARENT_MANAGED_FRAME_POSITIONS["MultiBarBottomLeft"] = nil
+
+        DFRL.mainBar = CreateFrame("Frame", "DFRL_MainBar", UIParent)
+        DFRL.mainBar:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 55)
+        DFRL.mainBar:SetHeight(45)
+        DFRL.mainBar:SetWidth(500)
+
+        ActionButton1:ClearAllPoints()
+        ActionButton1:SetPoint("BOTTOMLEFT", DFRL.mainBar, "BOTTOMLEFT", -0, 0)
+
+        BonusActionButton1:ClearAllPoints()
+        BonusActionButton1:SetPoint("BOTTOMLEFT", DFRL.mainBar, "BOTTOMLEFT", -0, 0)
+
+        local actionBarFrame = CreateFrame("Frame", "DFRL_ActionBar", UIParent)
+        actionBarFrame:SetPoint("TOPLEFT", ActionButton1, "TOPLEFT", 0, 0)
+        actionBarFrame:SetPoint("BOTTOMRIGHT", ActionButton12, "BOTTOMRIGHT", 0, 0)
+
+        MultiBarBottomLeft:ClearAllPoints()
+        MultiBarBottomLeft:SetPoint("BOTTOM", actionBarFrame, "TOP", 0, 12)
+
+        MultiBarBottomRight:ClearAllPoints()
+        MultiBarBottomRight:SetPoint("BOTTOM", MultiBarBottomLeft, "TOP", 0, 10)
+
+        MultiBarRight:ClearAllPoints()
+        MultiBarRight:SetPoint("RIGHT", UIParent, "RIGHT", -15, -50)
+
+        local newPetBar = CreateFrame("Frame", "DFRL_PetBar", UIParent)
+        newPetBar:SetPoint("BOTTOM", actionBarFrame, "TOP", 0, 8)
+        newPetBar:SetHeight(36)
+        newPetBar:SetWidth(360)
+
+        for i=1, 10 do
+            local button = _G["PetActionButton"..i]
+            button:SetParent(newPetBar)
+            button:ClearAllPoints()
+            button:SetPoint("LEFT", newPetBar, "LEFT", (i-1)*36, 0)
+        end
+
+        local newShapeshiftBar = CreateFrame("Frame", "DFRL_ShapeshiftBar", UIParent)
+        newShapeshiftBar:SetPoint("BOTTOM", newPetBar, "TOP", 0, 8)
+        newShapeshiftBar:SetHeight(36)
+        newShapeshiftBar:SetWidth(360)
+
+        for i=1, 10 do
+            local button = _G["ShapeshiftButton"..i]
+            button:SetParent(newShapeshiftBar)
+            button:ClearAllPoints()
+            button:SetPoint("LEFT", newShapeshiftBar, "LEFT", (i-1)*43, 0)
+        end
+
+        -- blizz doesnt hide actionbuttons when bonusbuttons are shown, they just put
+        -- a texture ontop of them, but i dont want that so I use this workaround
+        local bonusBarWatcher = CreateFrame("Frame")
+        bonusBarWatcher:RegisterEvent("UPDATE_BONUS_ACTIONBAR")
+        bonusBarWatcher:RegisterEvent("PLAYER_ENTERING_WORLD")
+        bonusBarWatcher:SetScript("OnEvent", function()
+            local bonusBarActive = GetBonusBarOffset() > 0
+            for i = 1, 12 do
+                if bonusBarActive then
+                    _G["ActionButton"..i]:SetAlpha(0)
+                else
+                    _G["ActionButton"..i]:SetAlpha(1)
+                end
+            end
+        end)
+
+        -- expose
+        DFRL.actionBarFrame = actionBarFrame
+        DFRL.newShapeshiftBar = newShapeshiftBar
+        DFRL.newPetBar = newPetBar
+    end
+
+    -- retexture buttons
+    do
+        local borderTexture = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\actionbars\\border.blp"
+        local highlightTexture = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\actionbars\\uiactionbariconframehighlight.tga"
+
+        local function AddBorderOverlay(button)
+            local overlay = button:CreateTexture(button:GetName() .. "DFRL_BorderOverlay", "OVERLAY")
+            overlay:SetTexture(borderTexture)
+            overlay:SetPoint("TOPLEFT", button, "TOPLEFT", -2, 2)
+            overlay:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 2, -2)
+            overlay:SetVertexColor(0.9, 0.9, 0.9, 1)
+
+            button:SetHighlightTexture(highlightTexture)
+            local highlight = button:GetHighlightTexture()
+            highlight:SetAllPoints(button)
+            highlight:SetBlendMode("ADD")
+
+            -- hook original SetNormalTexture function
+            local oldSetNormalTexture = button.SetNormalTexture
+            button.SetNormalTexture = function(self, tex)
+                oldSetNormalTexture(self, tex)
+
+                if tex and tex ~= "Interface\\Buttons\\UI-Quickslot" then
+                    overlay:Show()
+                else
+                    overlay:Hide()
+                end
+            end
+
+            -- init
+            if button:GetNormalTexture() and button:GetNormalTexture():GetTexture() ~= "Interface\\Buttons\\UI-Quickslot" then
+                overlay:Show()
+            else
+                overlay:Hide()
+            end
+        end
+
+        local buttonTypes = {
+            "ActionButton", "MultiBarBottomLeftButton", "MultiBarBottomRightButton",
+            "MultiBarRightButton", "MultiBarLeftButton", "PetActionButton",
+            "ShapeshiftButton", "BonusActionButton"
+        }
+
+        for _, buttonType in ipairs(buttonTypes) do
+            for i = 1, 12 do
+                local button = _G[buttonType .. i]
+                if button then
+                    AddBorderOverlay(button)
+                end
+            end
+        end
+    end
+
+    -- paging buttons
+    do
+        local pagingContainer = CreateFrame("Frame", "DFRL_PagingContainer", UIParent)
+        pagingContainer:SetWidth(ActionBarUpButton:GetWidth())
+        pagingContainer:SetHeight(65)
+        pagingContainer:SetPoint("LEFT", ActionButton12, "RIGHT", 15, -1)
+        pagingContainer:SetFrameStrata("DIALOG")
+        pagingContainer:SetFrameLevel(5)
+
+        ActionBarUpButton:SetNormalTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\actionbars\\page_up_normal.tga")
+        ActionBarUpButton:SetPushedTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\actionbars\\page_up_pushed.tga")
+        ActionBarUpButton:SetHighlightTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\actionbars\\page_up_highlight.tga")
+
+        ActionBarDownButton:SetNormalTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\actionbars\\page_down_normal.tga")
+        ActionBarDownButton:SetPushedTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\actionbars\\page_down_pushed.tga")
+        ActionBarDownButton:SetHighlightTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\actionbars\\page_down_highlight.tga")
+
+        ActionBarUpButton:ClearAllPoints()
+        ActionBarUpButton:SetPoint("TOP", pagingContainer, "TOP", -1, 0)
+        ActionBarUpButton:SetFrameStrata("DIALOG")
+        ActionBarUpButton:SetHeight(25)
+        ActionBarUpButton:SetWidth(25)
+
+        MainMenuBarPageNumber:ClearAllPoints()
+        MainMenuBarPageNumber:SetParent(pagingContainer)
+        MainMenuBarPageNumber:SetPoint("CENTER", pagingContainer, "CENTER", -1, 1)
+
+        ActionBarDownButton:ClearAllPoints()
+        ActionBarDownButton:SetPoint("BOTTOM", pagingContainer, "BOTTOM", 1, 0)
+        ActionBarDownButton:SetFrameStrata("DIALOG")
+        ActionBarDownButton:SetHeight(25)
+        ActionBarDownButton:SetWidth(25)
+
+        -- expose
+        DFRL.pagingContainer = pagingContainer
+    end
+
+    -- move bars on conditional
+    do
+        -- this func will position the actionbars if not user placed
+        local function UpdateBarPositions()
+            -- check if bars are user placed
+            local movable = DFRL:GetConfig("actionbars", "movable")
+            if movable[1] ~= true then
+                return
+            end
+
+            -- get blizz interface setting
+            local bottomLeftState, bottomRightState = GetActionBarToggles()
+
+            -- MultiBarBottomRight
+            MultiBarBottomRight:ClearAllPoints()
+            if bottomLeftState then
+                MultiBarBottomRight:SetPoint("BOTTOM", MultiBarBottomLeft, "TOP", 0, 5)
+            else
+                MultiBarBottomRight:SetPoint("BOTTOM", DFRL.actionBarFrame, "TOP", 0, 10)
+            end
+
+            -- PetBar
+            DFRL.newPetBar:ClearAllPoints()
+            if bottomLeftState and bottomRightState then
+                DFRL.newPetBar:SetPoint("BOTTOM", MultiBarBottomRight, "TOP", 0, 9)
+            elseif bottomLeftState then
+                DFRL.newPetBar:SetPoint("BOTTOM", MultiBarBottomLeft, "TOP", 0, 9)
+            elseif bottomRightState then
+                DFRL.newPetBar:SetPoint("BOTTOM", MultiBarBottomRight, "TOP", 0, 9)
+            else
+                DFRL.newPetBar:SetPoint("BOTTOM", DFRL.actionBarFrame, "TOP", 0, 9)
+            end
+
+            -- ShapeshiftBar
+            DFRL.newShapeshiftBar:ClearAllPoints()
+            if bottomLeftState and bottomRightState then
+                DFRL.newShapeshiftBar:SetPoint("BOTTOM", MultiBarBottomRight, "TOP", 0, 9)
+            elseif bottomLeftState then
+                DFRL.newShapeshiftBar:SetPoint("BOTTOM", MultiBarBottomLeft, "TOP", 0, 9)
+            elseif bottomRightState then
+                DFRL.newShapeshiftBar:SetPoint("BOTTOM", MultiBarBottomRight, "TOP", 0, 9)
+            else
+                DFRL.newShapeshiftBar:SetPoint("BOTTOM", DFRL.actionBarFrame, "TOP", 0, 9)
+            end
+        end
+
+        -- small delay otherwise it bugs
+        local updateTimer = 0
+        local barPositionFrame = CreateFrame("Frame")
+        barPositionFrame:RegisterEvent("CVAR_UPDATE")
+        barPositionFrame:SetScript("OnEvent", function()
+            updateTimer = 1
+            barPositionFrame:SetScript("OnUpdate", function()
+                updateTimer = updateTimer - arg1
+                if updateTimer <= 0 then
+                    UpdateBarPositions()
+                    barPositionFrame:SetScript("OnUpdate", nil)
+                end
+            end)
+        end)
+
+        -- init
+        UpdateBarPositions()
+    end
+
+    -- hide hotkey text and add custom keybind text
+    do
+        local buttonTypes = {
+            "ActionButton", "MultiBarBottomLeftButton", "MultiBarBottomRightButton",
+            "MultiBarRightButton", "MultiBarLeftButton", "BonusActionButton"
+        }
+
+        local commandMap = {
+            ["ActionButton"] = "ACTIONBUTTON",
+            ["MultiBarBottomLeftButton"] = "MULTIACTIONBAR1BUTTON",
+            ["MultiBarBottomRightButton"] = "MULTIACTIONBAR2BUTTON",
+            ["MultiBarRightButton"] = "MULTIACTIONBAR3BUTTON",
+            ["MultiBarLeftButton"] = "MULTIACTIONBAR4BUTTON",
+            ["BonusActionButton"] = "BONUSACTIONBUTTON"
+        }
+
+        local function UpdateHotkeys()
+            for _, buttonType in ipairs(buttonTypes) do
+                for i = 1, 12 do
+                    local button = _G[buttonType .. i]
+                    if button and button.DFRL_KeybindText then
+                        local key1 = GetBindingKey(commandMap[buttonType] .. i)
+                        if key1 then
+                            -- format the key text
+                            key1 = string.gsub(key1, "BUTTON", "M")
+                            key1 = string.gsub(key1, "SHIFT%-", "S-")
+                            key1 = string.gsub(key1, "CTRL%-", "C-")
+                            key1 = string.gsub(key1, "ALT%-", "A-")
+                            button.DFRL_KeybindText:SetText(key1)
+                        else
+                            button.DFRL_KeybindText:SetText("")
+                        end
+                    end
+                end
+            end
+        end
+
+        for _, buttonType in ipairs(buttonTypes) do
+            for i = 1, 12 do
+                local button = _G[buttonType .. i]
+                if button then
+                    -- hide original hotkey
+                    local hotkey = _G[button:GetName() .. "HotKey"]
+                    if hotkey then
+                        hotkey:Hide()
+                    end
+
+                    -- custom keybind text
+                    local keybindText = button:CreateFontString(button:GetName() .. "DFRL_KeybindText", "OVERLAY")
+                    keybindText:SetPoint("BOTTOM", button, "BOTTOM", 0, -2)
+                    keybindText:SetFont("Fonts\\FRIZQT__.TTF", 10, "OUTLINE")
+                    keybindText:SetTextColor(1, 0.82, 0)
+
+                    -- expose
+                    button.DFRL_KeybindText = keybindText
+                end
+            end
+        end
+
+        -- event handler
+        local bindingFrame = CreateFrame("Frame")
+        bindingFrame:RegisterEvent("UPDATE_BINDINGS")
+        bindingFrame:SetScript("OnEvent", function()
+            UpdateHotkeys()
+        end)
+
+        -- init
+        UpdateHotkeys()
+    end
+
+    -- reposition and recolor macro text
+    do
+        local buttonTypes = {
+            "ActionButton", "MultiBarBottomLeftButton", "MultiBarBottomRightButton",
+            "MultiBarRightButton", "MultiBarLeftButton", "BonusActionButton"
+        }
+
+        for _, buttonType in ipairs(buttonTypes) do
+            for i = 1, 12 do
+                local button = _G[buttonType .. i]
+                if button then
+                    local macroName = _G[button:GetName() .. "Name"]
+                    if macroName then
+                        macroName:ClearAllPoints()
+                        macroName:SetPoint("TOP", button, "TOP", 0, 2)
+                        macroName:SetFont("Fonts\\FRIZQT__.TTF", 9, "OUTLINE")
+                        macroName:SetTextColor(1, 1, 1, 1)
+                    end
+                end
+            end
+        end
+    end
+
+    -- action bar background textures
+    do
+        local barTexture = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\actionbars\\HDActionBar.tga"
+
+        local leftTexture = DFRL.actionBarFrame:CreateTexture("DFRL_ActionBarLeftTexture", "BACKGROUND")
+        leftTexture:SetTexture(barTexture)
+        leftTexture:SetPoint("RIGHT", ActionButton6, "RIGHT", 3, 0)
+        leftTexture:SetPoint("LEFT", ActionButton1, "LEFT", -5, 0)
+        leftTexture:SetPoint("TOP", ActionButton1, "TOP", 0, 14)
+        leftTexture:SetPoint("BOTTOM", ActionButton1, "BOTTOM", 0, -14)
+
+        local rightTexture = DFRL.actionBarFrame:CreateTexture("DFRL_ActionBarRightTexture", "BACKGROUND")
+        rightTexture:SetTexture(barTexture)
+        rightTexture:SetPoint("LEFT", ActionButton7, "LEFT", -3, 0)
+        rightTexture:SetPoint("RIGHT", ActionButton12, "RIGHT", 5, 0)
+        rightTexture:SetPoint("TOP", ActionButton7, "TOP", 0, 14)
+        rightTexture:SetPoint("BOTTOM", ActionButton7, "BOTTOM", 0, -14)
+        rightTexture:SetTexCoord(1, 0, 0, 1) -- flip
+    end
+
+    -- button background textures and borders
+    do
+        local buttonBgTexture = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\actionbars\\HDActionBarBtn.tga"
+        local borderTexture = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\actionbars\\border.blp"
+
+        for i = 1, 12 do
+            local bgTexture = DFRL.actionBarFrame:CreateTexture("DFRL_ActionButtonBg" .. i, "BORDER")
+            bgTexture:SetTexture(buttonBgTexture)
+            bgTexture:SetPoint("CENTER", _G["ActionButton" .. i], "CENTER", 0, 0)
+            bgTexture:SetWidth(ActionButton1:GetWidth() + 5)
+            bgTexture:SetHeight(ActionButton1:GetHeight() + 5)
+
+            local borderTex = DFRL.actionBarFrame:CreateTexture("DFRL_ActionButtonBorder" .. i, "BORDER")
+            borderTex:SetTexture(borderTexture)
+            borderTex:SetPoint("CENTER", _G["ActionButton" .. i], "CENTER", 0, 0)
+            borderTex:SetWidth(ActionButton1:GetWidth() + 5)
+            borderTex:SetHeight(ActionButton1:GetHeight() + 5)
+        end
+    end
+
+    -- gryphoons
+    do
+        local gryphonContainer = CreateFrame("Frame", "DFRL_GryphonContainer", UIParent)
+        gryphonContainer:SetFrameStrata("HIGH")
+        gryphonContainer:SetFrameLevel(10)
+        gryphonContainer:SetAllPoints(DFRL.actionBarFrame)
+
+        local leftGryphon = gryphonContainer:CreateTexture("DFRL_LeftGryphon", "OVERLAY")
+        local rightGryphon = gryphonContainer:CreateTexture("DFRL_RightGryphon", "OVERLAY")
+
+        leftGryphon:SetPoint("RIGHT", DFRL.actionBarFrame, "LEFT", 45, 10)
+        rightGryphon:SetPoint("LEFT", DFRL.actionBarFrame, "RIGHT", -45, 10)
+
+        local faction = UnitFactionGroup("player")
+        local texturePath
+        if faction == "Alliance" then
+            texturePath = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\actionbars\\GryphonNew.tga"
+        else
+            texturePath = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\actionbars\\WyvernNew.tga"
+        end
+
+        leftGryphon:SetTexture(texturePath)
+        rightGryphon:SetTexture(texturePath)
+
+        leftGryphon:SetWidth(180)
+        leftGryphon:SetHeight(180)
+        rightGryphon:SetWidth(180)
+        rightGryphon:SetHeight(180)
+
+        rightGryphon:SetTexCoord(1, 0, 0, 1) -- flip
+    end
+
+    -- callbacks
+    local callbacks = {}
+
+    callbacks.MultiBarOneScale = function(value)
+        local scale = value
+
+        MultiBarBottomLeft:SetScale(scale)
+    end
+
+    callbacks.MultiBarOneSpacing = function(value)
+        local spacing = value
+        for i = 2, 12 do
+            local button = _G["MultiBarBottomLeftButton"..i]
+            button:ClearAllPoints()
+            button:SetPoint("LEFT", _G["MultiBarBottomLeftButton"..(i-1)], "RIGHT", spacing, 0)
+        end
+    end
+
+    callbacks.MultiBarOneAlpha = function(value)
+        local alpha = value
+        MultiBarBottomLeft:SetAlpha(alpha)
+    end
+
+    callbacks.MultiBarTwoScale = function(value)
+        local scale = value
+        MultiBarBottomRight:SetScale(scale)
+    end
+
+    callbacks.MultiBarTwoSpacing = function(value)
+        local spacing = value
+        for i = 2, 12 do
+            local button = _G["MultiBarBottomRightButton"..i]
+            button:ClearAllPoints()
+            button:SetPoint("LEFT", _G["MultiBarBottomRightButton"..(i-1)], "RIGHT", spacing, 0)
+        end
+    end
+
+    callbacks.MultiBarTwoAlpha = function(value)
+        local alpha = value
+        MultiBarBottomRight:SetAlpha(alpha)
+    end
+
+    callbacks.MultiBarLeftScale = function(value)
+        local scale = value
+        MultiBarLeft:SetScale(scale)
+    end
+
+    callbacks.MultiBarLeftSpacing = function(value)
+        local spacing = value
+        for i = 2, 12 do
+            local button = _G["MultiBarLeftButton"..i]
+            button:ClearAllPoints()
+            button:SetPoint("TOP", _G["MultiBarLeftButton"..(i-1)], "BOTTOM", 0, -spacing)
+        end
+    end
+
+    callbacks.MultiBarLeftAlpha = function(value)
+        local alpha = value
+        MultiBarLeft:SetAlpha(alpha)
+    end
+
+    callbacks.MultiBarRightScale = function(value)
+        local scale = value
+        MultiBarRight:SetScale(scale)
+    end
+
+    callbacks.MultiBarRightSpacing = function(value)
+        local spacing = value
+        for i = 2, 12 do
+            local button = _G["MultiBarRightButton"..i]
+            button:ClearAllPoints()
+            button:SetPoint("TOP", _G["MultiBarRightButton"..(i-1)], "BOTTOM", 0, -spacing)
+        end
+    end
+
+    callbacks.MultiBarRightAlpha = function(value)
+        local alpha = value
+        MultiBarRight:SetAlpha(alpha)
+    end
+
+    callbacks.gryphoonScale = function(value)
+        local scale = value
+        local leftGryphon = _G["DFRL_LeftGryphon"]
+        local rightGryphon = _G["DFRL_RightGryphon"]
+
+        if leftGryphon then
+            leftGryphon:SetWidth(180 * scale)
+            leftGryphon:SetHeight(180 * scale)
+        end
+
+        if rightGryphon then
+            rightGryphon:SetWidth(180 * scale)
+            rightGryphon:SetHeight(180 * scale)
+        end
+    end
+
+    callbacks.gryphoonShow = function(value)
+        local leftGryphon = _G["DFRL_LeftGryphon"]
+        local rightGryphon = _G["DFRL_RightGryphon"]
+
+        if leftGryphon then
+            if value then
+                leftGryphon:Show()
+            else
+                leftGryphon:Hide()
+            end
+        end
+
+        if rightGryphon then
+            if value then
+                rightGryphon:Show()
+            else
+                rightGryphon:Hide()
+            end
+        end
+    end
+
+    callbacks.gryphoonX = function(value)
+        local xOffset = value
+        local leftGryphon = _G["DFRL_LeftGryphon"]
+        local rightGryphon = _G["DFRL_RightGryphon"]
+
+        if leftGryphon then
+            leftGryphon:ClearAllPoints()
+            leftGryphon:SetPoint("RIGHT", DFRL.actionBarFrame, "LEFT", -xOffset, DFRL:GetConfig("actionbars", "gryphoonY")[1])
+        end
+
+        if rightGryphon then
+            rightGryphon:ClearAllPoints()
+            rightGryphon:SetPoint("LEFT", DFRL.actionBarFrame, "RIGHT", xOffset, DFRL:GetConfig("actionbars", "gryphoonY")[1])
+        end
+    end
+
+    callbacks.gryphoonY = function(value)
+        local yOffset = value
+        local leftGryphon = _G["DFRL_LeftGryphon"]
+        local rightGryphon = _G["DFRL_RightGryphon"]
+
+        if leftGryphon then
+            leftGryphon:ClearAllPoints()
+            leftGryphon:SetPoint("RIGHT", DFRL.actionBarFrame, "LEFT", DFRL:GetConfig("actionbars", "gryphoonX")[1], yOffset)
+        end
+
+        if rightGryphon then
+            rightGryphon:ClearAllPoints()
+            rightGryphon:SetPoint("LEFT", DFRL.actionBarFrame, "RIGHT", -DFRL:GetConfig("actionbars", "gryphoonX")[1], yOffset)
+        end
+    end
+
+    callbacks.darkMode = function(value)
+        local darkColor = {0.2, 0.2, 0.2}
+        local lightColor = {1, 1, 1}
+        local color = value and darkColor or lightColor
+
+        local leftGryphon = _G["DFRL_LeftGryphon"]
+        local rightGryphon = _G["DFRL_RightGryphon"]
+        if leftGryphon then leftGryphon:SetVertexColor(color[1], color[2], color[3]) end
+        if rightGryphon then rightGryphon:SetVertexColor(color[1], color[2], color[3]) end
+
+        local leftTexture = _G["DFRL_ActionBarLeftTexture"]
+        local rightTexture = _G["DFRL_ActionBarRightTexture"]
+        if leftTexture then leftTexture:SetVertexColor(color[1], color[2], color[3]) end
+        if rightTexture then rightTexture:SetVertexColor(color[1], color[2], color[3]) end
+
+        for i = 1, 12 do
+            local borderTex = _G["DFRL_ActionButtonBorder" .. i]
+            if borderTex then borderTex:SetVertexColor(color[1], color[2], color[3]) end
+        end
+
+        local buttonTypes = {
+            "ActionButton", "MultiBarBottomLeftButton", "MultiBarBottomRightButton",
+            "MultiBarRightButton", "MultiBarLeftButton", "PetActionButton",
+            "ShapeshiftButton", "BonusActionButton"
+        }
+
+        for _, buttonType in ipairs(buttonTypes) do
+            for i = 1, 12 do
+                local button = _G[buttonType .. i]
+                if button then
+                    local overlay = _G[button:GetName() .. "DFRL_BorderOverlay"]
+                    if overlay then overlay:SetVertexColor(color[1], color[2], color[3]) end
+                end
+            end
+        end
+    end
+
+    callbacks.pagingShow = function(value)
+        if DFRL.pagingContainer then
+            if value then
+                DFRL.pagingContainer:Show()
+                ActionBarUpButton:Show()
+                ActionBarDownButton:Show()
+                MainMenuBarPageNumber:Show()
+            else
+                DFRL.pagingContainer:Hide()
+                ActionBarUpButton:Hide()
+                ActionBarDownButton:Hide()
+                MainMenuBarPageNumber:Hide()
+            end
+        end
+    end
+
+    callbacks.hotkeyColour = function(value)
+        local r, g, b = unpack(value)
+
+        local buttonTypes = {
+            "ActionButton", "MultiBarBottomLeftButton", "MultiBarBottomRightButton",
+            "MultiBarRightButton", "MultiBarLeftButton", "BonusActionButton"
+        }
+
+        for _, buttonType in ipairs(buttonTypes) do
+            for i = 1, 12 do
+                local button = _G[buttonType .. i]
+                if button and button.DFRL_KeybindText then
+                    button.DFRL_KeybindText:SetTextColor(r, g, b)
+                end
+            end
+        end
+    end
+
+    callbacks.hotkeyShow = function(value)
+        local buttonTypes = {
+            "ActionButton", "MultiBarBottomLeftButton", "MultiBarBottomRightButton",
+            "MultiBarRightButton", "MultiBarLeftButton", "BonusActionButton"
+        }
+
+        for _, buttonType in ipairs(buttonTypes) do
+            for i = 1, 12 do
+                local button = _G[buttonType .. i]
+                if button and button.DFRL_KeybindText then
+                    if value then
+                        button.DFRL_KeybindText:Show()
+                    else
+                        button.DFRL_KeybindText:Hide()
+                    end
+                end
+            end
+        end
+    end
+
+    callbacks.hotkeyScale = function(value)
+        local scale = value
+        local buttonTypes = {
+            "ActionButton", "MultiBarBottomLeftButton", "MultiBarBottomRightButton",
+            "MultiBarRightButton", "MultiBarLeftButton", "BonusActionButton"
+        }
+
+        for _, buttonType in ipairs(buttonTypes) do
+            for i = 1, 12 do
+                local button = _G[buttonType .. i]
+                if button and button.DFRL_KeybindText then
+                    button.DFRL_KeybindText:SetFont("Fonts\\FRIZQT__.TTF", 10 * scale, "OUTLINE")
+                end
+            end
+        end
+    end
+
+    callbacks.hotkeyX = function(value)
+        local xOffset = value
+        local buttonTypes = {
+            "ActionButton", "MultiBarBottomLeftButton", "MultiBarBottomRightButton",
+            "MultiBarRightButton", "MultiBarLeftButton", "BonusActionButton"
+        }
+
+        for _, buttonType in ipairs(buttonTypes) do
+            for i = 1, 12 do
+                local button = _G[buttonType .. i]
+                if button and button.DFRL_KeybindText then
+                    button.DFRL_KeybindText:ClearAllPoints()
+                    button.DFRL_KeybindText:SetPoint("BOTTOM", button, "BOTTOM", xOffset, DFRL:GetConfig("actionbars", "hotkeyY")[1])
+                end
+            end
+        end
+    end
+
+    callbacks.hotkeyY = function(value)
+        local yOffset = value
+        local buttonTypes = {
+            "ActionButton", "MultiBarBottomLeftButton", "MultiBarBottomRightButton",
+            "MultiBarRightButton", "MultiBarLeftButton", "BonusActionButton"
+        }
+
+        for _, buttonType in ipairs(buttonTypes) do
+            for i = 1, 12 do
+                local button = _G[buttonType .. i]
+                if button and button.DFRL_KeybindText then
+                    button.DFRL_KeybindText:ClearAllPoints()
+                    button.DFRL_KeybindText:SetPoint("BOTTOM", button, "BOTTOM", DFRL:GetConfig("actionbars", "hotkeyX")[1], yOffset)
+                end
+            end
+        end
+    end
+
+    callbacks.macroColour = function(value)
+        local r, g, b = unpack(value)
+
+        local buttonTypes = {
+            "ActionButton", "MultiBarBottomLeftButton", "MultiBarBottomRightButton",
+            "MultiBarRightButton", "MultiBarLeftButton", "BonusActionButton"
+        }
+
+        for _, buttonType in ipairs(buttonTypes) do
+            for i = 1, 12 do
+                local button = _G[buttonType .. i]
+                if button then
+                    local macroName = _G[button:GetName() .. "Name"]
+                    if macroName then
+                        macroName:SetTextColor(r, g, b)
+                    end
+                end
+            end
+        end
+    end
+
+    callbacks.macroShow = function(value)
+        local buttonTypes = {
+            "ActionButton", "MultiBarBottomLeftButton", "MultiBarBottomRightButton",
+            "MultiBarRightButton", "MultiBarLeftButton", "BonusActionButton"
+        }
+
+        for _, buttonType in ipairs(buttonTypes) do
+            for i = 1, 12 do
+                local button = _G[buttonType .. i]
+                if button then
+                    local macroName = _G[button:GetName() .. "Name"]
+                    if macroName then
+                        if value then
+                            macroName:Show()
+                        else
+                            macroName:Hide()
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    callbacks.macroScale = function(value)
+        local scale = value
+        local buttonTypes = {
+            "ActionButton", "MultiBarBottomLeftButton", "MultiBarBottomRightButton",
+            "MultiBarRightButton", "MultiBarLeftButton", "BonusActionButton"
+        }
+
+        for _, buttonType in ipairs(buttonTypes) do
+            for i = 1, 12 do
+                local button = _G[buttonType .. i]
+                if button then
+                    local macroName = _G[button:GetName() .. "Name"]
+                    if macroName then
+                        macroName:SetFont("Fonts\\FRIZQT__.TTF", 9 * scale, "OUTLINE")
+                    end
+                end
+            end
+        end
+    end
+
+    callbacks.macroX = function(value)
+        local xOffset = value
+        local buttonTypes = {
+            "ActionButton", "MultiBarBottomLeftButton", "MultiBarBottomRightButton",
+            "MultiBarRightButton", "MultiBarLeftButton", "BonusActionButton"
+        }
+
+        for _, buttonType in ipairs(buttonTypes) do
+            for i = 1, 12 do
+                local button = _G[buttonType .. i]
+                if button then
+                    local macroName = _G[button:GetName() .. "Name"]
+                    if macroName then
+                        macroName:ClearAllPoints()
+                        macroName:SetPoint("TOP", button, "TOP", xOffset, DFRL:GetConfig("actionbars", "macroY")[1])
+                    end
+                end
+            end
+        end
+    end
+
+    callbacks.macroY = function(value)
+        local yOffset = value
+        local buttonTypes = {
+            "ActionButton", "MultiBarBottomLeftButton", "MultiBarBottomRightButton",
+            "MultiBarRightButton", "MultiBarLeftButton", "BonusActionButton"
+        }
+
+        for _, buttonType in ipairs(buttonTypes) do
+            for i = 1, 12 do
+                local button = _G[buttonType .. i]
+                if button then
+                    local macroName = _G[button:GetName() .. "Name"]
+                    if macroName then
+                        macroName:ClearAllPoints()
+                        macroName:SetPoint("TOP", button, "TOP", DFRL:GetConfig("actionbars", "macroX")[1], yOffset)
+                    end
+                end
+            end
+        end
+    end
+
+    callbacks.petbarScale = function(value)
+        local scale = value
+        if DFRL.newPetBar then
+            DFRL.newPetBar:SetScale(scale)
+        end
+    end
+
+    callbacks.shapeshiftScale = function(value)
+        local scale = value
+        if DFRL.newShapeshiftBar then
+            DFRL.newShapeshiftBar:SetScale(scale)
+        end
+    end
+
+    callbacks.petbarSpacing = function(value)
+        local spacing = value
+        for i = 2, 10 do
+            local button = _G["PetActionButton"..i]
+            if button then
+                button:ClearAllPoints()
+                button:SetPoint("LEFT", _G["PetActionButton"..(i-1)], "RIGHT", spacing, 0)
+            end
+        end
+    end
+
+    callbacks.petbarAlpha = function(value)
+        local alpha = value
+        if DFRL.newPetBar then
+            DFRL.newPetBar:SetAlpha(alpha)
+        end
+    end
+
+    callbacks.shapeshiftSpacing = function(value)
+        local spacing = value
+        for i = 2, 10 do
+            local button = _G["ShapeshiftButton"..i]
+            if button then
+                button:ClearAllPoints()
+                button:SetPoint("LEFT", _G["ShapeshiftButton"..(i-1)], "RIGHT", spacing, 0)
+            end
+        end
+    end
+
+    callbacks.shapeshiftAlpha = function(value)
+        local alpha = value
+        if DFRL.newShapeshiftBar then
+            DFRL.newShapeshiftBar:SetAlpha(alpha)
+        end
+    end
+
+    callbacks.gryphoonFlip = function (value)
+        local leftGryphon = _G["DFRL_LeftGryphon"]
+        local rightGryphon = _G["DFRL_RightGryphon"]
+
+        if value then
+            leftGryphon:SetTexCoord(1, 0, 0, 1)
+            rightGryphon:SetTexCoord(0, 1, 0, 1)
+        else
+            leftGryphon:SetTexCoord(0, 1, 0, 1)
+            rightGryphon:SetTexCoord(1, 0, 0, 1)
+        end
+    end
+
+    callbacks.gryphoonAlt = function(value)
+        local leftGryphon = _G["DFRL_LeftGryphon"]
+        local rightGryphon = _G["DFRL_RightGryphon"]
+
+        local faction = UnitFactionGroup("player")
+        local texturePath
+
+        if value then
+            if faction == "Alliance" then
+                texturePath = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\actionbars\\altGyph.tga"
+            else
+                texturePath = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\actionbars\\altWyv.tga"
+            end
+        else
+            if faction == "Alliance" then
+                texturePath = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\actionbars\\GryphonNew.tga"
+            else
+                texturePath = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\actionbars\\WyvernNew.tga"
+            end
+        end
+
+        if leftGryphon and rightGryphon then
+            leftGryphon:SetTexture(texturePath)
+            rightGryphon:SetTexture(texturePath)
+
+            -- maintain flip
+            local isFlipped = DFRL:GetConfig("actionbars", "gryphoonFlip")[1]
+            if isFlipped then
+                leftGryphon:SetTexCoord(1, 0, 0, 1)
+                rightGryphon:SetTexCoord(0, 1, 0, 1)
+            else
+                leftGryphon:SetTexCoord(0, 1, 0, 1)
+                rightGryphon:SetTexCoord(1, 0, 0, 1)
+            end
+        end
+    end
+
+    callbacks.pagingSwap = function(value)
+        if DFRL.pagingContainer then
+            DFRL.pagingContainer:ClearAllPoints()
+            if value then
+                DFRL.pagingContainer:SetPoint("RIGHT", ActionButton1, "LEFT", -15, -1)
+            else
+                DFRL.pagingContainer:SetPoint("LEFT", ActionButton12, "RIGHT", 15, -1)
+            end
+        end
+    end
+
+    callbacks.pagingX = function(value)
+        if DFRL.pagingContainer then
+            local isSwapped = DFRL:GetConfig("actionbars", "pagingSwap")[1]
+            DFRL.pagingContainer:ClearAllPoints()
+            if isSwapped then
+                DFRL.pagingContainer:SetPoint("RIGHT", ActionButton1, "LEFT", -value, -1)
+            else
+                DFRL.pagingContainer:SetPoint("LEFT", ActionButton12, "RIGHT", value, -1)
+            end
+        end
+    end
+
+    -- execute callbacks
+    DFRL:RegisterCallback("actionbars", callbacks)
+end)
