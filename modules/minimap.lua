@@ -213,7 +213,7 @@ DFRL:RegisterModule("minimap", 1, function()
 
     local function CalculateTexOffset(size)
         local minSize, maxSize = 140, 350
-        local minOffset, maxOffset = 8, 26
+        local minOffset, maxOffset = 10, 26
 
         local offset = minOffset + (size - minSize) * (maxOffset - minOffset) / (maxSize - minSize)
         return offset
