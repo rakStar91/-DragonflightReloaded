@@ -21,6 +21,8 @@ if DEBUG_MODE then
     --         DEFAULT_CHAT_FRAME:AddMessage(time .. " - Event fired: " .. event)
     --     end
     -- end)
+
+    DEFAULT_CHAT_FRAME:SetMaxLines(1000)
 end
 
 function DFRL_DEBUGTOOLS.DebugPrint(msg)

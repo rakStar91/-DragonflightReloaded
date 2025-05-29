@@ -8,6 +8,11 @@ DFRL:RegisterModule("framemanager", 2, function()
         PlayerFrame,
         -- targetframes module
         TargetFrame,
+        -- partframes
+        PartyMemberFrame1,
+        PartyMemberFrame2,
+        PartyMemberFrame3,
+        PartyMemberFrame4,
         -- actionbars module
         DFRL.mainBar,
         MultiBarBottomLeft,

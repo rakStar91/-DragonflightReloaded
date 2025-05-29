@@ -4,8 +4,9 @@ DFRL:SetDefaults("bags", {
 
     darkMode = {false, 1, "checkbox", "appearance", "Activate darkmode"},
     bagsExpanded = {true, 2, "checkbox", "appearance", "Show or hide small bag slots"},
-    bagScale = {1.5, 3, "slider", {0.9, 2.5}, "appearance", "Adjusts the scale of the main backpack"},
-    bagAlpha = {1, 4, "slider", {0.1, 1}, "appearance", "Adjusts the transparency of all bags"}
+    bagHide = {false, 3, "checkbox", "appearance", "Show or hide the bag frame"},
+    bagScale = {1.5, 4, "slider", {0.9, 2.5}, "appearance", "Adjusts the scale of the main backpack"},
+    bagAlpha = {1, 5, "slider", {0.1, 1}, "appearance", "Adjusts the transparency of all bags"},
 })
 
 DFRL:RegisterModule("bags", 1, function()
@@ -291,10 +292,12 @@ DFRL:RegisterModule("bags", 1, function()
     end
 
     callbacks.bagsExpanded = function(value)
-        -- show/hide
+        -- show/hide only if bags aren't hidden by bagHide
+        local bagHideValue = DFRL:GetConfig("bags", "bagHide")[1]
+
         for i = 0, 3 do
             local slot = _G['CharacterBag' .. i .. 'Slot']
-            if value then
+            if value and not bagHideValue then
                 slot:Show()
             else
                 slot:Hide()
@@ -315,6 +318,7 @@ DFRL:RegisterModule("bags", 1, function()
         end
     end
 
+
     callbacks.bagScale = function(value)
         MainMenuBarBackpackButton:SetScale(value)
     end
@@ -328,6 +332,30 @@ DFRL:RegisterModule("bags", 1, function()
 
         if KeyRingButton then
             KeyRingButton:SetAlpha(value)
+        end
+    end
+
+    callbacks.bagHide = function (value)
+        if value then
+            MainMenuBarBackpackButton:Hide()
+            for i = 0, 3 do
+                _G['CharacterBag' .. i .. 'Slot']:Hide()
+            end
+
+            -- if KeyRingButton then
+            --     KeyRingButton:Hide()
+            -- end
+            DFRL.bagToggleButton:Hide()
+        else
+            MainMenuBarBackpackButton:Show()
+            for i = 0, 3 do
+                _G['CharacterBag' .. i .. 'Slot']:Show()
+            end
+
+            DFRL.bagToggleButton:Show()
+            -- if KeyRingButton then
+            --     KeyRingButton:Show()
+            -- end
         end
     end
 

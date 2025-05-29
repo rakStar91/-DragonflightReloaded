@@ -240,7 +240,8 @@ DFRL:RegisterModule("gui", 2, function()
         end
 
         -- shagu
-        if DFRL.shagu then
+        local shaguHotfix = IsAddOnLoaded("ShaguTweaks")
+        if DFRL.shagu or shaguHotfix then
             d.DebugPrint("Adding ShaguTweaks to tabs")
             tabsToCreate["ShaguTweaks"] = true
         end
@@ -1269,5 +1270,4 @@ DFRL:RegisterModule("gui", 2, function()
             noteText:SetText("|cFFCCCCCCChanges will take effect\n after reloading the UI.|r")
         end
     end
-
 end)
