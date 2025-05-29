@@ -33,5 +33,5 @@ Type `/dfrl` in chat to access addon commands and settings.
 
 - DragonflightUI by Karl-Heinz Schneider
 - Shagu my master (pfUI / ShaguTweaks)
-- TurtleDragonflight (for the close button texture LOL)
+- TurtleDragonflight
 - Inspired by World of Warcraft: Dragonflight UI
