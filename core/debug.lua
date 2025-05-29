@@ -1,7 +1,7 @@
 ---@diagnostic disable: deprecated
 
 -- debug toggle (and one in gui.lua, will be changed later)
-local DEBUG_MODE = true
+local DEBUG_MODE = false
 
 -- tables
 DFRL_LOGS = {}
