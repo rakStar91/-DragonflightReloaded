@@ -234,6 +234,27 @@ DFRL:RegisterModule("ui", 1, function()
         ReplaceSpellBookTextures()
     end
 
+    -- gamemenu
+    do
+        local gamemenuBtn = CreateFrame("Button", "DFRLGameMenuButton", GameMenuFrame, "GameMenuButtonTemplate")
+        gamemenuBtn:SetText("|cFFFFD100Dragonflight:|r Reloaded")
+        gamemenuBtn:SetPoint("TOP", GameMenuFrame, "TOP", 0, -35)
+        gamemenuBtn:SetHeight(30)
+        gamemenuBtn:SetWidth(150)
+        gamemenuBtn:SetScript("OnClick", function()
+            HideUIPanel(GameMenuFrame)
+            DFRL.gui.Toggle()
+        end)
+
+        GameMenuButtonShop:ClearAllPoints()
+        GameMenuButtonShop:SetPoint("TOP", gamemenuBtn, "BOTTOM", 0, -15)
+
+        GameMenuFrame:SetWidth(GameMenuFrame:GetWidth() + 10)
+        GameMenuFrame:SetHeight(GameMenuFrame:GetHeight() + 60)
+
+        DFRL.gui.gamemenuBtn = gamemenuBtn
+    end
+
     -- zoom
     ConsoleExec("CameraDistanceMaxFactor 5")
 
@@ -327,8 +348,12 @@ DFRL:RegisterModule("ui", 1, function()
 
             if ShouldExclude(frame) then return end
 
+            -- Handle backdrop colors (background AND border)
             if frame.SetBackdropColor then
                 frame:SetBackdropColor(color[1], color[2], color[3], 1)
+            end
+            if frame.SetBackdropBorderColor then
+                frame:SetBackdropBorderColor(color[1], color[2], color[3], 1)
             end
 
             local regions = {frame:GetRegions()}

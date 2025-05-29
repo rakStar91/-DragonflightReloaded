@@ -202,7 +202,7 @@ DFRL:RegisterModule("gui", 2, function()
             -- deselect all buttons (remove highlight and reset text color)
             for _, button in tabButtons do
                 button.highlightTexture:Hide()
-                -- Keep ShaguTweaks tab always white
+                -- keep ShaguTweaks tab always white
                 if not button.isShaguTab then
                     button.text:SetTextColor(1, 0.82, 0)
                 end
@@ -920,12 +920,12 @@ DFRL:RegisterModule("gui", 2, function()
             local realm = GetRealmName()
 
             -- check if compatible addons are loaded
-            local shaguInstalled = IsAddOnLoaded("ShaguTweaks") and "|cFF77CC77(installed)|r" or "|cFF666666(uninstalled)|r"
-            local pfQuestInstalled = IsAddOnLoaded("pfQuest") and "|cFF77CC77(installed)|r" or "|cFF666666(uninstalled)|r"
-            local bagShuiInstalled = IsAddOnLoaded("BagShui") and "|cFF77CC77(installed)|r" or "|cFF666666(uninstalled)|r"
+            local shaguInstalled = IsAddOnLoaded("ShaguTweaks") and "|cFF77CC77(installed)|r" or "|cFF666666(not installed)|r"
+            local pfQuestInstalled = IsAddOnLoaded("pfQuest") and "|cFF77CC77(installed)|r" or "|cFF666666(not installed)|r"
+            local bagShuiInstalled = IsAddOnLoaded("BagShui") and "|cFF77CC77(installed)|r" or "|cFF666666(not installed)|r"
 
             -- easter egg
-            local specialText = UnitName("player") == "Shagu" and "|cFF00FF00Hi Shagu, danke dir für alles. <3!|r\n\n\n" or "\n\n\n"
+            local specialText = UnitName("player") == "Shagu" or "Guzruul" and "|cFF00FF00Hi Shagu, danke dir für alles. <3!|r\n\n\n" or "\n\n\n"
 
             -- text blocks
             local generalInfo = leftFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
@@ -946,9 +946,9 @@ DFRL:RegisterModule("gui", 2, function()
                 "|cFFCCCCCCLocale: |r|cFF77CC77" .. locale .. "|r\n" ..
                 "|cFFCCCCCCRealm: |r|cFF77CC77" .. realm .. "|r\n\n" ..
                 "|cFFFFFFFFCompatible with:|r\n" ..
-                "|cFFCCCCCC• |r|cFF77CC77ShaguTweaks" .. "  " .. shaguInstalled .. "|r\n" ..
-                "|cFFCCCCCC• |r|cFF77CC77pfQuest" .. "             " .. pfQuestInstalled .. "|r\n" ..
-                "|cFFCCCCCC• |r|cFF77CC77BagShui" .. "             " .. bagShuiInstalled .. "|r\n\n" ..
+                "|cFFCCCCCC• |r|cFF77CC77ShaguTweaks" .. "     " .. shaguInstalled .. "|r\n" ..
+                "|cFFCCCCCC• |r|cFF77CC77pfQuest" .. "                " .. pfQuestInstalled .. "|r\n" ..
+                "|cFFCCCCCC• |r|cFF77CC77BagShui" .. "                " .. bagShuiInstalled .. "|r\n\n" ..
                 "|cFFFFFFFFDevelopment Status:|r\n" ..
                 "|cFFCCCCCC• |r|cFFCCCCCCBag module is currently under development.\n" ..
                 "|cFFCCCCCC• |r|cFFCCCCCCShaguTweaks-extra will be integrated soon.\n" ..
@@ -957,13 +957,13 @@ DFRL:RegisterModule("gui", 2, function()
                 "|cFFFF6666Please report bugs on the Turtle-WoW Forum.|r\n" ..
                 "|cFFCCCCCCCheck for known bugs as well before you post.|r\n" ..
                 "|cFFFF6666Logfiles|r: |cFFCCCCCCWTF/Acc/Accname/Realm/Name|r\n" ..
-                "|cFFCCCCCCforum.turtle-wow.org/viewtopic.php?t=13151|r"
+                "|cFFCCCCCCforum.turtle-wow.org/viewtopic.php?t=19599|r"
             )
 
             generalInfo:SetTextColor(0.9, 0.9, 0.9)
 
             --====================================
-            --LEFT AREA - PERFORMANCE
+            --RIGHT AREA - PERFORMANCE
             --====================================
             local rightFrame = CreateFrame("Frame", nil, infoPanel)
             rightFrame:SetWidth(420)
@@ -1019,13 +1019,13 @@ DFRL:RegisterModule("gui", 2, function()
                 elseif memory < 1215 then memRating = 2 -- poor
                 else memRating = 1 end                  -- bad
 
-                if time < 0.162 then timeRating = 5      -- excellent
-                elseif time < 0.243 then timeRating = 4  -- good
-                elseif time < 0.3645 then timeRating = 3 -- fair
-                elseif time < 0.486 then timeRating = 2  -- poor
+                if time < 0.05 then timeRating = 5      -- excellent
+                elseif time < 0.10 then timeRating = 4  -- good
+                elseif time < 0.15 then timeRating = 3  -- fair
+                elseif time < 0.20 then timeRating = 2  -- poor
                 else timeRating = 1 end                 -- bad
 
-                -- Average rating
+                -- average rating
                 local avgRating = (memRating + timeRating) / 2
 
                 if avgRating >= 4.5 then return "Excellent"
@@ -1034,8 +1034,6 @@ DFRL:RegisterModule("gui", 2, function()
                 elseif avgRating >= 1.5 then return "Poor"
                 else return "Bad" end
             end
-
-
 
             local perfUpdateFrame = CreateFrame("Frame")
             perfUpdateFrame:SetScript("OnUpdate", function()
@@ -1136,7 +1134,6 @@ DFRL:RegisterModule("gui", 2, function()
                     "|cFFCCCCCC - Rating: |r|cFF77CC77" .. GetPerformanceRating(totalMemory, totalTime) .. "|r"
                 )
             end)
-
         end
     end
 
@@ -1273,22 +1270,4 @@ DFRL:RegisterModule("gui", 2, function()
         end
     end
 
-    -- gamemenu
-    do
-        local gamemenuBtn = CreateFrame("Button", "GameMenuButtonMyAddon", GameMenuFrame, "GameMenuButtonTemplate")
-        gamemenuBtn:SetText("|cFFFFD100Dragonflight:|r Reloaded")
-        gamemenuBtn:SetPoint("TOP", GameMenuFrame, "TOP", 0, -35)
-        gamemenuBtn:SetHeight(30)
-        gamemenuBtn:SetWidth(150)
-        gamemenuBtn:SetScript("OnClick", function()
-            HideUIPanel(GameMenuFrame)
-            gui.Toggle()
-        end)
-
-        GameMenuButtonShop:ClearAllPoints()
-        GameMenuButtonShop:SetPoint("TOP", gamemenuBtn, "BOTTOM", 0, -15)
-
-        GameMenuFrame:SetWidth(GameMenuFrame:GetWidth() + 10)
-        GameMenuFrame:SetHeight(GameMenuFrame:GetHeight() + 60)
-    end
 end)

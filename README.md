@@ -1,9 +1,9 @@
 # Dragonflight: Reloaded
+![Logo](https://i.ibb.co/5xFzTW7q/logo.png)
 
 A modern UI replacement for World of Warcraft Classic (1.12) inspired by the Dragonflight UI.
 
 ## Features
-
 - Redesigned action bars with modern styling
 - Enhanced player and target frames
 - Stylish cast bar implementation
@@ -33,5 +33,5 @@ Type `/dfrl` in chat to access addon commands and settings.
 
 - DragonflightUI by Karl-Heinz Schneider
 - Shagu my master (pfUI / ShaguTweaks)
-- TurtleDragonflight (for the close button texture LOL)
+- TurtleDragonflight
 - Inspired by World of Warcraft: Dragonflight UI

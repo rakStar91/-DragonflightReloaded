@@ -61,7 +61,7 @@ end
 -- modules system
 function DFRL:RegisterModule(moduleName, priority, moduleFunc)
     assert(type(moduleName) == "string", "Module name must be a string")
-    assert(type(priority) == "number", "Priority must be a number")
+    --assert(type(priority) == "number", "Priority must be a number")
     assert(type(moduleFunc) == "function", "Module must be a function")
     assert(priority == 1 or priority == 2, "Priority must be 1 (normal) or 2 (delayed)")
 
@@ -326,6 +326,8 @@ DFRL:SetScript("OnEvent", function()
         print("Welcome to |cffffd200Dragonflight:|r Reloaded.")
         print("Open menu via |cffddddddESC|r or |cffddddddSLASH DFRL|r.")
         print("|cFFFF6666Alpha Phase|r until end of June/July.")
+
+        DFRL:UnregisterEvent("PLAYER_ENTERING_WORLD")
     end
 
 	-- save DB

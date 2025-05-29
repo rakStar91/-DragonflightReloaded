@@ -1,7 +1,7 @@
 ---@diagnostic disable: deprecated
 
 -- debug toggle (and one in gui.lua, will be changed later)
-local DEBUG_MODE = false
+local DEBUG_MODE = true
 
 -- tables
 DFRL_LOGS = {}
@@ -195,8 +195,27 @@ seterrorhandler(DFRL_DEBUGTOOLS.ErrorHandler)
 
 -- event handler
 local f = CreateFrame("Frame")
+f:RegisterEvent("ADDON_LOADED")
+f:RegisterEvent("PLAYER_ENTERING_WORLD")
 f:RegisterEvent("PLAYER_LOGOUT")
 f:SetScript("OnEvent", function()
-    DFRL_DEBUGTOOLS.DebugPrint("EVENT: PLAYER LOGOUT, TEMPDB COPIED OVER")
-    DFRL_LOGS = TEMPDB
+
+    -- make sure our errhandler sticks so we are
+    -- a bit aggresive here :p
+    if event == "ADDON_LOADED" then
+        DFRL_DEBUGTOOLS.DebugPrint("EVENT: ADDON_LOADED [ErrorHandler]")
+        seterrorhandler(DFRL_DEBUGTOOLS.ErrorHandler)
+    end
+
+    if event == "PLAYER_ENTERING_WORLD" then
+        DFRL_DEBUGTOOLS.DebugPrint("EVENT: PLAYER_ENTERING_WORLD [ErrorHandler]")
+        seterrorhandler(DFRL_DEBUGTOOLS.ErrorHandler)
+
+        f:UnregisterEvent("PLAYER_ENTERING_WORLD") -- prevent blizz instance repeats
+    end
+
+    if event == "PLAYER_LOGOUT" then
+        DFRL_DEBUGTOOLS.DebugPrint("EVENT: PLAYER_LOGOUT, TEMPDB COPIED OVER")
+        DFRL_LOGS = TEMPDB
+    end
 end)
