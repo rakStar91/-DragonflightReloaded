@@ -179,9 +179,9 @@ local function CreateSlashHandler()
 end
 
 -- run slash handler
--- if DEBUG_MODE then
+if DEBUG_MODE then
     CreateSlashHandler()
--- end
+end
 
 -- error handler
 function DFRL_DEBUGTOOLS.ErrorHandler(errorMsg)
