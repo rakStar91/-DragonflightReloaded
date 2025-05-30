@@ -388,7 +388,6 @@ DFRL:RegisterModule("minimap", 1, function()
         MinimapZoomIn:SetPoint("TOPLEFT", Minimap, "BOTTOMRIGHT", DFRL:GetConfig("minimap", "zoomX")[1], value)
     end
 
-
     -- execute callbacks
     DFRL:RegisterCallback("minimap", callbacks)
 end)

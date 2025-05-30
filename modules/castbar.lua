@@ -1,5 +1,5 @@
 DFRL:SetDefaults("castbar", {
-    enabled = {false},
+    enabled = {true},
     hidden = {false},
 
     darkMode = {false, 1, "checkbox", "appearance", "Use dark mode for castbar border"},
@@ -102,7 +102,6 @@ DFRL:RegisterModule("castbar", 1, function()
             CastingBarText.time:Hide()
         end
     end
-
 
     callbacks.castText = function(value)
         if value then
