@@ -1,5 +1,5 @@
 DFRL:SetDefaults("castbar", {
-    enabled = {true},
+    enabled = {false},
     hidden = {false},
 
     darkMode = {false, 1, "checkbox", "appearance", "Use dark mode for castbar border"},

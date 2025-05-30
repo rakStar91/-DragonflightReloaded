@@ -8,6 +8,7 @@ DFRL:RegisterModule("framemanager", 2, function()
         PlayerFrame,
         -- targetframes module
         TargetFrame,
+        TargetofTargetFrame,
         -- partframes
         PartyMemberFrame1,
         PartyMemberFrame2,
@@ -160,15 +161,15 @@ DFRL:RegisterModule("framemanager", 2, function()
                 FramerateLabel:Show()
                 DFRL.netStatsFrame:Show()
                 -- BuffButton8:Show() -- doesnt work yet
-                TargetUnit("player")
-                TargetFrame:Show()
+                -- TargetUnit("player")
+                -- TargetFrame:Show()
 
                 overlay:Show()
                 grid:Show()
             else
                 if flag == true then
-                    ClearTarget()
-                    TargetFrame:Hide()
+                    -- ClearTarget()
+                    -- TargetFrame:Hide()
                     CastingBarFrame:Hide()
                     FramerateLabel:Hide()
                     DFRL.netStatsFrame:Hide()

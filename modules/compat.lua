@@ -87,6 +87,9 @@ local function ShaguFix()
     end
 end
 
+-- run instant in case it ws loaded already
+ShaguFix()
+
 local f = CreateFrame("Frame")
 f:RegisterEvent("ADDON_LOADED")
 f:RegisterEvent("PLAYER_ENTERING_WORLD")

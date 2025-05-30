@@ -169,20 +169,19 @@ DFRL:RegisterModule("bags", 1, function()
                 pushed:SetPoint('CENTER', 2, -1)
 
                 if not KeyRingButton.Icon then
-                    local icon = KeyRingButton:CreateTexture('DragonflightUIKeyRingIconTexture')
+                    local icon = KeyRingButton:CreateTexture('KeyRingIconTexture')
                     icon:SetTexture('Interface\\AddOns\\DragonflightReloaded\\media\\tex\\bags\\KeyRing-Bag-Icon')
                     KeyRingButton.Icon = icon
 
-                    local delta = 6
-                    icon:SetWidth(size - delta)
-                    icon:SetHeight(size - delta)
+                    icon:SetWidth(20.5)
+                    icon:SetHeight(20.5)
                     icon:SetPoint('CENTER', 0, 0)
                     icon:SetDrawLayer('BORDER', 2)
 
                 end
 
                 if not KeyRingButton.Border then
-                    local border = KeyRingButton:CreateTexture('DragonflightUIKeyRingBorder')
+                    local border = KeyRingButton:CreateTexture('KeyRingBorder')
                     border:SetTexture(bagAtlas)
                     border:SetTexCoord(0.699219, 0.818359, 0.5, 0.976562)
                     border:SetWidth(size)
@@ -292,7 +291,7 @@ DFRL:RegisterModule("bags", 1, function()
     end
 
     callbacks.bagsExpanded = function(value)
-        -- show/hide only if bags aren't hidden by bagHide
+        -- show/hide only if bags not hidden
         local bagHideValue = DFRL:GetConfig("bags", "bagHide")[1]
 
         for i = 0, 3 do
@@ -301,6 +300,20 @@ DFRL:RegisterModule("bags", 1, function()
                 slot:Show()
             else
                 slot:Hide()
+            end
+        end
+
+        -- KeyRingButton
+        if KeyRingButton then
+            if value and not bagHideValue then
+                local keyringID = KEYRING_CONTAINER or 4
+                if GetContainerNumSlots(keyringID) > 0 then
+                    KeyRingButton:Show()
+                else
+                    KeyRingButton:Hide()
+                end
+            else
+                KeyRingButton:Hide()
             end
         end
 
@@ -341,23 +354,28 @@ DFRL:RegisterModule("bags", 1, function()
             for i = 0, 3 do
                 _G['CharacterBag' .. i .. 'Slot']:Hide()
             end
-
-            -- if KeyRingButton then
-            --     KeyRingButton:Hide()
-            -- end
+            if KeyRingButton then
+                KeyRingButton:Hide()
+            end
             DFRL.bagToggleButton:Hide()
         else
             MainMenuBarBackpackButton:Show()
+
             for i = 0, 3 do
                 _G['CharacterBag' .. i .. 'Slot']:Show()
             end
-
             DFRL.bagToggleButton:Show()
-            -- if KeyRingButton then
-            --     KeyRingButton:Show()
-            -- end
+            if KeyRingButton then
+                local keyringID = KEYRING_CONTAINER or 4
+                if GetContainerNumSlots(keyringID) > 0 then
+                    KeyRingButton:Show()
+                else
+                    KeyRingButton:Hide()
+                end
+            end
         end
     end
+
 
     -- execute callbacks
     DFRL:RegisterCallback("bags", callbacks)

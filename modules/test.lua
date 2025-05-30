@@ -1,9 +1,89 @@
--- DFRL:SetDefaults("test", {
---     enabled = {false},
---     hidden = {true},
--- })
+-- local myCastBar = CreateFrame("StatusBar", "MyCastBar", UIParent)
+-- myCastBar:SetWidth(150)
+-- myCastBar:SetHeight(20)
+-- myCastBar:SetPoint("CENTER", 0, 0)
+-- myCastBar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
+-- myCastBar:Hide()
 
--- DFRL:RegisterModule("test", 1, function()
---     d.DebugPrint("BOOTING")
+-- local castText = myCastBar:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+-- castText:SetPoint("CENTER", 0, 0)
 
+-- -- Add spark for smoother appearance
+-- local spark = myCastBar:CreateTexture(nil, "OVERLAY")
+-- spark:SetTexture("Interface\\CastingBar\\UI-CastingBar-Spark")
+-- spark:SetWidth(32)
+-- spark:SetHeight(32)
+-- spark:SetBlendMode("ADD")
+
+-- myCastBar:RegisterEvent("SPELLCAST_START")
+-- myCastBar:RegisterEvent("SPELLCAST_STOP")
+-- myCastBar:RegisterEvent("SPELLCAST_FAILED")
+-- myCastBar:RegisterEvent("SPELLCAST_INTERRUPTED")
+-- myCastBar:RegisterEvent("SPELLCAST_DELAYED")
+
+-- myCastBar:SetScript("OnEvent", function()
+-- 	if event == "SPELLCAST_START" then
+-- 		myCastBar.startTime = GetTime()
+-- 		myCastBar.maxValue = arg2 / 1000
+-- 		myCastBar.endTime = myCastBar.startTime + myCastBar.maxValue
+-- 		myCastBar:SetMinMaxValues(0, 1)
+-- 		myCastBar:SetValue(0)
+-- 		castText:SetText(arg1)
+-- 		myCastBar:Show()
+-- 		myCastBar.casting = 1
+-- 	elseif event == "SPELLCAST_STOP" or event == "SPELLCAST_FAILED" or event == "SPELLCAST_INTERRUPTED" then
+-- 		myCastBar:Hide()
+-- 		myCastBar.casting = nil
+-- 	elseif event == "SPELLCAST_DELAYED" and myCastBar.casting then
+-- 		local delay = arg1 / 1000
+-- 		myCastBar.endTime = myCastBar.endTime + delay
+-- 	end
 -- end)
+
+-- -- Add this after your existing code
+-- function ShowTestCastBar()
+--     myCastBar.startTime = GetTime()
+--     myCastBar.maxValue = 3  -- 3 second test cast
+--     myCastBar.endTime = myCastBar.startTime + myCastBar.maxValue
+--     myCastBar:SetMinMaxValues(0, 1)
+--     myCastBar:SetValue(0)
+--     castText:SetText("Test Cast")
+--     myCastBar:Show()
+--     myCastBar.casting = 1
+--     myCastBar.testing = 1
+-- end
+
+-- -- Modify your OnUpdate function to loop the test cast
+-- local originalOnUpdate = myCastBar:GetScript("OnUpdate")
+-- myCastBar:SetScript("OnUpdate", function()
+--     if myCastBar.casting then
+--         local t = GetTime()
+--         if t >= myCastBar.endTime then
+--             if myCastBar.testing then
+--                 -- Reset the test cast to loop it
+--                 myCastBar.startTime = GetTime()
+--                 myCastBar.endTime = myCastBar.startTime + myCastBar.maxValue
+--                 myCastBar:SetValue(0)
+--             else
+--                 myCastBar:Hide()
+--                 myCastBar.casting = nil
+--             end
+--         else
+--             local value = (t - myCastBar.startTime) / myCastBar.maxValue
+--             myCastBar:SetValue(value)
+--             spark:SetPoint("CENTER", myCastBar, "LEFT", value * myCastBar:GetWidth(), 0)
+--         end
+--     end
+-- end)
+
+-- -- Add a slash command to toggle the test cast
+-- SLASH_TESTCAST1 = "/testcast"
+-- SlashCmdList["TESTCAST"] = function()
+--     if myCastBar:IsShown() and myCastBar.testing then
+--         myCastBar:Hide()
+--         myCastBar.casting = nil
+--         myCastBar.testing = nil
+--     else
+--         ShowTestCastBar()
+--     end
+-- end

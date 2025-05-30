@@ -326,11 +326,12 @@ DFRL:RegisterModule("actionbars", 1, function()
         UpdateBarPositions()
     end
 
-    -- hide hotkey text and add custom keybind text
+    --hotkey text
     do
         local buttonTypes = {
             "ActionButton", "MultiBarBottomLeftButton", "MultiBarBottomRightButton",
-            "MultiBarRightButton", "MultiBarLeftButton", "BonusActionButton"
+            "MultiBarRightButton", "MultiBarLeftButton", "BonusActionButton",
+            "ShapeshiftButton", "PetActionButton"
         }
 
         local commandMap = {
@@ -339,7 +340,9 @@ DFRL:RegisterModule("actionbars", 1, function()
             ["MultiBarBottomRightButton"] = "MULTIACTIONBAR2BUTTON",
             ["MultiBarRightButton"] = "MULTIACTIONBAR3BUTTON",
             ["MultiBarLeftButton"] = "MULTIACTIONBAR4BUTTON",
-            ["BonusActionButton"] = "BONUSACTIONBUTTON"
+            ["BonusActionButton"] = "BONUSACTIONBUTTON",
+            ["ShapeshiftButton"] = "SHAPESHIFTBUTTON",
+            ["PetActionButton"] = "BONUSACTIONBUTTON"
         }
 
         local function UpdateHotkeys()

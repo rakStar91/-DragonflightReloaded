@@ -4,9 +4,9 @@ DFRL:SetDefaults("minimap", {
 
     darkMode = {false, 1, "checkbox", "appearance", "Enable dark mode for the minimap"},
     mapSize = {180, 6, "slider", {140, 350}, "map appearance", "Adjusts the overall size of the minimap"},
-    shadowShow = {true, 3, "checkbox", "map appearance", "Show or hide the shadow behind the minimap"},
+    zoomShow = {true, 3, "checkbox", "map appearance", "Show or hide zoom buttons on the minimap"},
+    shadowShow = {true, 2, "checkbox", "map appearance", "Show or hide the shadow behind the minimap"},
     shadowAlpha = {0.3, 8, "slider", {0.1, 1}, "map appearance", "Adjusts transparency of the minimap shadow"},
-    zoomShow = {true, 2, "checkbox", "map appearance", "Show or hide zoom buttons on the minimap"},
     zoomScale = {0.8, 18, "slider", {0.2, 2}, "map appearance", "Adjusts size of zoom buttons"},
     zoomAlpha = {1, 9, "slider", {0.1, 1}, "map appearance", "Adjusts transparency of zoom buttons"},
     minimapAlpha = {1, 7, "slider", {0.1, 1}, "map appearance", "Adjusts transparency of the entire minimap"},
@@ -23,6 +23,11 @@ DFRL:SetDefaults("minimap", {
 
     PFQuestShow = {true, 19, "checkbox", "top panel", "Show or hide the pfQuest icon"},
     radioShow = {true, 20, "checkbox", "top panel", "Show or hide the Everlook Broadcasting Radio"},
+
+    mapSquare = {false, 4, "checkbox", "map appearance", "Show the Minimap Square design"},
+    zoomX = {-5, 22, "slider", {-100, 100}, "map appearance", "Adjusts horizontal position of zoom buttons"},
+    zoomY = {40, 23, "slider", {-100, 100}, "map appearance", "Adjusts vertical position of zoom buttons"},
+
 })
 
 DFRL:RegisterModule("minimap", 1, function()
@@ -360,6 +365,29 @@ DFRL:RegisterModule("minimap", 1, function()
             end
         end
     end
+
+    callbacks.mapSquare = function(value)
+        if value then
+            minimapBorder:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\minimap\\map_dragonflight_square2.tga")
+            minimapShadow:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\minimap\\map_dragonflight_square_shadow.tga")
+            Minimap:SetMaskTexture("Interface\\BUTTONS\\WHITE8X8")
+        else
+            minimapBorder:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\minimap\\uiminimapborder.tga")
+            minimapShadow:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\minimap\\uiminimapshadow.tga")
+            Minimap:SetMaskTexture("Textures\\MinimapMask")
+        end
+    end
+
+    callbacks.zoomX = function(value)
+        MinimapZoomIn:ClearAllPoints()
+        MinimapZoomIn:SetPoint("TOPLEFT", Minimap, "BOTTOMRIGHT", value, DFRL:GetConfig("minimap", "zoomY")[1])
+    end
+
+    callbacks.zoomY = function(value)
+        MinimapZoomIn:ClearAllPoints()
+        MinimapZoomIn:SetPoint("TOPLEFT", Minimap, "BOTTOMRIGHT", DFRL:GetConfig("minimap", "zoomX")[1], value)
+    end
+
 
     -- execute callbacks
     DFRL:RegisterCallback("minimap", callbacks)

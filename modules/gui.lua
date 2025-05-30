@@ -895,7 +895,7 @@ DFRL:RegisterModule("gui", 2, function()
             infoText:SetWidth(600)
             infoText:SetJustifyH("CENTER")
             infoText:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
-            infoText:SetText("Welcome to DragonflightReloaded")
+            infoText:SetText("Welcome to Dragonflight: Reloaded")
             infoText:SetTextColor(1, 1, 1)
 
             --====================================
