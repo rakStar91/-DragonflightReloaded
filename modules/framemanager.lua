@@ -25,7 +25,7 @@ DFRL:RegisterModule("framemanager", 2, function()
         DFRL.xpBar,
         DFRL.repBar,
         -- castingbar module
-        CastingBarFrame,
+        DFRL.castbar,
         -- bags module
         MainMenuBarBackpackButton,
         -- micromenu module
@@ -156,8 +156,8 @@ DFRL:RegisterModule("framemanager", 2, function()
             if IsControlKeyDown() and IsShiftKeyDown() and IsAltKeyDown() then
                 flag = true
 
-                CastingBarFrame:Show()
-                CastingBarFrame:SetAlpha(1) -- bug fix
+                DFRL.castbar:Show()
+                DFRL.castbar.bar:Hide() -- bug fix
                 FramerateLabel:Show()
                 DFRL.netStatsFrame:Show()
                 -- BuffButton8:Show() -- doesnt work yet
@@ -170,7 +170,8 @@ DFRL:RegisterModule("framemanager", 2, function()
                 if flag == true then
                     -- ClearTarget()
                     -- TargetFrame:Hide()
-                    CastingBarFrame:Hide()
+                    DFRL.castbar.bar:Show()
+                    DFRL.castbar:Hide()
                     FramerateLabel:Hide()
                     DFRL.netStatsFrame:Hide()
                     -- BuffButton8:Hide()

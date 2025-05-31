@@ -340,7 +340,7 @@ DFRL:RegisterModule("actionbars", 1, function()
             ["MultiBarBottomRightButton"] = "MULTIACTIONBAR2BUTTON",
             ["MultiBarRightButton"] = "MULTIACTIONBAR3BUTTON",
             ["MultiBarLeftButton"] = "MULTIACTIONBAR4BUTTON",
-            ["BonusActionButton"] = "ACTIONBUTTON", -- Change this line from BONUSACTIONBUTTON to ACTIONBUTTON
+            ["BonusActionButton"] = "ACTIONBUTTON",
             ["ShapeshiftButton"] = "SHAPESHIFTBUTTON",
             ["PetActionButton"] = "BONUSACTIONBUTTON"
         }
@@ -492,6 +492,118 @@ DFRL:RegisterModule("actionbars", 1, function()
         rightGryphon:SetHeight(180)
 
         rightGryphon:SetTexCoord(1, 0, 0, 1) -- flip
+    end
+
+    -- range indicator
+    do
+        local buttonTypes = {
+            "ActionButton",
+            "BonusActionButton",
+        }
+
+        local function CreateRangeIndicator(button)
+            if button.rangeIndicator then
+                return -- has indicator
+            end
+
+            local dot = button:CreateTexture(nil, "OVERLAY")
+            dot:SetTexture("Interface\\Buttons\\WHITE8x8")
+            dot:SetVertexColor(1, 0, 0)
+            dot:SetWidth(4)
+            dot:SetHeight(4)
+            dot:SetPoint("TOPRIGHT", button, "TOPRIGHT", -4, -4)
+            dot:Hide()
+
+            button.rangeIndicator = dot
+        end
+
+        local function IsInRange(button)
+            if not button or not button:IsVisible() then
+                return true
+            end
+
+            local slot = button:GetID()
+            if not slot or slot == 0 then
+                return true
+            end
+
+            if not UnitExists("target") then
+                return true
+            end
+
+            if not UnitCanAttack("player", "target") then
+                return true
+            end
+
+            local inRange = IsActionInRange(slot)
+            if inRange == 0 then
+                return false
+            end
+
+            return true
+        end
+
+        local function UpdateRangeIndicator(button)
+            if not button.rangeIndicator then
+                return
+            end
+
+            if IsInRange(button) then
+                button.rangeIndicator:Hide()
+            else
+                button.rangeIndicator:Show()
+            end
+        end
+
+        local function UpdateAllRangeIndicators()
+            for _, buttonType in ipairs(buttonTypes) do
+                local i = 1
+                while true do
+                    local button = getglobal(buttonType .. i)
+                    if not button then
+                        break
+                    end
+                    UpdateRangeIndicator(button)
+                    i = i + 1
+                end
+            end
+        end
+
+        local function InitializeRangeIndicators()
+            for _, buttonType in ipairs(buttonTypes) do
+                local i = 1
+                while true do
+                    local button = getglobal(buttonType .. i)
+                    if not button then
+                        break
+                    end
+                    CreateRangeIndicator(button)
+                    i = i + 1
+                end
+            end
+        end
+
+        local frame = CreateFrame("Frame")
+        frame:RegisterEvent("ADDON_LOADED")
+        frame:RegisterEvent("PLAYER_TARGET_CHANGED")
+        frame:RegisterEvent("ACTIONBAR_SLOT_CHANGED")
+        frame:RegisterEvent("PLAYER_ENTERING_WORLD")
+        frame:RegisterEvent("SPELLS_CHANGED")
+        frame:SetScript("OnEvent", function()
+            if event == "ADDON_LOADED" or event == "PLAYER_ENTERING_WORLD" then
+                InitializeRangeIndicators()
+            end
+            UpdateAllRangeIndicators()
+        end)
+
+        local updateTimer = 0
+        frame:SetScript("OnUpdate", function()
+            updateTimer = updateTimer + arg1
+            if updateTimer >= 0.1 then
+                UpdateAllRangeIndicators()
+                updateTimer = 0
+            end
+        end)
     end
 
     -- callbacks

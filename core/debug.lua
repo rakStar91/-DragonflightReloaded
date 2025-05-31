@@ -22,6 +22,17 @@ if DEBUG_MODE then
     --     end
     -- end)
 
+    local debugText = CreateFrame("Frame", "DFRL_DebugIndicator", UIParent)
+    debugText:SetPoint("TOP", UIParent, "TOP", 0, -5)
+    debugText:SetWidth(200)
+    debugText:SetHeight(30)
+
+    local text = debugText:CreateFontString(nil, "OVERLAY")
+    text:SetFont("Fonts\\FRIZQT__.TTF", 22, "OUTLINE")
+    text:SetText("DEBUG MODE")
+    text:SetTextColor(1, 0, 0, 1)
+    text:SetAllPoints()
+
     DEFAULT_CHAT_FRAME:SetMaxLines(1000)
 end
 

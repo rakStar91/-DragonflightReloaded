@@ -28,7 +28,7 @@ DFRL:RegisterModule("bags", 1, function()
 
         -- main func to change the bag textures
         function ChangeBackpack()
-            local bagAtlas = 'Interface\\AddOns\\DragonflightReloaded\\media\\tex\\bags\\bagslots2x'
+            local bagAtlas = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\bags\\bagslots2x"
             -- main bag
             do
                 local texture = 'Interface\\AddOns\\DragonflightReloaded\\media\\tex\\bags\\bigbag'
@@ -375,7 +375,6 @@ DFRL:RegisterModule("bags", 1, function()
             end
         end
     end
-
 
     -- execute callbacks
     DFRL:RegisterCallback("bags", callbacks)

@@ -354,7 +354,7 @@ DFRL:RegisterModule("gui", 2, function()
         SelectTab("Info")
     end
 
-    -- UI generation
+    -- generator
     do
         -- templates
         local function CreateSlider(parent, name, moduleName, key, tooltip, minVal, maxVal)
@@ -662,6 +662,236 @@ DFRL:RegisterModule("gui", 2, function()
             return checkbox
         end
 
+        local function CreateConfigDropdown(parent, name, moduleName, key, options, tooltip)
+            -- get current value
+            local currentValue = DFRL:GetConfig(moduleName, key)
+            local defaultText = currentValue[1] or "Select Option"
+
+            local dropdown = CreateDropDownMenu(name, parent, options, defaultText, function(selectedText)
+                DFRL:SetConfig(moduleName, key, selectedText)
+                d.DebugPrint("Dropdown config saved: " .. moduleName .. "." .. key .. " = " .. selectedText)
+            end)
+
+            -- tooltip
+            if tooltip and dropdown then
+                dropdown:SetScript("OnEnter", function()
+                    GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
+                    GameTooltip:SetText(tooltip)
+                    GameTooltip:Show()
+                end)
+                dropdown:SetScript("OnLeave", function()
+                    GameTooltip:Hide()
+                end)
+            end
+
+            return dropdown
+        end
+
+        local DROPDOWN_WIDTH = 165
+        local DROPDOWN_HEIGHT = 27
+        local OPTION_HEIGHT = 18
+        local OPTION_PADDING = 2
+        local LIST_PADDING = 5
+        local ARROW_WIDTH = 20
+        local TEXT_PADDING = 15
+
+        function CreateDropDownMenu(name, parent, options, defaultText, onSelectCallback)
+            d.DebugPrint("Creating custom dropdown: " .. name)
+
+            -- validate parameters
+            if not name or not parent or not options then
+                d.DebugPrint("ERROR: Missing required parameters for dropdown creation")
+                return nil
+            end
+
+            -- defaults
+            defaultText = defaultText or "Select Option"
+
+            d.DebugPrint("Custom dropdown parameters - options count: " .. table.getn(options))
+
+            -- dropdown containe
+            local dropdown = CreateFrame("Frame", name, parent)
+            dropdown:SetWidth(DROPDOWN_WIDTH)
+            dropdown:SetHeight(DROPDOWN_HEIGHT)
+            dropdown:SetPoint("CENTER", parent, "CENTER", 0, 0)
+            dropdown:SetBackdrop({
+                bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
+                edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
+                tile = true, tileSize = 32, edgeSize = 12,
+            })
+            dropdown:SetBackdropColor(0, 0, 0, 1)
+
+            d.DebugPrint("Main dropdown frame created: " .. name)
+
+            -- text label for current selection
+            local currentText = dropdown:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+            currentText:SetPoint("LEFT", dropdown, "LEFT", TEXT_PADDING, 0)
+            currentText:SetPoint("RIGHT", dropdown, "RIGHT", -(ARROW_WIDTH + 5), 0)
+            currentText:SetText(defaultText)
+            currentText:SetJustifyH("CENTER")
+
+            -- dropdown arrow button
+            local arrowButton = CreateFrame("Button", name .. "Arrow", dropdown)
+            arrowButton:SetWidth(ARROW_WIDTH)
+            arrowButton:SetHeight(ARROW_WIDTH)
+            arrowButton:SetPoint("RIGHT", dropdown, "RIGHT", -5, 0)
+
+            -- arrow texture
+            local arrowTexture = arrowButton:CreateTexture(nil, "OVERLAY")
+            arrowTexture:SetAllPoints(arrowButton)
+            arrowTexture:SetTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Up")
+
+            d.DebugPrint("Dropdown button and text created")
+
+            -- store data
+            dropdown.options = options
+            dropdown.isOpen = false
+            dropdown.optionsList = nil
+            dropdown.selectedIndex = nil
+            dropdown.selectedValue = nil
+            dropdown.currentText = currentText
+            dropdown.defaultText = defaultText
+            dropdown.onSelectCallback = onSelectCallback
+
+            d.DebugPrint("Stored " .. table.getn(options) .. " options in custom dropdown")
+
+            local function CloseDropdownList()
+                if dropdown.optionsList and dropdown.optionsList:IsVisible() then
+                    d.DebugPrint("Closing dropdown list")
+                    dropdown.optionsList:Hide()
+                    dropdown.isOpen = false
+                end
+            end
+
+            local function ShowDropdownList()
+                d.DebugPrint("Opening dropdown list")
+
+                -- close if already open
+                if dropdown.isOpen then
+                    CloseDropdownList()
+                    return
+                end
+
+                -- options list frame if dont exist
+                if not dropdown.optionsList then
+                    d.DebugPrint("Creating new options list frame")
+
+                    -- calculate list height
+                    local listHeight = (table.getn(dropdown.options) * (OPTION_HEIGHT + OPTION_PADDING)) + (LIST_PADDING * 2) - OPTION_PADDING
+
+                    local listFrame = CreateFrame("Frame", name .. "List", dropdown)
+                    listFrame:SetWidth(DROPDOWN_WIDTH)
+                    listFrame:SetHeight(listHeight)
+                    listFrame:SetPoint("TOP", dropdown, "BOTTOM", 0, 5)
+                    listFrame:SetFrameStrata("FULLSCREEN_DIALOG")
+                    listFrame:SetBackdrop({
+                        bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
+                        edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
+                        tile = true, tileSize = 32, edgeSize = 12,
+                    })
+                    listFrame:SetBackdropColor(0, 0, 0, 1)
+
+                    dropdown.optionsList = listFrame
+                    dropdown.optionButtons = {}
+
+                    d.DebugPrint("Options list frame created with height: " .. listFrame:GetHeight())
+
+                    -- option buttons
+                    for i = 1, table.getn(dropdown.options) do
+                        local optionButton = CreateFrame("Button", name .. "Option" .. i, listFrame)
+                        optionButton:SetWidth(DROPDOWN_WIDTH - (LIST_PADDING * 2) - 22)
+                        optionButton:SetHeight(OPTION_HEIGHT)
+
+                        local yOffset = LIST_PADDING + ((i-1) * (OPTION_HEIGHT + OPTION_PADDING))
+                        optionButton:SetPoint("TOP", listFrame, "TOP", 0, -yOffset)
+
+                        local buttonText = optionButton:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+                        buttonText:SetPoint("LEFT", optionButton, "LEFT", TEXT_PADDING - 10, 0)
+                        buttonText:SetPoint("RIGHT", optionButton, "RIGHT", -5, 0)
+                        buttonText:SetText(dropdown.options[i])
+                        buttonText:SetJustifyH("CENTER")
+
+                        -- store references
+                        optionButton.optionIndex = i
+                        optionButton.optionText = dropdown.options[i]
+                        dropdown.optionButtons[i] = optionButton
+
+                        d.DebugPrint("Created option button " .. i .. ": " .. dropdown.options[i])
+
+                        -- hover
+                        optionButton:SetScript("OnEnter", function()
+                            optionButton:SetBackdrop({
+                                bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background"
+                            })
+                            optionButton:SetBackdropColor(0.2, 0.2, 0.8, 0.5)
+                        end)
+
+                        optionButton:SetScript("OnLeave", function()
+                            optionButton:SetBackdrop(nil)
+                        end)
+
+                        -- click handler
+                        optionButton:SetScript("OnClick", function()
+                            d.DebugPrint("=== OPTION CLICKED ===")
+                            d.DebugPrint("Selected: " .. optionButton.optionText .. " (index: " .. optionButton.optionIndex .. ")")
+
+                            -- update dropdown state
+                            dropdown.selectedIndex = optionButton.optionIndex
+                            dropdown.selectedValue = optionButton.optionText
+                            currentText:SetText(optionButton.optionText)
+
+                            d.DebugPrint("Dropdown state updated - selectedIndex: " .. optionButton.optionIndex)
+
+                            -- close
+                            CloseDropdownList()
+
+                            -- call callback
+                            if dropdown.onSelectCallback then
+                                d.DebugPrint("Calling onSelectCallback")
+                                dropdown.onSelectCallback(optionButton.optionText, optionButton.optionIndex, dropdown)
+                            end
+
+                            d.DebugPrint("=== END OPTION CLICK ===")
+                        end)
+                    end
+                end
+
+                -- show list
+                dropdown.optionsList:Show()
+                dropdown.isOpen = true
+                d.DebugPrint("Dropdown list shown with " .. table.getn(dropdown.options) .. " options")
+            end
+
+            -- click handler
+            dropdown:SetScript("OnMouseDown", function()
+                d.DebugPrint("Main dropdown clicked")
+                ShowDropdownList()
+            end)
+
+            -- arrow button click handler
+            arrowButton:SetScript("OnClick", function()
+                d.DebugPrint("Arrow button clicked")
+                ShowDropdownList()
+            end)
+
+            -- click outside to close
+            local function OnUpdate()
+                if dropdown.isOpen then
+                    if not MouseIsOver(dropdown) and not MouseIsOver(dropdown.optionsList) then
+                        CloseDropdownList()
+                    end
+                end
+            end
+
+            dropdown:SetScript("OnUpdate", OnUpdate)
+
+            -- show
+            dropdown:Show()
+
+            d.DebugPrint("Custom dropdown creation complete: " .. name)
+            return dropdown
+        end
+
         local function CreateCategoryHeader(parent, categoryName)
             local categoryBg = CreateFrame("Frame", nil, parent)
             categoryBg:SetWidth(180)
@@ -741,18 +971,24 @@ DFRL:RegisterModule("gui", 2, function()
                             local _ = metadata[1]
                             local index = metadata[2]
                             local elementType = metadata[3]
-                            local rangeOrCategory = metadata[4]
-                            local category, tooltip, minVal, maxVal
+                            local rangeOrCategoryOrOptions = metadata[4]
+                            local category, tooltip, minVal, maxVal, options
 
-                            -- handle new format with ranges for sliders
-                            if elementType == "slider" and type(rangeOrCategory) == "table" then
-                                minVal = rangeOrCategory[1]
-                                maxVal = rangeOrCategory[2]
+                            -- handle different formats
+                            if elementType == "slider" and type(rangeOrCategoryOrOptions) == "table" then
+                                -- slider with range
+                                minVal = rangeOrCategoryOrOptions[1]
+                                maxVal = rangeOrCategoryOrOptions[2]
+                                category = metadata[5]
+                                tooltip = metadata[6]
+                            elseif elementType == "dropdown" and type(rangeOrCategoryOrOptions) == "table" then
+                                -- dropdown with options
+                                options = rangeOrCategoryOrOptions
                                 category = metadata[5]
                                 tooltip = metadata[6]
                             else
-                                -- old format or checkbox
-                                category = rangeOrCategory
+                                -- checkbox or old format
+                                category = rangeOrCategoryOrOptions
                                 tooltip = metadata[5]
                             end
 
@@ -767,7 +1003,8 @@ DFRL:RegisterModule("gui", 2, function()
                                     elementType = elementType,
                                     tooltip = tooltip,
                                     minVal = minVal,
-                                    maxVal = maxVal
+                                    maxVal = maxVal,
+                                    options = options
                                 })
                             else
                                 d.DebugPrint("Skipping invalid config: " .. key .. " (missing elementType or category)")
@@ -852,7 +1089,7 @@ DFRL:RegisterModule("gui", 2, function()
                             local yPos = baseY - (currentRow * elementSpacing)
 
                             if setting.elementType == "checkbox" then
-                                -- use different checkbox function for ShaguTweaks
+                                -- ShaguTweaks
                                 if isShaguTweaks then
                                     element = CreateShaguCheckbox(panel, "ShaguTweaks_"..setting.key, setting.key, setting.tooltip)
                                 else
@@ -861,10 +1098,20 @@ DFRL:RegisterModule("gui", 2, function()
                                 element:SetPoint("TOPLEFT", panel, "TOPLEFT", xPos, yPos)
                             elseif setting.elementType == "slider" then
                                 element = CreateSlider(panel, moduleName.."_"..setting.key, moduleName, setting.key, setting.tooltip, setting.minVal, setting.maxVal)
-                                element:SetPoint("TOPLEFT", panel, "TOPLEFT", xPos, yPos)
+                                if element then
+                                    element:SetPoint("TOPLEFT", panel, "TOPLEFT", xPos, yPos)
+                                end
                             elseif setting.elementType == "colourslider" then
                                 element = CreateColourSlider(panel, moduleName.."_"..setting.key, moduleName, setting.key, setting.tooltip)
-                                element:SetPoint("TOPLEFT", panel, "TOPLEFT", xPos, yPos)
+                                if element then
+                                    element:SetPoint("TOPLEFT", panel, "TOPLEFT", xPos, yPos)
+                                end
+                            elseif setting.elementType == "dropdown" then
+                                -- NEW: Handle dropdown creation
+                                element = CreateConfigDropdown(panel, moduleName.."_"..setting.key, moduleName, setting.key, setting.options, setting.tooltip)
+                                if element then
+                                    element:SetPoint("TOPLEFT", panel, "TOPLEFT", xPos, yPos)
+                                end
                             end
 
                             currentRow = currentRow + 1
