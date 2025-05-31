@@ -90,11 +90,19 @@ DFRL:RegisterModule("targetframe", 1, function()
         local noPercentEnabled = DFRL:GetConfig("targetframe", "noPercent")[1]
         local coloringEnabled = DFRL:GetConfig("targetframe", "textColoring")[1]
 
+        -- Check if target is dead
+        local isDead = UnitIsDead("target")
+
         -- Set text content based on noPercent setting
         if noPercentEnabled then
             -- Show only current values in center
             healthPercentText:SetText("")
-            healthValueText:SetText(health)
+            -- Don't show health value if target is dead
+            if isDead then
+                healthValueText:SetText("")
+            else
+                healthValueText:SetText(health)
+            end
             healthValueText:ClearAllPoints()
             healthValueText:SetPoint("CENTER", TargetFrameHealthBar, "CENTER", 3, 0)
 
@@ -108,8 +116,14 @@ DFRL:RegisterModule("targetframe", 1, function()
             end
         else
             -- Show percent on left, value on right
-            healthPercentText:SetText(healthPercentInt .. "%")
-            healthValueText:SetText(health)
+            -- Don't show health percent or value if target is dead
+            if isDead then
+                healthPercentText:SetText("")
+                healthValueText:SetText("")
+            else
+                healthPercentText:SetText(healthPercentInt .. "%")
+                healthValueText:SetText(health)
+            end
             healthValueText:ClearAllPoints()
             healthValueText:SetPoint("RIGHT", TargetFrameHealthBar, "RIGHT", -5, 0)
 

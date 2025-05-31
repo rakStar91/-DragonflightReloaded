@@ -340,7 +340,7 @@ DFRL:RegisterModule("actionbars", 1, function()
             ["MultiBarBottomRightButton"] = "MULTIACTIONBAR2BUTTON",
             ["MultiBarRightButton"] = "MULTIACTIONBAR3BUTTON",
             ["MultiBarLeftButton"] = "MULTIACTIONBAR4BUTTON",
-            ["BonusActionButton"] = "BONUSACTIONBUTTON",
+            ["BonusActionButton"] = "ACTIONBUTTON", -- Change this line from BONUSACTIONBUTTON to ACTIONBUTTON
             ["ShapeshiftButton"] = "SHAPESHIFTBUTTON",
             ["PetActionButton"] = "BONUSACTIONBUTTON"
         }
