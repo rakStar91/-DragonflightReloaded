@@ -7,6 +7,8 @@ DFRL:SetDefaults("ui", {
     darkModeGameMenu = {false, 2, "checkbox", "appearance", "Darkmode game menu"},
     darkModeCharacterFrame = {false, 3, "checkbox", "appearance", "Darkmode characterframe"},
     uiErrorMessage = {false, 4, "checkbox", "appearance", "Hide the top UI error message (eg. 'Spell is not ready')"},
+    uiToolTipMouse = {true, 5, "checkbox", "appearance", "Hide tooltip"},
+
 })
 
 DFRL:RegisterModule("ui", 1, function()
@@ -444,6 +446,19 @@ DFRL:RegisterModule("ui", 1, function()
             UIErrorsFrame:UnregisterEvent("UI_ERROR_MESSAGE")
         else
             UIErrorsFrame:RegisterEvent("UI_ERROR_MESSAGE")
+        end
+    end
+
+    callbacks.uiToolTipMouse = function(value)
+        if value then
+            _G.GameTooltip_SetDefaultAnchor = function(tooltip, parent)
+                tooltip:SetOwner(parent, "ANCHOR_CURSOR", 20, 0)
+            end
+        else
+            _G.GameTooltip_SetDefaultAnchor = function(tooltip, parent)
+                tooltip:SetOwner(parent, "ANCHOR_NONE")
+                tooltip:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -CONTAINER_OFFSET_X - 13, CONTAINER_OFFSET_Y)
+            end
         end
     end
 

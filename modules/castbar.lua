@@ -14,7 +14,6 @@ DFRL:SetDefaults("castbar", {
     cbBarColor = {{1, 0.82, 0}, 21, "colourslider", "appearance", "Change castbar color"},
     cbFontY = {-16, 22, "slider", {-20, 20}, "appearance", "Change castbar font Y offset"},
 
-
 })
 
 DFRL:RegisterModule("castbar", 1, function()

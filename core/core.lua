@@ -324,7 +324,6 @@ DFRL:SetScript("OnEvent", function()
 
         print("Welcome to |cffffd200Dragonflight:|r Reloaded.")
         print("Open menu via |cffddddddESC|r or |cffddddddSLASH DFRL|r.")
-        print("|cFFFF6666Alpha Phase|r until end of June/July.")
 
         DFRL:UnregisterEvent("PLAYER_ENTERING_WORLD")
     end

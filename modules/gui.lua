@@ -420,6 +420,25 @@ DFRL:RegisterModule("gui", 2, function()
                     GameTooltip:Hide()
                 end)
             end
+            slider:EnableMouseWheel(true)
+            slider:SetScript("OnMouseWheel", function()
+                local step = 0.01
+                local currentValue2 = this:GetValue()
+                local minValue, maxValue = this:GetMinMaxValues()
+
+                if arg1 > 0 then
+                    -- scroll up, increase value
+                    local newValue = currentValue2 + step
+                    if newValue > maxValue then newValue = maxValue end
+                    this:SetValue(newValue)
+                else
+                    -- scroll down, decrease value
+                    local newValue = currentValue2 - step
+                    if newValue < minValue then newValue = minValue end
+                    this:SetValue(newValue)
+                end
+            end)
+
 
             return slider
         end
@@ -1183,7 +1202,7 @@ DFRL:RegisterModule("gui", 2, function()
             generalInfo:SetJustifyV("TOP")
             generalInfo:SetFont("Fonts\\FRIZQT__.TTF", 11, "")
             generalInfo:SetText(
-                "|cFFFFD100Dragonflight: Reloaded|r - Version: " .. "|cFF77CC77" .. version .. "|r (Alpha)\n\n" ..
+                "|cFFFFD100Dragonflight: Reloaded|r - Version: " .. "|cFF77CC77" .. version .. "\n\n" ..
                 "|cFFCCCCCCThis addon enhances your vanilla WoW experience with modern design and tweaks.\n\n" ..
                 "|cFFFFFFFFUsage:|r\n" ..
                 "|cFFCCCCCCOpen menu via ESC or SLASH DFRL.|r\n" ..
