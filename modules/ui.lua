@@ -7,7 +7,7 @@ DFRL:SetDefaults("ui", {
     darkModeGameMenu = {false, 2, "checkbox", "appearance", "Darkmode game menu"},
     darkModeCharacterFrame = {false, 3, "checkbox", "appearance", "Darkmode characterframe"},
     uiErrorMessage = {false, 4, "checkbox", "appearance", "Hide the top UI error message (eg. 'Spell is not ready')"},
-    uiToolTipMouse = {true, 5, "checkbox", "appearance", "Hide tooltip"},
+    uiToolTipMouse = {true, 5, "checkbox", "appearance", "Show the tooltip above your cursor"},
 
 })
 

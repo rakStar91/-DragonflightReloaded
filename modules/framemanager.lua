@@ -21,6 +21,7 @@ DFRL:RegisterModule("framemanager", 2, function()
         MultiBarLeft,
         MultiBarRight,
         DFRL.newPetBar,
+        DFRL.newShapeshiftBar,
         -- xprep module
         DFRL.xpBar,
         DFRL.repBar,
