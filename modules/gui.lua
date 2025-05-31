@@ -926,7 +926,7 @@ DFRL:RegisterModule("gui", 2, function()
             local bagShuiInstalled = IsAddOnLoaded("BagShui") and "|cFF77CC77(installed)|r" or "|cFF666666(not installed)|r"
 
             -- easter egg
-            local specialText = UnitName("player") == "Shagu" or "Guzruul" and "|cFF00FF00Hi Shagu, danke dir für alles. <3!|r\n\n\n" or "\n\n\n"
+            local specialText = UnitName("player") == "Shagu" and "|cFF00FF00Hi Shagu, danke dir für alles. <3|r\n\n\n" or "\n\n\n"
 
             -- text blocks
             local generalInfo = leftFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")

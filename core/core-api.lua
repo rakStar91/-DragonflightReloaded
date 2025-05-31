@@ -1,9 +1,13 @@
+function print(msg)
+    DEFAULT_CHAT_FRAME:AddMessage(msg)
+end
+
 setfenv(1, DFRL:GetEnvironment())
 d.DebugPrint("BOOTING")
 
 -- my api
 function print(msg)
-    DEFAULT_CHAT_FRAME:AddMessage("|cffffd100DFRL: |r".. tostring(msg))
+    DEFAULT_CHAT_FRAME:AddMessage(msg)
 end
 
 function KillFrame(frame)
@@ -106,15 +110,15 @@ function hooksecurefunc(name, func, append)
     DFRL.hooks[tostring(func)]["new"] = func
 
     if append then
-    DFRL.hooks[tostring(func)]["function"] = function(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10)
-        DFRL.hooks[tostring(func)]["old"](a1, a2, a3, a4, a5, a6, a7, a8, a9, a10)
-        DFRL.hooks[tostring(func)]["new"](a1, a2, a3, a4, a5, a6, a7, a8, a9, a10)
-    end
+        DFRL.hooks[tostring(func)]["function"] = function(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10)
+            DFRL.hooks[tostring(func)]["old"](a1, a2, a3, a4, a5, a6, a7, a8, a9, a10)
+            DFRL.hooks[tostring(func)]["new"](a1, a2, a3, a4, a5, a6, a7, a8, a9, a10)
+        end
     else
-    DFRL.hooks[tostring(func)]["function"] = function(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10)
-        DFRL.hooks[tostring(func)]["new"](a1, a2, a3, a4, a5, a6, a7, a8, a9, a10)
-        DFRL.hooks[tostring(func)]["old"](a1, a2, a3, a4, a5, a6, a7, a8, a9, a10)
-    end
+        DFRL.hooks[tostring(func)]["function"] = function(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10)
+            DFRL.hooks[tostring(func)]["new"](a1, a2, a3, a4, a5, a6, a7, a8, a9, a10)
+            DFRL.hooks[tostring(func)]["old"](a1, a2, a3, a4, a5, a6, a7, a8, a9, a10)
+        end
     end
 
     _G[name] = DFRL.hooks[tostring(func)]["function"]

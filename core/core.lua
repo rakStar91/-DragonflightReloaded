@@ -61,9 +61,8 @@ end
 -- modules system
 function DFRL:RegisterModule(moduleName, priority, moduleFunc)
     assert(type(moduleName) == "string", "Module name must be a string")
-    --assert(type(priority) == "number", "Priority must be a number")
-    assert(type(moduleFunc) == "function", "Module must be a function")
     assert(priority == 1 or priority == 2, "Priority must be 1 (normal) or 2 (delayed)")
+    assert(type(moduleFunc) == "function", "Module must be a function")
 
     self.modules[moduleName] = {
         func = moduleFunc,
@@ -290,7 +289,7 @@ end
 
 function DFRL:SaveDB()
     assert(self.tempDB, "tempDB must exist before saving")
-    assert(type(self.tempDB) == "table", "tempDB must be a table")
+    assert(type(self.tempDB) == "table", "tempDB must be a table") -- im insecure sry lol
 
     local count = 0
     for moduleName, moduleData in pairs(self.tempDB) do
@@ -336,6 +335,7 @@ DFRL:SetScript("OnEvent", function()
         for _ in pairs(DFRL.tempDB) do
             count = count + 1
         end
+
         d.DebugPrint("EVENT: PLAYER_LOGOUT")
         DFRL:SaveDB()
     end

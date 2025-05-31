@@ -380,17 +380,18 @@ DFRL:RegisterModule("playerframe", 1, function()
         end
     end
 
-    local f = CreateFrame("Frame")
-    f:RegisterEvent("PLAYER_ENTERING_WORLD")
-    f:RegisterEvent("UNIT_HEALTH")
-    f:RegisterEvent("UNIT_MANA")
-    f:SetScript("OnEvent", function()
-        if event == "PLAYER_ENTERING_WORLD" or
-        (event == "UNIT_HEALTH" and arg1 == "player") or
-        (event == "UNIT_MANA" and arg1 == "player") then
+    local powerUpdateFrame = CreateFrame("Frame")
+    powerUpdateFrame:RegisterEvent("UNIT_MANA")
+    powerUpdateFrame:RegisterEvent("UNIT_RAGE")
+    powerUpdateFrame:RegisterEvent("UNIT_ENERGY")
+    powerUpdateFrame:RegisterEvent("UNIT_FOCUS")
+    powerUpdateFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+    powerUpdateFrame:SetScript("OnEvent", function()
+        if event == "PLAYER_ENTERING_WORLD" or arg1 == "player" then
             UpdateTexts()
         end
     end)
+
 
     UpdateTexts()
 

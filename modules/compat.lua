@@ -8,7 +8,7 @@ d.DebugPrint("BOOTING")
 -- SHAGUTWEAKS FIXES
 --===========================
 
-local function ShaguFix()
+function _G.ShaguFix()
     -- disable redundant or incompatible features -- config isnt loaded bug
     do
         -- i wont use config anymore since a) bugs out on first time (config nil)
@@ -85,6 +85,57 @@ local function ShaguFix()
             DEFAULT_CHAT_FRAME:AddMessage("|cffffd100DFRL: |r".. tostring(msg))
         end
     end
+
+
+
+    -- dynamic shagu disabler
+    -- local f = CreateFrame("Frame")
+    -- local timer = 0
+
+    -- f:SetScript("OnUpdate", function()
+    --     timer = timer + arg1
+    --     if timer > 1 then
+    --         local _G = getfenv(0)
+    --         local ShaguTweaks = _G["ShaguTweaks"]
+    --         if not ShaguTweaks or not ShaguTweaks.mods then
+    --             print("ShaguTweaks or mods table not found!")
+    --             f:SetScript("OnUpdate", nil)
+    --             return
+    --         end
+
+    --         local mod = ShaguTweaks.mods["Auto Stance"]
+    --         if not mod then
+    --             print("Module 'Auto Stance' not found")
+    --             f:SetScript("OnUpdate", nil)
+    --             return
+    --         end
+
+    --         -- Save original disable if not saved yet
+    --         if not mod._originalDisable then
+    --             mod._originalDisable = mod.disable or function() end
+    --         end
+
+    --         -- Dynamic frame to cleanup in disable
+    --         local dynamicFrame = mod.frame -- or assign mod's frame here if known
+
+    --         -- Override disable method
+    --         mod.disable = function(self)
+    --             print("fired")
+    --             if dynamicFrame then
+    --                 dynamicFrame:UnregisterAllEvents()
+    --                 dynamicFrame:SetScript("OnEvent", nil)
+    --                 dynamicFrame = nil
+    --             end
+    --             self:_originalDisable()
+    --         end
+
+    --         print("Disable override applied.")
+    --         f:SetScript("OnUpdate", nil)
+    --     end
+    -- end)
+
+
+
 end
 
 -- run instant in case it ws loaded already
