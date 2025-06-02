@@ -131,6 +131,190 @@ DFRL:RegisterModule("playerframe", 1, function()
         UpdateRestingState()
     end
 
+    -- cut out effect
+    do
+        local animationFrames = {}
+
+        local function CreateCutoutEffect(statusBar, barType, unit)
+            local cutoutFrame = CreateFrame("Frame", nil, statusBar)
+            cutoutFrame:SetFrameLevel(statusBar:GetFrameLevel() + 1)
+            cutoutFrame:SetAllPoints(statusBar)
+
+            local cutoutTexture = cutoutFrame:CreateTexture(nil, "OVERLAY")
+            if barType == "health" then
+                cutoutTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\healthDF2.tga")
+            else
+                cutoutTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana-Status.tga")
+            end
+            cutoutTexture:SetVertexColor(1, 1, 1, 0.7)
+            cutoutTexture:SetAllPoints(cutoutFrame)
+            cutoutTexture:Hide()
+
+            cutoutFrame.texture = cutoutTexture
+            cutoutFrame.barType = barType
+            cutoutFrame.unit = unit
+            cutoutFrame.lastValue = nil
+            cutoutFrame.initialized = false
+
+            table.insert(animationFrames, cutoutFrame)
+            return cutoutFrame
+        end
+
+        local function UpdateCutoutEffect(frame, unit)
+            local currentValue, maxValue
+
+            if frame.barType == "health" then
+                currentValue = UnitHealth(unit)
+                maxValue = UnitHealthMax(unit)
+            else
+                currentValue = UnitMana(unit)
+                maxValue = UnitManaMax(unit)
+            end
+
+            if UnitIsDead(unit) or UnitIsGhost(unit) then
+                frame.lastValue = currentValue
+                return
+            end
+
+            if not frame.initialized then
+                frame.lastValue = currentValue
+                frame.initialized = true
+                return
+            end
+
+            if frame.lastValue and currentValue < frame.lastValue and maxValue > 0 then
+                local statusBar = frame:GetParent()
+                local width = statusBar:GetWidth()
+                local lostPercent = (frame.lastValue - currentValue) / maxValue
+                local cutoutWidth = width * lostPercent
+
+                local remainingPercent = currentValue / maxValue
+                local xOffset = width * remainingPercent
+
+                frame.texture:ClearAllPoints()
+                frame.texture:SetPoint("TOPLEFT", statusBar, "TOPLEFT", xOffset, 0)
+                frame.texture:SetPoint("BOTTOMLEFT", statusBar, "BOTTOMLEFT", xOffset, 0)
+                frame.texture:SetWidth(cutoutWidth)
+                frame.texture:Show()
+
+                frame.fadeStart = GetTime()
+                frame.fading = true
+            end
+
+            frame.lastValue = currentValue
+        end
+
+        local function OnUpdate()
+            local currentTime = GetTime()
+
+            for i = 1, table.getn(animationFrames) do
+                local frame = animationFrames[i]
+                if frame.fading and frame.fadeStart then
+                    local elapsed = currentTime - frame.fadeStart
+                    local duration = 0.5
+
+                    if elapsed >= duration then
+                        frame.texture:Hide()
+                        frame.fading = false
+                    else
+                        local alpha = 0.7 * (1 - (elapsed / duration))
+                        frame.texture:SetAlpha(alpha)
+                    end
+                end
+            end
+        end
+
+        local updateFrame = CreateFrame("Frame")
+        updateFrame:SetScript("OnUpdate", function()
+            OnUpdate()
+        end)
+
+        local function HookUnitFrames()
+            local playerHealth = PlayerFrameHealthBar
+            if playerHealth then
+                local playerHealthCutout = CreateCutoutEffect(playerHealth, "health")
+                playerHealth:SetScript("OnValueChanged", function()
+                    UpdateCutoutEffect(playerHealthCutout, "player")
+                end)
+            end
+
+            local playerMana = PlayerFrameManaBar
+            if playerMana then
+                local playerManaCutout = CreateCutoutEffect(playerMana, "mana")
+                playerMana:SetScript("OnValueChanged", function()
+                    UpdateCutoutEffect(playerManaCutout, "player")
+                end)
+            end
+
+            local targetHealth = TargetFrameHealthBar
+            if targetHealth then
+                local targetHealthCutout = CreateCutoutEffect(targetHealth, "health")
+                targetHealth:SetScript("OnValueChanged", function()
+                    UpdateCutoutEffect(targetHealthCutout, "target")
+                end)
+            end
+
+            local targetMana = TargetFrameManaBar
+            if targetMana then
+                local targetManaCutout = CreateCutoutEffect(targetMana, "mana")
+                targetMana:SetScript("OnValueChanged", function()
+                    UpdateCutoutEffect(targetManaCutout, "target")
+                end)
+            end
+
+            local totHealth = TargetofTargetHealthBar
+            if totHealth then
+                local totHealthCutout = CreateCutoutEffect(totHealth, "health")
+                totHealth:SetScript("OnValueChanged", function()
+                    UpdateCutoutEffect(totHealthCutout, "targettarget")
+                end)
+            end
+
+            local totMana = TargetofTargetManaBar
+            if totMana then
+                local totManaCutout = CreateCutoutEffect(totMana, "mana")
+                totMana:SetScript("OnValueChanged", function()
+                    UpdateCutoutEffect(totManaCutout, "targettarget")
+                end)
+            end
+
+            local petHealth = PetFrameHealthBar
+            if petHealth then
+                local petHealthCutout = CreateCutoutEffect(petHealth, "health")
+                petHealth:SetScript("OnValueChanged", function()
+                    UpdateCutoutEffect(petHealthCutout, "pet")
+                end)
+            end
+
+            local petMana = PetFrameManaBar
+            if petMana then
+                local petManaCutout = CreateCutoutEffect(petMana, "mana")
+                petMana:SetScript("OnValueChanged", function()
+                    UpdateCutoutEffect(petManaCutout, "pet")
+                end)
+            end
+
+            for i = 1, 4 do
+                local partyHealthBar = getglobal("PartyMemberFrame"..i.."HealthBar")
+                if partyHealthBar then
+                    local partyHealthCutout = CreateCutoutEffect(partyHealthBar, "health")
+                    partyHealthBar:SetScript("OnValueChanged", function()
+                        UpdateCutoutEffect(partyHealthCutout, "party"..i)
+                    end)
+                end
+
+                local partyManaBar = getglobal("PartyMemberFrame"..i.."ManaBar")
+                if partyManaBar then
+                    local partyManaCutout = CreateCutoutEffect(partyManaBar, "mana")
+                    partyManaBar:SetScript("OnValueChanged", function()
+                        UpdateCutoutEffect(partyManaCutout, "party"..i)
+                    end)
+                end
+            end
+        end
+
+        HookUnitFrames()
+    end
     local function UpdateTexts()
         local health = UnitHealth("player")
         local maxHealth = UnitHealthMax("player")
@@ -381,16 +565,23 @@ DFRL:RegisterModule("playerframe", 1, function()
     end
 
     local powerUpdateFrame = CreateFrame("Frame")
+    powerUpdateFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
     powerUpdateFrame:RegisterEvent("UNIT_MANA")
     powerUpdateFrame:RegisterEvent("UNIT_RAGE")
     powerUpdateFrame:RegisterEvent("UNIT_ENERGY")
     powerUpdateFrame:RegisterEvent("UNIT_FOCUS")
-    powerUpdateFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+    powerUpdateFrame:RegisterEvent("UNIT_HEALTH")
+    powerUpdateFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+    powerUpdateFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
     powerUpdateFrame:SetScript("OnEvent", function()
-        if event == "PLAYER_ENTERING_WORLD" or arg1 == "player" then
+        if event == "PLAYER_ENTERING_WORLD" or
+        event == "PLAYER_REGEN_ENABLED" or
+        event == "PLAYER_REGEN_DISABLED" or
+        arg1 == "player" then
             UpdateTexts()
         end
     end)
+
 
 
     UpdateTexts()

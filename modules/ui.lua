@@ -6,8 +6,8 @@ DFRL:SetDefaults("ui", {
     darkModeQuestLog = {false, 1, "checkbox", "appearance", "Darkmode questlog"},
     darkModeGameMenu = {false, 2, "checkbox", "appearance", "Darkmode game menu"},
     darkModeCharacterFrame = {false, 3, "checkbox", "appearance", "Darkmode characterframe"},
+    uiToolTipMouse = {false, 5, "checkbox", "appearance", "Show the tooltip above your cursor"},
     uiErrorMessage = {false, 4, "checkbox", "appearance", "Hide the top UI error message (eg. 'Spell is not ready')"},
-    uiToolTipMouse = {true, 5, "checkbox", "appearance", "Show the tooltip above your cursor"},
 
 })
 
@@ -31,7 +31,14 @@ DFRL:RegisterModule("ui", 1, function()
             {"ShopFrame", "ShopFrameFrameCloseButton", -9, -17},
             {"HelpFrame", "HelpFrameCloseButton", -50, -10},
             {"QuestFrame", "QuestFrameCloseButton", -34, -22},
+            {"GuildMemberDetailFrame", "GuildMemberDetailCloseButton", -10, -10},
+
         }
+
+        FriendsFrameCloseButton:SetFrameLevel(100) -- for some reason this button is always behind the other frames
+        FriendsFrameCloseButton:Show()
+
+
 
         for i = 1, 5 do
             table.insert(closeButtonData, {"ContainerFrame"..i, "ContainerFrame"..i.."CloseButton", -8, -8})
@@ -168,6 +175,30 @@ DFRL:RegisterModule("ui", 1, function()
                 frame.customBottomRight:SetPoint("TOPLEFT", frame, "TOPLEFT", 253, -256)
             end
         end
+
+getglobal("GuildFrameNotesText"):SetDrawLayer("OVERLAY", 10)
+getglobal("GuildMOTDEditButton"):SetFrameStrata("TOOLTIP")
+
+local original_GuildStatus_Update = GuildStatus_Update
+function GuildStatus_Update()
+    original_GuildStatus_Update()
+    GuildFrameNotesText:SetDrawLayer("OVERLAY", 7)
+end
+-- Add this to your existing code
+getglobal("GuildFrameTotals"):SetDrawLayer("OVERLAY", 10)
+getglobal("GuildFrameOnlineTotals"):SetDrawLayer("OVERLAY", 10)
+
+local original_GuildRoster_Update = GuildRoster_Update
+function GuildRoster_Update()
+    original_GuildRoster_Update()
+    GuildFrameTotals:SetDrawLayer("OVERLAY", 10)
+    GuildFrameOnlineTotals:SetDrawLayer("OVERLAY", 10)
+end
+
+
+
+
+
 
         local function ReplaceCharacterTextures()
             ApplyCustomTextures(FriendsFrame)
@@ -465,3 +496,5 @@ DFRL:RegisterModule("ui", 1, function()
     -- execute  callbacks
     DFRL:RegisterCallback("ui", callbacks)
 end)
+
+

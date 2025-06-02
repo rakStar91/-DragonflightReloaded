@@ -188,19 +188,26 @@ DFRL:RegisterModule("minimap", 1, function()
 
     -- EBC
     do
-        EBC_Minimap:ClearAllPoints()
-        EBC_Minimap:SetPoint("TOPRIGHT", topPanel, "BOTTOMRIGHT", 0, -15)
-        EBC_Minimap:SetScale(0.8)
+        ---@diagnostic disable-next-line: undefined-field
+        _G.EBC_Minimap:Hide()
+        ---@diagnostic disable-next-line: undefined-field
+        _G.EBC_Minimap.Show = function() end
 
-        local regions = {EBC_Minimap:GetRegions()}
-        for _, region in ipairs(regions) do
-            if region and region:GetObjectType() == "Texture" then
-                local width, height = region:GetWidth(), region:GetHeight()
-                if width > 20 or height > 20 then
-                    region:Hide()
-                end
-            end
-        end
+        -- EBC_Minimap:SetParent(UIParent)
+        -- EBC_Minimap:ClearAllPoints()
+        -- EBC_Minimap:Hide()
+        -- EBC_Minimap:SetPoint("TOPRIGHT", topPanel, "BOTTOMRIGHT", 0, -15)
+        -- EBC_Minimap:SetScale(0.8)
+
+        -- local regions = {EBC_Minimap:GetRegions()}
+        -- for _, region in ipairs(regions) do
+        --     if region and region:GetObjectType() == "Texture" then
+        --         local width, height = region:GetWidth(), region:GetHeight()
+        --         if width > 20 or height > 20 then
+        --             region:Hide()
+        --         end
+        --     end
+        -- end
     end
 
     -- pf quest

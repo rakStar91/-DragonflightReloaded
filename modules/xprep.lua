@@ -6,10 +6,11 @@ DFRL:SetDefaults("xprep", {
     xpTxtShow = {true, 2, "checkbox", "appearance", "Show or hide XP text on the XP bar"},
     repTxtShow = {false, 3, "checkbox", "appearance", "Show or hide reputation text on the reputation bar"},
 
-    xpBarWidth = {400, 4, "slider", {200, 700}, "appearance", "Adjusts the width of the XP bar"},
+    autoTrack = {false, 4, "checkbox", "appearance", "Automatically track reputation for factions you gain reputation with"},
     xpBarHeight = {12, 5, "slider", {5, 25}, "appearance", "Adjusts the height of the XP bar"},
-    repBarWidth = {300, 6, "slider", {200, 700}, "appearance", "Adjusts the width of the reputation bar"},
+    xpBarWidth = {400, 6, "slider", {200, 700}, "appearance", "Adjusts the width of the XP bar"},
     repBarHeight = {10, 7, "slider", {5, 25}, "appearance", "Adjusts the height of the reputation bar"},
+    repBarWidth = {300, 8, "slider", {200, 700}, "appearance", "Adjusts the width of the reputation bar"},
 
 })
 
@@ -299,6 +300,43 @@ DFRL:RegisterModule("xprep", 1, function()
         if repBar.rightBorder then
             repBar.rightBorder:SetVertexColor(color[1], color[2], color[3])
         end
+    end
+
+    callbacks.autoTrack = function(value)
+        if not repBar.trackingFrame then
+            repBar.trackingFrame = CreateFrame("Frame")
+            repBar.trackingFrame:RegisterEvent("CHAT_MSG_COMBAT_FACTION_CHANGE")
+            repBar.trackingFrame:SetScript("OnEvent", function()
+                if not repBar.autoTrack then return end
+
+                d.DebugPrint("Faction message: " .. tostring(arg1))
+
+                -- extract faction name
+                local startPos, endPos = string.find(arg1, "Your ", 1, true)
+                if startPos then
+                    local restStart = string.find(arg1, " reputation has increased", endPos + 1, true)
+                    if restStart then
+                        local factionName = string.sub(arg1, endPos + 1, restStart - 1)
+                        d.DebugPrint("Found faction: " .. factionName)
+
+                        -- find the faction
+                        for i=1, GetNumFactions() do
+                            local name = GetFactionInfo(i)
+                            if name == factionName then
+                                d.DebugPrint("Setting watched faction to: " .. name)
+                                SetWatchedFactionIndex(i)
+                                -- update
+                                xpBar:GetScript("OnEvent")("UPDATE_FACTION")
+                                break
+                            end
+                        end
+                    end
+                end
+            end)
+        end
+
+        -- store
+        repBar.autoTrack = value
     end
 
     -- execute module callbacks

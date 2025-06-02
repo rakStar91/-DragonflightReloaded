@@ -44,7 +44,7 @@ DFRL:RegisterModule("castbar", 1, function()
             width            = 200,
             height           = 16,
             bgTexture        = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\castbar\\CastingBarBackground.blp",
-            barTexture       = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\castbar\\CastingBarStandard2.blp",
+            barTexture       = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\castbar\\CastingBarStandard3.blp",
             dropshadow       = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\castbar\\CastingBarFrameDropShadow.blp",
             spark            = "Interface\\CastingBar\\UI-CastingBar-Spark",
             flashTex         = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\castbar\\CastingBarFrameFlash.tga",
@@ -196,7 +196,7 @@ DFRL:RegisterModule("castbar", 1, function()
 
         -- handle fill
         if self.config.fillDirection == "left" then
-            -- default: left to right
+            -- left to right
             self.barTexture:SetPoint("LEFT", self.frame, "LEFT", 0, 0)
             self.barTexture:SetWidth(newWidth)
             self.barTexture:SetTexCoord(0, progress, 0, 1)

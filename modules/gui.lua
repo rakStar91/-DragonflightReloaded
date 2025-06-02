@@ -1219,12 +1219,10 @@ DFRL:RegisterModule("gui", 2, function()
                 "|cFFFFFFFFDevelopment Status:|r\n" ..
                 "|cFFCCCCCC• |r|cFFCCCCCCBag module is currently under development.\n" ..
                 "|cFFCCCCCC• |r|cFFCCCCCCShaguTweaks-extra will be integrated soon.\n" ..
-                "|cFFCCCCCC• |r|cFFCCCCCCMore config options soon.\n\n\n\n" ..
+                "|cFFCCCCCC• |r|cFFCCCCCCMore config options soon.\n\n\n\n\n\n" ..
                 specialText..
                 "|cFFFF6666Please report bugs on the Turtle-WoW Forum.|r\n" ..
-                "|cFFCCCCCCCheck for known bugs as well before you post.|r\n" ..
-                "|cFFFF6666Logfiles|r: |cFFCCCCCCWTF/Acc/Accname/Realm/Name|r\n" ..
-                "|cFFCCCCCCforum.turtle-wow.org/viewtopic.php?t=19599|r"
+                "|cFFCCCCCCCheck for known bugs as well before you post.|r\n"
             )
 
             generalInfo:SetTextColor(0.9, 0.9, 0.9)

@@ -4,9 +4,10 @@ DFRL:SetDefaults("micromenu", {
     hidden = {false},
 
     darkMode = {false, 1, "checkbox", "appearance", "Activate darkmode"},
-    microScale = {0.85, 2, "slider", {0.5, 1.5}, "appearance", "Adjusts the scale of the micro menu"},
-    microAlpha = {1, 3, "slider", {0.1, 1}, "appearance", "Adjusts the transparency of the micro menu"},
-    microSpacing = {3, 4, "slider", {0.5, 15}, "appearance", "Adjusts spacing between micro menu buttons"},
+    microColor = {true, 2, "checkbox", "appearance", "Activate gray micro menu"},
+    microScale = {0.85, 3, "slider", {0.5, 1.5}, "appearance", "Adjusts the scale of the micro menu"},
+    microAlpha = {1, 4, "slider", {0.1, 1}, "appearance", "Adjusts the transparency of the micro menu"},
+    microSpacing = {3, 5, "slider", {0.5, 15}, "appearance", "Adjusts spacing between micro menu buttons"},
 
 })
 
@@ -91,6 +92,29 @@ DFRL:RegisterModule("micromenu", 1, function()
         GameTooltip:Hide()
     end)
 
+    -- EBC button
+    local ebcButton = CreateFrame("Button", "DFRLEBCMicroButton", microMenuContainer)
+    ebcButton:SetWidth(buttonWidth)
+    ebcButton:SetHeight(buttonHeight)
+    ebcButton:SetHitRectInsets(0, 0, 0, 0)
+    ebcButton:Show()
+    ebcButton:Enable()
+    ebcButton:SetScript("OnClick", function()
+        EBCMinimapDropdown:ClearAllPoints()
+        EBCMinimapDropdown:SetPoint("CENTER", ebcButton, 0, 65)
+        ShowEBCMinimapDropdown()
+    end)
+
+    ebcButton:SetScript("OnEnter", function()
+        GameTooltip:SetOwner(ebcButton, "ANCHOR_RIGHT")
+        GameTooltip:SetText("Everlook Broadcasting Co.", 1, 1, 1, 1, true)
+        GameTooltip:AddLine("Listen to some awesome tunes while you play Turtle WoW.", nil, nil, nil, true)
+        GameTooltip:Show()
+    end)
+    ebcButton:SetScript("OnLeave", function()
+        GameTooltip:Hide()
+    end)
+
     -- custom buttons position
     local newButtons = {}
     for i, button in ipairs(buttons) do
@@ -98,6 +122,7 @@ DFRL:RegisterModule("micromenu", 1, function()
         if i == 5 then -- after SocialsMicroButton
             table.insert(newButtons, pvpButton)
             table.insert(newButtons, lftButton)
+            table.insert(newButtons, ebcButton)
         end
     end
     buttons = newButtons
@@ -127,7 +152,7 @@ DFRL:RegisterModule("micromenu", 1, function()
         end
     end
 
-    -- character button (position 1)
+    -- character button
     if buttons[1] then
         buttons[1]:SetNormalTexture(path)
         if buttons[1]:GetNormalTexture() then
@@ -141,141 +166,6 @@ DFRL:RegisterModule("micromenu", 1, function()
         buttons[1]:SetHighlightTexture(path)
         if buttons[1]:GetHighlightTexture() then
             buttons[1]:GetHighlightTexture():SetTexCoord(82/256, 116/256, 216/512, 264/512)
-        end
-    end
-
-    -- spellbook button (position 2)
-    if buttons[2] then
-        buttons[2]:SetNormalTexture(path)
-        if buttons[2]:GetNormalTexture() then
-            buttons[2]:GetNormalTexture():SetTexCoord(122/256, 157/256, 54/512, 102/512)
-            buttons[2]:GetNormalTexture():Show()
-        end
-        buttons[2]:SetPushedTexture(path)
-        if buttons[2]:GetPushedTexture() then
-            buttons[2]:GetPushedTexture():SetTexCoord(190/256, 225/256, 432/512, 480/512)
-        end
-        buttons[2]:SetHighlightTexture(path)
-        if buttons[2]:GetHighlightTexture() then
-            buttons[2]:GetHighlightTexture():SetTexCoord(190/256, 225/256, 432/512, 480/512)
-        end
-    end
-
-    -- -- talents button (position 3)
-    if buttons[3] then
-        buttons[3]:SetNormalTexture(path)
-        if buttons[3]:GetNormalTexture() then
-            buttons[3]:GetNormalTexture():SetTexCoord(162/256, 197/256, 0/512, 48/512)
-            buttons[3]:GetNormalTexture():Show()
-        end
-        buttons[3]:SetPushedTexture(path)
-        if buttons[3]:GetPushedTexture() then
-            buttons[3]:GetPushedTexture():SetTexCoord(82/256, 117/256, 0/512, 48/512)
-        end
-        buttons[3]:SetHighlightTexture(path)
-        if buttons[3]:GetHighlightTexture() then
-            buttons[3]:GetHighlightTexture():SetTexCoord(82/256, 117/256, 0/512, 48/512)
-        end
-    end
-
-    -- quest button (position 4)
-    if buttons[4] then
-        buttons[4]:SetNormalTexture(path)
-        if buttons[4]:GetNormalTexture() then
-            buttons[4]:GetNormalTexture():SetTexCoord(202/256, 237/256, 270/512, 318/512)
-            buttons[4]:GetNormalTexture():Show()
-        end
-        buttons[4]:SetPushedTexture(path)
-        if buttons[4]:GetPushedTexture() then
-            buttons[4]:GetPushedTexture():SetTexCoord(42/256, 77/256, 432/512, 480/512)
-        end
-        buttons[4]:SetHighlightTexture(path)
-        if buttons[4]:GetHighlightTexture() then
-            buttons[4]:GetHighlightTexture():SetTexCoord(42/256, 77/256, 432/512, 480/512)
-        end
-    end
-
-    -- socials button (position 5)
-    if buttons[5] then
-        buttons[5]:SetNormalTexture(path)
-        if buttons[5]:GetNormalTexture() then
-            buttons[5]:GetNormalTexture():SetTexCoord(42/256, 76/256, 54/512, 102/512)
-            buttons[5]:GetNormalTexture():Show()
-        end
-        buttons[5]:SetPushedTexture(path)
-        if buttons[5]:GetPushedTexture() then
-            buttons[5]:GetPushedTexture():SetTexCoord(42/256, 77/256, 0/512, 48/512)
-        end
-        buttons[5]:SetHighlightTexture(path)
-        if buttons[5]:GetHighlightTexture() then
-            buttons[5]:GetHighlightTexture():SetTexCoord(42/256, 77/256, 0/512, 48/512)
-        end
-    end
-
-    -- PVP button (position 6 - custom)
-    buttons[6]:SetNormalTexture(path)
-    buttons[6]:GetNormalTexture():SetTexCoord(0/256, 37/256, 269/512, 319/512)
-    buttons[6]:SetPushedTexture(path)
-    buttons[6]:GetPushedTexture():SetTexCoord(161/256, 197/256, 161/512, 211/512)
-    buttons[6]:SetHighlightTexture(path)
-    buttons[6]:GetHighlightTexture():SetTexCoord(161/256, 197/256, 161/512, 211/512)
-
-    -- LFT button (position 7 - custom)
-    buttons[7]:SetNormalTexture(path)
-    buttons[7]:GetNormalTexture():SetTexCoord(0/256, 38/256, 161/512, 211/512)
-    buttons[7]:SetPushedTexture(path)
-    buttons[7]:GetPushedTexture():SetTexCoord(41/256, 78/256, 107/512, 157/512)
-    buttons[7]:SetHighlightTexture(path)
-    buttons[7]:GetHighlightTexture():SetTexCoord(41/256, 78/256, 107/512, 157/512)
-
-    -- world map button (position 8)
-    if buttons[8] then
-        buttons[8]:SetNormalTexture(path)
-        if buttons[8]:GetNormalTexture() then
-            buttons[8]:GetNormalTexture():SetTexCoord(162/256, 196/256, 107/512, 157/512)
-            buttons[8]:GetNormalTexture():Show()
-        end
-        buttons[8]:SetPushedTexture(path)
-        if buttons[8]:GetPushedTexture() then
-            buttons[8]:GetPushedTexture():SetTexCoord(202/256, 237/256, 54/512, 102/512)
-        end
-        buttons[8]:SetHighlightTexture(path)
-        if buttons[8]:GetHighlightTexture() then
-            buttons[8]:GetHighlightTexture():SetTexCoord(202/256, 237/256, 54/512, 102/512)
-        end
-    end
-
-    -- main menu button (position 9)
-    if buttons[9] then
-        buttons[9]:SetNormalTexture(path)
-        if buttons[9]:GetNormalTexture() then
-            buttons[9]:GetNormalTexture():SetTexCoord(2/256, 37/256, 107/512, 157/512)
-            buttons[9]:GetNormalTexture():Show()
-        end
-        buttons[9]:SetPushedTexture(path)
-        if buttons[9]:GetPushedTexture() then
-            buttons[9]:GetPushedTexture():SetTexCoord(122/256, 157/256, 323/512, 372/512)
-        end
-        buttons[9]:SetHighlightTexture(path)
-        if buttons[9]:GetHighlightTexture() then
-            buttons[9]:GetHighlightTexture():SetTexCoord(122/256, 157/256, 323/512, 372/512)
-        end
-    end
-
-    -- help button (position 10)
-    if buttons[10] then
-        buttons[10]:SetNormalTexture(path)
-        if buttons[10]:GetNormalTexture() then
-            buttons[10]:GetNormalTexture():SetTexCoord(202/256, 237/256, 215/512, 265/512)
-            buttons[10]:GetNormalTexture():Show()
-        end
-        buttons[10]:SetPushedTexture(path)
-        if buttons[10]:GetPushedTexture() then
-            buttons[10]:GetPushedTexture():SetTexCoord(162/256, 198/256, 215/512, 265/512)
-        end
-        buttons[10]:SetHighlightTexture(path)
-        if buttons[10]:GetHighlightTexture() then
-            buttons[10]:GetHighlightTexture():SetTexCoord(162/256, 198/256, 215/512, 265/512)
         end
     end
 
@@ -430,6 +320,183 @@ DFRL:RegisterModule("micromenu", 1, function()
 
             -- update container width
             DFRL.microMenuContainer:SetWidth((buttonWidth + value) * table.getn(buttons))
+        end
+    end
+
+    callbacks.microColor = function(value)
+        if value then
+            local tempFrame = CreateFrame("Frame")
+            local tempTexture = tempFrame:CreateTexture()
+
+            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\spellbook-regular.tga")
+            buttons[2]:SetNormalTexture(tempTexture:GetTexture())
+            buttons[2]:GetNormalTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
+            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\spellbook-faded.tga")
+            buttons[2]:SetPushedTexture(tempTexture:GetTexture())
+            buttons[2]:GetPushedTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
+            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\spellbook-highlight.tga")
+            buttons[2]:SetHighlightTexture(tempTexture:GetTexture())
+            buttons[2]:GetHighlightTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
+
+            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\talents-regular.tga")
+            buttons[3]:SetNormalTexture(tempTexture:GetTexture())
+            buttons[3]:GetNormalTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
+            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\talents-faded.tga")
+            buttons[3]:SetPushedTexture(tempTexture:GetTexture())
+            buttons[3]:GetPushedTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
+            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\talents-highlight.tga")
+            buttons[3]:SetHighlightTexture(tempTexture:GetTexture())
+            buttons[3]:GetHighlightTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
+
+            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\quest-regular.tga")
+            buttons[4]:SetNormalTexture(tempTexture:GetTexture())
+            buttons[4]:GetNormalTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
+            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\quest-faded.tga")
+            buttons[4]:SetPushedTexture(tempTexture:GetTexture())
+            buttons[4]:GetPushedTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
+            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\quest-highlight.tga")
+            buttons[4]:SetHighlightTexture(tempTexture:GetTexture())
+            buttons[4]:GetHighlightTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
+
+            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\tabard-regular.tga")
+            buttons[5]:SetNormalTexture(tempTexture:GetTexture())
+            buttons[5]:GetNormalTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
+            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\tabard-faded.tga")
+            buttons[5]:SetPushedTexture(tempTexture:GetTexture())
+            buttons[5]:GetPushedTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
+            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\tabard-highlight.tga")
+            buttons[5]:SetHighlightTexture(tempTexture:GetTexture())
+            buttons[5]:GetHighlightTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
+
+            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\book-regular.tga")
+            buttons[6]:SetNormalTexture(tempTexture:GetTexture())
+            buttons[6]:GetNormalTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
+            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\book-faded.tga")
+            buttons[6]:SetPushedTexture(tempTexture:GetTexture())
+            buttons[6]:GetPushedTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
+            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\book-highlight.tga")
+            buttons[6]:SetHighlightTexture(tempTexture:GetTexture())
+            buttons[6]:GetHighlightTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
+
+            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\eye-regular.tga")
+            buttons[7]:SetNormalTexture(tempTexture:GetTexture())
+            buttons[7]:GetNormalTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
+            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\eye-faded.tga")
+            buttons[7]:SetPushedTexture(tempTexture:GetTexture())
+            buttons[7]:GetPushedTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
+            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\eye-highlight.tga")
+            buttons[7]:SetHighlightTexture(tempTexture:GetTexture())
+            buttons[7]:GetHighlightTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
+
+            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\horseshoe-regular.tga")
+            buttons[8]:SetNormalTexture(tempTexture:GetTexture())
+            buttons[8]:GetNormalTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
+            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\horseshoe-faded.tga")
+            buttons[8]:SetPushedTexture(tempTexture:GetTexture())
+            buttons[8]:GetPushedTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
+            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\horseshoe-highlight.tga")
+            buttons[8]:SetHighlightTexture(tempTexture:GetTexture())
+            buttons[8]:GetHighlightTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
+
+            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\shield-regular.tga")
+            buttons[9]:SetNormalTexture(tempTexture:GetTexture())
+            buttons[9]:GetNormalTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
+            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\shield-faded.tga")
+            buttons[9]:SetPushedTexture(tempTexture:GetTexture())
+            buttons[9]:GetPushedTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
+            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\shield-highlight.tga")
+            buttons[9]:SetHighlightTexture(tempTexture:GetTexture())
+            buttons[9]:GetHighlightTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
+
+            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\wow-regular.tga")
+            buttons[10]:SetNormalTexture(tempTexture:GetTexture())
+            buttons[10]:GetNormalTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
+            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\wow-faded.tga")
+            buttons[10]:SetPushedTexture(tempTexture:GetTexture())
+            buttons[10]:GetPushedTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
+            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\wow-highlight.tga")
+            buttons[10]:SetHighlightTexture(tempTexture:GetTexture())
+            buttons[10]:GetHighlightTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
+
+            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\question-regular.tga")
+            buttons[11]:SetNormalTexture(tempTexture:GetTexture())
+            buttons[11]:GetNormalTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
+            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\question-faded.tga")
+            buttons[11]:SetPushedTexture(tempTexture:GetTexture())
+            buttons[11]:GetPushedTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
+            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\question-highlight.tga")
+            buttons[11]:SetHighlightTexture(tempTexture:GetTexture())
+            buttons[11]:GetHighlightTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
+        else
+            buttons[2]:SetNormalTexture(path)
+            buttons[2]:GetNormalTexture():SetTexCoord(122/256, 157/256, 54/512, 102/512)
+            buttons[2]:SetPushedTexture(path)
+            buttons[2]:GetPushedTexture():SetTexCoord(190/256, 225/256, 432/512, 480/512)
+            buttons[2]:SetHighlightTexture(path)
+            buttons[2]:GetHighlightTexture():SetTexCoord(190/256, 225/256, 432/512, 480/512)
+
+            buttons[3]:SetNormalTexture(path)
+            buttons[3]:GetNormalTexture():SetTexCoord(162/256, 197/256, 0/512, 48/512)
+            buttons[3]:SetPushedTexture(path)
+            buttons[3]:GetPushedTexture():SetTexCoord(82/256, 117/256, 0/512, 48/512)
+            buttons[3]:SetHighlightTexture(path)
+            buttons[3]:GetHighlightTexture():SetTexCoord(82/256, 117/256, 0/512, 48/512)
+
+            buttons[4]:SetNormalTexture(path)
+            buttons[4]:GetNormalTexture():SetTexCoord(202/256, 237/256, 270/512, 318/512)
+            buttons[4]:SetPushedTexture(path)
+            buttons[4]:GetPushedTexture():SetTexCoord(42/256, 77/256, 432/512, 480/512)
+            buttons[4]:SetHighlightTexture(path)
+            buttons[4]:GetHighlightTexture():SetTexCoord(42/256, 77/256, 432/512, 480/512)
+
+            buttons[5]:SetNormalTexture(path)
+            buttons[5]:GetNormalTexture():SetTexCoord(42/256, 76/256, 54/512, 102/512)
+            buttons[5]:SetPushedTexture(path)
+            buttons[5]:GetPushedTexture():SetTexCoord(42/256, 77/256, 0/512, 48/512)
+            buttons[5]:SetHighlightTexture(path)
+            buttons[5]:GetHighlightTexture():SetTexCoord(42/256, 77/256, 0/512, 48/512)
+
+            buttons[6]:SetNormalTexture(path)
+            buttons[6]:GetNormalTexture():SetTexCoord(0/256, 37/256, 269/512, 319/512)
+            buttons[6]:SetPushedTexture(path)
+            buttons[6]:GetPushedTexture():SetTexCoord(161/256, 197/256, 161/512, 211/512)
+            buttons[6]:SetHighlightTexture(path)
+            buttons[6]:GetHighlightTexture():SetTexCoord(161/256, 197/256, 161/512, 211/512)
+
+            buttons[7]:SetNormalTexture(path)
+            buttons[7]:GetNormalTexture():SetTexCoord(0/256, 38/256, 161/512, 211/512)
+            buttons[7]:SetPushedTexture(path)
+            buttons[7]:GetPushedTexture():SetTexCoord(41/256, 78/256, 107/512, 157/512)
+            buttons[7]:SetHighlightTexture(path)
+            buttons[7]:GetHighlightTexture():SetTexCoord(41/256, 78/256, 107/512, 157/512)
+
+            buttons[8]:SetNormalTexture(path)
+            buttons[8]:GetNormalTexture():SetTexCoord(82/256, 119/256, 325/512, 374/512)
+            buttons[8]:SetPushedTexture(path)
+            buttons[8]:GetPushedTexture():SetTexCoord(82/256, 119/256, 378/512, 429/512)
+            buttons[8]:SetHighlightTexture(path)
+            buttons[8]:GetHighlightTexture():SetTexCoord(82/256, 119/256, 378/512, 429/512)
+
+            buttons[9]:SetNormalTexture(path)
+            buttons[9]:GetNormalTexture():SetTexCoord(162/256, 196/256, 107/512, 157/512)
+            buttons[9]:SetPushedTexture(path)
+            buttons[9]:GetPushedTexture():SetTexCoord(202/256, 237/256, 54/512, 102/512)
+            buttons[9]:SetHighlightTexture(path)
+            buttons[9]:GetHighlightTexture():SetTexCoord(202/256, 237/256, 54/512, 102/512)
+
+            buttons[10]:SetNormalTexture(path)
+            buttons[10]:GetNormalTexture():SetTexCoord(2/256, 37/256, 107/512, 157/512)
+            buttons[10]:SetPushedTexture(path)
+            buttons[10]:GetPushedTexture():SetTexCoord(122/256, 157/256, 323/512, 372/512)
+            buttons[10]:SetHighlightTexture(path)
+            buttons[10]:GetHighlightTexture():SetTexCoord(122/256, 157/256, 323/512, 372/512)
+
+            buttons[11]:SetNormalTexture(path)
+            buttons[11]:GetNormalTexture():SetTexCoord(202/256, 237/256, 215/512, 265/512)
+            buttons[11]:SetPushedTexture(path)
+            buttons[11]:GetPushedTexture():SetTexCoord(162/256, 198/256, 215/512, 265/512)
+            buttons[11]:SetHighlightTexture(path)
+            buttons[11]:GetHighlightTexture():SetTexCoord(162/256, 198/256, 215/512, 265/512)
         end
     end
 

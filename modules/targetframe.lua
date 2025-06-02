@@ -6,18 +6,22 @@ DFRL:SetDefaults("targetframe", {
     textShow = {true, 2, "checkbox", "appearance", "Show health and mana text"},
     noPercent = {true, 3, "checkbox", "appearance", "Show only current values without percentages"},
     textColoring = {false, 4, "checkbox", "appearance", "Color text based on health/mana percentage"},
+    colorReaction = {true, 5, "checkbox", "appearance", "Color health bar based on target reaction (red=hostile, yellow=neutral, green=friendly)"},
 
 })
 
 DFRL:RegisterModule("targetframe", 1, function()
     d.DebugPrint("BOOTING")
 
+    -- blizz
+    do
+        TargetFrameHealthBar:SetScript("OnEnter", nil)
+        TargetFrameHealthBar:SetScript("OnLeave", nil)
+    end
+
     TargetFrameHealthBar:SetPoint("TOPRIGHT", -100, -29)
     TargetFrameHealthBar:SetWidth(130)
     TargetFrameHealthBar:SetHeight(31)
-
-    TargetFrameHealthBar:SetScript("OnEnter", nil)
-    TargetFrameHealthBar:SetScript("OnLeave", nil)
 
     TargetFrameManaBar:SetPoint("TOPRIGHT", -95, -53)
     TargetFrameManaBar:SetWidth(132)
@@ -198,6 +202,45 @@ DFRL:RegisterModule("targetframe", 1, function()
         UpdateTexts()
     end
 
+    callbacks.colorReaction = function(value)
+        TargetFrameHealthBar.colorReaction = value
+
+        if UnitExists("target") then
+            local reaction = UnitReaction("player", "target")
+
+            if value and reaction then
+                if reaction <= 2 then
+                    -- hostile
+                    TargetFrameHealthBar:SetStatusBarColor(1, 0, 0)
+                elseif reaction == 3 or reaction == 4 then
+                    -- neutral
+                    TargetFrameHealthBar:SetStatusBarColor(1, 1, 0)
+                else
+                    -- friendly
+                    TargetFrameHealthBar:SetStatusBarColor(0, 1, 0)
+                end
+            else
+                -- reset
+                TargetFrameHealthBar:SetStatusBarColor(0, 1, 0)
+            end
+        end
+    end
+
+    HookScript(_G["TargetFrameHealthBar"], "OnValueChanged", function()
+        if _G["TargetFrameHealthBar"].colorReaction then
+            local reaction = UnitReaction("player", "target")
+            if reaction then
+                if reaction <= 2 then
+                    _G["TargetFrameHealthBar"]:SetStatusBarColor(1, 0, 0)
+                elseif reaction <= 4 then
+                    _G["TargetFrameHealthBar"]:SetStatusBarColor(1, 1, 0)
+                else
+                    _G["TargetFrameHealthBar"]:SetStatusBarColor(0, 1, 0)
+                end
+            end
+        end
+    end)
+
     -- event handler
     local f = CreateFrame("Frame")
     f:RegisterEvent("PLAYER_TARGET_CHANGED")
@@ -218,6 +261,24 @@ DFRL:RegisterModule("targetframe", 1, function()
             _G.TargetFrame_CheckClassification()
             UpdateTexts()
 
+            if TargetFrameHealthBar.colorReaction then
+                local reaction = UnitReaction("player", "target")
+                if reaction then
+                    if reaction <= 2 then
+                        -- Hostile - Red
+                        TargetFrameHealthBar:SetStatusBarColor(1, 0, 0)
+                    elseif reaction == 3 or reaction == 4 then
+                        -- Neutral - Yellow
+                        TargetFrameHealthBar:SetStatusBarColor(1, 1, 0)
+                    else
+                        -- Friendly - Green
+                        TargetFrameHealthBar:SetStatusBarColor(0, 1, 0)
+                    end
+                else
+                    -- Reset to default color
+                    TargetFrameHealthBar:SetStatusBarColor(0, 1, 0)
+                end
+            end
         elseif (event == "UNIT_HEALTH" and arg1 == "target") or
             (event == "UNIT_MANA" and arg1 == "target") or
             (event == "UNIT_ENERGY" and arg1 == "target") or
