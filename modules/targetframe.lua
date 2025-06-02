@@ -90,18 +90,13 @@ DFRL:RegisterModule("targetframe", 1, function()
         local manaPercent = maxMana > 0 and mana / maxMana or 0
         local manaPercentInt = math.floor(manaPercent * 100)
 
-        -- Get current settings
         local noPercentEnabled = DFRL:GetConfig("targetframe", "noPercent")[1]
         local coloringEnabled = DFRL:GetConfig("targetframe", "textColoring")[1]
 
-        -- Check if target is dead
         local isDead = UnitIsDead("target")
 
-        -- Set text content based on noPercent setting
         if noPercentEnabled then
-            -- Show only current values in center
             healthPercentText:SetText("")
-            -- Don't show health value if target is dead
             if isDead then
                 healthValueText:SetText("")
             else
@@ -119,8 +114,6 @@ DFRL:RegisterModule("targetframe", 1, function()
                 manaValueText:SetText("")
             end
         else
-            -- Show percent on left, value on right
-            -- Don't show health percent or value if target is dead
             if isDead then
                 healthPercentText:SetText("")
                 healthValueText:SetText("")
@@ -142,16 +135,13 @@ DFRL:RegisterModule("targetframe", 1, function()
             end
         end
 
-        -- Apply coloring based on textColoring setting
         if coloringEnabled then
-            -- Health coloring (white to red based on health percentage)
             local r = 1
             local g = healthPercent
             local b = healthPercent
             healthPercentText:SetTextColor(r, g, b)
             healthValueText:SetTextColor(r, g, b)
 
-            -- Mana coloring (white to red based on mana percentage)
             if maxMana > 0 then
                 r = 1
                 g = manaPercent
@@ -160,7 +150,6 @@ DFRL:RegisterModule("targetframe", 1, function()
                 manaValueText:SetTextColor(r, g, b)
             end
         else
-            -- Default white text
             healthPercentText:SetTextColor(1, 1, 1)
             healthValueText:SetTextColor(1, 1, 1)
             manaPercentText:SetTextColor(1, 1, 1)
@@ -265,17 +254,17 @@ DFRL:RegisterModule("targetframe", 1, function()
                 local reaction = UnitReaction("player", "target")
                 if reaction then
                     if reaction <= 2 then
-                        -- Hostile - Red
+                        -- hostile - red
                         TargetFrameHealthBar:SetStatusBarColor(1, 0, 0)
                     elseif reaction == 3 or reaction == 4 then
-                        -- Neutral - Yellow
+                        -- neutral - yellow
                         TargetFrameHealthBar:SetStatusBarColor(1, 1, 0)
                     else
-                        -- Friendly - Green
+                        -- friendly - green
                         TargetFrameHealthBar:SetStatusBarColor(0, 1, 0)
                     end
                 else
-                    -- Reset to default color
+                    -- reset to default color
                     TargetFrameHealthBar:SetStatusBarColor(0, 1, 0)
                 end
             end

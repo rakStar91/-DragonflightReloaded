@@ -374,7 +374,6 @@ DFRL:RegisterModule("ui", 1, function()
 
             if ShouldExclude(frame) then return end
 
-            -- Handle backdrop colors (background AND border)
             if frame.SetBackdropColor then
                 frame:SetBackdropColor(color[1], color[2], color[3], 1)
             end

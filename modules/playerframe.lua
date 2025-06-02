@@ -65,6 +65,71 @@ DFRL:RegisterModule("playerframe", 1, function()
     manaValueText:SetPoint("RIGHT", -5, 0)
     manaValueText:SetTextColor(1, 1, 1)
 
+    -- combat indicator
+    do
+        local combatOverlay = CreateFrame("Frame", nil, PlayerFrame)
+        combatOverlay:SetAllPoints(PlayerFrame)
+        combatOverlay:SetFrameStrata("HIGH")
+
+        local texture = combatOverlay:CreateTexture(nil, "OVERLAY")
+        texture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\UI-Player-Status.blp")
+        texture:SetPoint("CENTER", PlayerFrame, "CENTER", 45, -21)
+        texture:SetVertexColor(1, 0, 0)
+        texture:SetBlendMode("ADD")
+        texture:SetAlpha(0)
+
+        local timeSinceLastUpdate = 0
+        local updateInterval = 1.0
+        local fadeDirection = 1
+        local currentAlpha = 0
+        local fadeSpeed = 2.0
+
+        combatOverlay:SetScript("OnUpdate", function()
+            timeSinceLastUpdate = timeSinceLastUpdate + arg1
+
+            if UnitAffectingCombat("player") then
+                if timeSinceLastUpdate >= updateInterval then
+                    fadeDirection = -fadeDirection
+                    timeSinceLastUpdate = 0
+                end
+
+                local deltaAlpha = fadeSpeed * arg1 * fadeDirection
+                currentAlpha = currentAlpha + deltaAlpha
+
+                if currentAlpha >= 1.0 then
+                    currentAlpha = 1.0
+                    fadeDirection = -1
+                elseif currentAlpha <= 0.2 then
+                    currentAlpha = 0.2
+                    fadeDirection = 1
+                end
+
+                texture:SetAlpha(currentAlpha)
+            else
+                if currentAlpha > 0 then
+                    currentAlpha = currentAlpha - (fadeSpeed * arg1 * 2)
+                    if currentAlpha < 0 then
+                        currentAlpha = 0
+                    end
+                    texture:SetAlpha(currentAlpha)
+                end
+            end
+        end)
+
+        local eventFrame = CreateFrame("Frame")
+        eventFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
+        eventFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+        eventFrame:SetScript("OnEvent", function()
+            if event == "PLAYER_REGEN_DISABLED" then
+                currentAlpha = 0.2
+                fadeDirection = 1
+                timeSinceLastUpdate = 0
+            elseif event == "PLAYER_REGEN_ENABLED" then
+                fadeDirection = -1
+            end
+        end)
+    end
+
     -- resting animation
     do
         PlayerRestIcon:SetTexture("")
@@ -175,7 +240,6 @@ DFRL:RegisterModule("playerframe", 1, function()
                 maxValue = UnitManaMax(unit)
             end
 
-            -- Create a unique identifier for the actual unit using name and level
             local unitName = UnitName(unit)
             local unitLevel = UnitLevel(unit)
             local unitID = (unitName or "unknown") .. "_" .. (unitLevel or "0")
@@ -189,7 +253,6 @@ DFRL:RegisterModule("playerframe", 1, function()
                 return
             end
 
-            -- Check if this is a different actual unit than before (unit changed)
             if frame.lastUnitID ~= unitID then
                 d.DebugPrint("ACTUAL UNIT CHANGED - Old ID: " .. (frame.lastUnitID or "nil") .. ", New ID: " .. unitID .. ", Setting lastValue to: " .. currentValue)
                 frame.lastUnitID = unitID
@@ -597,8 +660,6 @@ DFRL:RegisterModule("playerframe", 1, function()
             UpdateTexts()
         end
     end)
-
-
 
     UpdateTexts()
 
