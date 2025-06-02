@@ -136,6 +136,8 @@ DFRL:RegisterModule("playerframe", 1, function()
         local animationFrames = {}
 
         local function CreateCutoutEffect(statusBar, barType, unit)
+            d.DebugPrint("Creating cutout effect - BarType: " .. barType .. ", Unit: " .. (unit or "unknown"))
+
             local cutoutFrame = CreateFrame("Frame", nil, statusBar)
             cutoutFrame:SetFrameLevel(statusBar:GetFrameLevel() + 1)
             cutoutFrame:SetAllPoints(statusBar)
@@ -154,9 +156,11 @@ DFRL:RegisterModule("playerframe", 1, function()
             cutoutFrame.barType = barType
             cutoutFrame.unit = unit
             cutoutFrame.lastValue = nil
+            cutoutFrame.lastUnitID = nil
             cutoutFrame.initialized = false
 
             table.insert(animationFrames, cutoutFrame)
+            d.DebugPrint("Cutout frame created and added to animationFrames")
             return cutoutFrame
         end
 
@@ -171,16 +175,38 @@ DFRL:RegisterModule("playerframe", 1, function()
                 maxValue = UnitManaMax(unit)
             end
 
+            -- Create a unique identifier for the actual unit using name and level
+            local unitName = UnitName(unit)
+            local unitLevel = UnitLevel(unit)
+            local unitID = (unitName or "unknown") .. "_" .. (unitLevel or "0")
+
+            d.DebugPrint("UpdateCutoutEffect called - Unit: " .. unit .. ", ID: " .. unitID .. ", BarType: " .. frame.barType .. ", Current: " .. currentValue .. ", Max: " .. maxValue)
+
             if UnitIsDead(unit) or UnitIsGhost(unit) then
+                d.DebugPrint("Unit is dead or ghost - setting lastValue and returning")
                 frame.lastValue = currentValue
+                frame.lastUnitID = unitID
                 return
             end
 
-            if not frame.initialized then
+            -- Check if this is a different actual unit than before (unit changed)
+            if frame.lastUnitID ~= unitID then
+                d.DebugPrint("ACTUAL UNIT CHANGED - Old ID: " .. (frame.lastUnitID or "nil") .. ", New ID: " .. unitID .. ", Setting lastValue to: " .. currentValue)
+                frame.lastUnitID = unitID
                 frame.lastValue = currentValue
                 frame.initialized = true
                 return
             end
+
+            if not frame.initialized then
+                d.DebugPrint("Frame not initialized - setting lastValue to: " .. currentValue)
+                frame.lastValue = currentValue
+                frame.lastUnitID = unitID
+                frame.initialized = true
+                return
+            end
+
+            d.DebugPrint("Comparing values - LastValue: " .. (frame.lastValue or "nil") .. ", CurrentValue: " .. currentValue)
 
             if frame.lastValue and currentValue < frame.lastValue and maxValue > 0 then
                 local statusBar = frame:GetParent()
@@ -190,6 +216,8 @@ DFRL:RegisterModule("playerframe", 1, function()
 
                 local remainingPercent = currentValue / maxValue
                 local xOffset = width * remainingPercent
+
+                d.DebugPrint("TRIGGERING CUTOUT EFFECT - Lost: " .. (frame.lastValue - currentValue) .. ", LostPercent: " .. lostPercent .. ", CutoutWidth: " .. cutoutWidth)
 
                 frame.texture:ClearAllPoints()
                 frame.texture:SetPoint("TOPLEFT", statusBar, "TOPLEFT", xOffset, 0)
@@ -202,6 +230,7 @@ DFRL:RegisterModule("playerframe", 1, function()
             end
 
             frame.lastValue = currentValue
+            d.DebugPrint("Updated lastValue to: " .. currentValue)
         end
 
         local function OnUpdate()
@@ -248,23 +277,25 @@ DFRL:RegisterModule("playerframe", 1, function()
 
             local targetHealth = TargetFrameHealthBar
             if targetHealth then
-                local targetHealthCutout = CreateCutoutEffect(targetHealth, "health")
+                local targetHealthCutout = CreateCutoutEffect(targetHealth, "health", "target")
                 targetHealth:SetScript("OnValueChanged", function()
+                    d.DebugPrint("TARGET HEALTH OnValueChanged triggered")
                     UpdateCutoutEffect(targetHealthCutout, "target")
                 end)
             end
 
             local targetMana = TargetFrameManaBar
             if targetMana then
-                local targetManaCutout = CreateCutoutEffect(targetMana, "mana")
+                local targetManaCutout = CreateCutoutEffect(targetMana, "mana", "target")
                 targetMana:SetScript("OnValueChanged", function()
+                    d.DebugPrint("TARGET MANA OnValueChanged triggered")
                     UpdateCutoutEffect(targetManaCutout, "target")
                 end)
             end
 
             local totHealth = TargetofTargetHealthBar
             if totHealth then
-                local totHealthCutout = CreateCutoutEffect(totHealth, "health")
+                local totHealthCutout = CreateCutoutEffect(totHealth, "health", "targettarget")
                 totHealth:SetScript("OnValueChanged", function()
                     UpdateCutoutEffect(totHealthCutout, "targettarget")
                 end)
@@ -272,7 +303,7 @@ DFRL:RegisterModule("playerframe", 1, function()
 
             local totMana = TargetofTargetManaBar
             if totMana then
-                local totManaCutout = CreateCutoutEffect(totMana, "mana")
+                local totManaCutout = CreateCutoutEffect(totMana, "mana", "targettarget")
                 totMana:SetScript("OnValueChanged", function()
                     UpdateCutoutEffect(totManaCutout, "targettarget")
                 end)
@@ -315,6 +346,7 @@ DFRL:RegisterModule("playerframe", 1, function()
 
         HookUnitFrames()
     end
+
     local function UpdateTexts()
         local health = UnitHealth("player")
         local maxHealth = UnitHealthMax("player")
