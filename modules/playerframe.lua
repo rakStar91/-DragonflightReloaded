@@ -309,22 +309,6 @@ DFRL:RegisterModule("playerframe", 1, function()
                 end)
             end
 
-            local petHealth = PetFrameHealthBar
-            if petHealth then
-                local petHealthCutout = CreateCutoutEffect(petHealth, "health")
-                petHealth:SetScript("OnValueChanged", function()
-                    UpdateCutoutEffect(petHealthCutout, "pet")
-                end)
-            end
-
-            local petMana = PetFrameManaBar
-            if petMana then
-                local petManaCutout = CreateCutoutEffect(petMana, "mana")
-                petMana:SetScript("OnValueChanged", function()
-                    UpdateCutoutEffect(petManaCutout, "pet")
-                end)
-            end
-
             for i = 1, 4 do
                 local partyHealthBar = getglobal("PartyMemberFrame"..i.."HealthBar")
                 if partyHealthBar then
