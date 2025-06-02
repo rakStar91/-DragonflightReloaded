@@ -65,6 +65,7 @@ DFRL:RegisterModule("playerframe", 1, function()
     manaValueText:SetPoint("RIGHT", -5, 0)
     manaValueText:SetTextColor(1, 1, 1)
 
+
     -- combat indicator
     do
         local combatOverlay = CreateFrame("Frame", nil, PlayerFrame)
@@ -372,23 +373,23 @@ DFRL:RegisterModule("playerframe", 1, function()
                 end)
             end
 
-            for i = 1, 4 do
-                local partyHealthBar = getglobal("PartyMemberFrame"..i.."HealthBar")
-                if partyHealthBar then
-                    local partyHealthCutout = CreateCutoutEffect(partyHealthBar, "health")
-                    partyHealthBar:SetScript("OnValueChanged", function()
-                        UpdateCutoutEffect(partyHealthCutout, "party"..i)
-                    end)
-                end
+            -- for i = 1, 4 do
+            --     local partyHealthBar = getglobal("PartyMemberFrame"..i.."HealthBar")
+            --     if partyHealthBar then
+            --         local partyHealthCutout = CreateCutoutEffect(partyHealthBar, "health")
+            --         partyHealthBar:SetScript("OnValueChanged", function()
+            --             UpdateCutoutEffect(partyHealthCutout, "party"..i)
+            --         end)
+            --     end
 
-                local partyManaBar = getglobal("PartyMemberFrame"..i.."ManaBar")
-                if partyManaBar then
-                    local partyManaCutout = CreateCutoutEffect(partyManaBar, "mana")
-                    partyManaBar:SetScript("OnValueChanged", function()
-                        UpdateCutoutEffect(partyManaCutout, "party"..i)
-                    end)
-                end
-            end
+            --     local partyManaBar = getglobal("PartyMemberFrame"..i.."ManaBar")
+            --     if partyManaBar then
+            --         local partyManaCutout = CreateCutoutEffect(partyManaBar, "mana")
+            --         partyManaBar:SetScript("OnValueChanged", function()
+            --             UpdateCutoutEffect(partyManaCutout, "party"..i)
+            --         end)
+            --     end
+            -- end
         end
 
         HookUnitFrames()
