@@ -157,6 +157,14 @@ DFRL:RegisterModule("targetframe", 1, function()
         end
     end
 
+    local function IsTargetTaggedByOther()
+        if not UnitExists("target") or UnitIsPlayer("target") then
+            return false
+        end
+
+        return UnitIsTapped("target") and not UnitIsTappedByPlayer("target")
+    end
+
     -- callbacks
     local callbacks = {}
 
@@ -195,8 +203,13 @@ DFRL:RegisterModule("targetframe", 1, function()
         TargetFrameHealthBar.colorReaction = value
 
         if UnitExists("target") then
-            local reaction = UnitReaction("player", "target")
+            -- Check for tagged mobs first
+            if IsTargetTaggedByOther() then
+                TargetFrameHealthBar:SetStatusBarColor(0.5, 0.5, 0.5)
+                return
+            end
 
+            local reaction = UnitReaction("player", "target")
             if value and reaction then
                 if reaction <= 2 then
                     -- hostile
@@ -216,6 +229,11 @@ DFRL:RegisterModule("targetframe", 1, function()
     end
 
     HookScript(_G["TargetFrameHealthBar"], "OnValueChanged", function()
+        if IsTargetTaggedByOther() then
+            _G["TargetFrameHealthBar"]:SetStatusBarColor(0.5, 0.5, 0.5)
+            return
+        end
+
         if _G["TargetFrameHealthBar"].colorReaction then
             local reaction = UnitReaction("player", "target")
             if reaction then
@@ -250,7 +268,9 @@ DFRL:RegisterModule("targetframe", 1, function()
             _G.TargetFrame_CheckClassification()
             UpdateTexts()
 
-            if TargetFrameHealthBar.colorReaction then
+            if IsTargetTaggedByOther() then
+                TargetFrameHealthBar:SetStatusBarColor(0.5, 0.5, 0.5)
+            elseif TargetFrameHealthBar.colorReaction then
                 local reaction = UnitReaction("player", "target")
                 if reaction then
                     if reaction <= 2 then

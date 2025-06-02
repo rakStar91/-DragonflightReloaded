@@ -220,6 +220,14 @@ DFRL:RegisterModule("smallframes", 1, function()
         end
     end
 
+    local function IsTargetOfTargetTaggedByOther()
+        if not UnitExists("targettarget") or UnitIsPlayer("targettarget") then
+            return false
+        end
+        return UnitIsTapped("targettarget") and not UnitIsTappedByPlayer("targettarget")
+    end
+
+
     -- callbacks
     local callbacks = {}
 
@@ -303,6 +311,11 @@ DFRL:RegisterModule("smallframes", 1, function()
         TargetofTargetHealthBar.colorReaction = value
 
         if UnitExists("targettarget") then
+            if IsTargetOfTargetTaggedByOther() then
+                TargetofTargetHealthBar:SetStatusBarColor(0.5, 0.5, 0.5)
+                return
+            end
+
             local reaction = UnitReaction("player", "targettarget")
 
             if value and reaction then
@@ -324,6 +337,11 @@ DFRL:RegisterModule("smallframes", 1, function()
     end
 
     HookScript(_G["TargetofTargetHealthBar"], "OnValueChanged", function()
+        if IsTargetOfTargetTaggedByOther() then
+            _G["TargetofTargetHealthBar"]:SetStatusBarColor(0.5, 0.5, 0.5)
+            return
+        end
+
         if _G["TargetofTargetHealthBar"].colorReaction then
             local reaction = UnitReaction("player", "targettarget")
             if reaction then
@@ -338,7 +356,7 @@ DFRL:RegisterModule("smallframes", 1, function()
         end
     end)
 
-    --  event handler update text
+    --  event handler
     local f = CreateFrame("Frame")
     f:RegisterEvent("PLAYER_ENTERING_WORLD")
     f:RegisterEvent("UNIT_HEALTH")
