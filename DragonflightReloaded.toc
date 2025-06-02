@@ -23,6 +23,7 @@ modules\targetframe.lua
 modules\smallframes.lua
 modules\xprep.lua
 modules\chat.lua
+modules\tooltip.lua
 modules\ui.lua
 
 modules\framemanager.lua

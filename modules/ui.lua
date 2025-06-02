@@ -176,29 +176,23 @@ DFRL:RegisterModule("ui", 1, function()
             end
         end
 
-getglobal("GuildFrameNotesText"):SetDrawLayer("OVERLAY", 10)
-getglobal("GuildMOTDEditButton"):SetFrameStrata("TOOLTIP")
+        getglobal("GuildFrameNotesText"):SetDrawLayer("OVERLAY", 10)
+        getglobal("GuildMOTDEditButton"):SetFrameStrata("TOOLTIP")
 
-local original_GuildStatus_Update = GuildStatus_Update
-function GuildStatus_Update()
-    original_GuildStatus_Update()
-    GuildFrameNotesText:SetDrawLayer("OVERLAY", 7)
-end
--- Add this to your existing code
-getglobal("GuildFrameTotals"):SetDrawLayer("OVERLAY", 10)
-getglobal("GuildFrameOnlineTotals"):SetDrawLayer("OVERLAY", 10)
+        local original_GuildStatus_Update = GuildStatus_Update
+        function GuildStatus_Update()
+            original_GuildStatus_Update()
+            GuildFrameNotesText:SetDrawLayer("OVERLAY", 7)
+        end
+        getglobal("GuildFrameTotals"):SetDrawLayer("OVERLAY", 10)
+        getglobal("GuildFrameOnlineTotals"):SetDrawLayer("OVERLAY", 10)
 
-local original_GuildRoster_Update = GuildRoster_Update
-function GuildRoster_Update()
-    original_GuildRoster_Update()
-    GuildFrameTotals:SetDrawLayer("OVERLAY", 10)
-    GuildFrameOnlineTotals:SetDrawLayer("OVERLAY", 10)
-end
-
-
-
-
-
+        local original_GuildRoster_Update = GuildRoster_Update
+        function GuildRoster_Update()
+            original_GuildRoster_Update()
+            GuildFrameTotals:SetDrawLayer("OVERLAY", 10)
+            GuildFrameOnlineTotals:SetDrawLayer("OVERLAY", 10)
+        end
 
         local function ReplaceCharacterTextures()
             ApplyCustomTextures(FriendsFrame)
@@ -480,21 +474,6 @@ end
         end
     end
 
-    callbacks.uiToolTipMouse = function(value)
-        if value then
-            _G.GameTooltip_SetDefaultAnchor = function(tooltip, parent)
-                tooltip:SetOwner(parent, "ANCHOR_CURSOR", 20, 0)
-            end
-        else
-            _G.GameTooltip_SetDefaultAnchor = function(tooltip, parent)
-                tooltip:SetOwner(parent, "ANCHOR_NONE")
-                tooltip:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -CONTAINER_OFFSET_X - 13, CONTAINER_OFFSET_Y)
-            end
-        end
-    end
-
     -- execute  callbacks
     DFRL:RegisterCallback("ui", callbacks)
 end)
-
-

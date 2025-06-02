@@ -132,8 +132,8 @@ DFRL:RegisterModule("gui", 2, function()
         -- tabs panel
         local tabFrame = CreateFrame("Frame", "DFRLTabFrame", mainFrame)
         tabFrame:SetWidth(150)
-        tabFrame:SetHeight(contentFrame:GetHeight() - 45)
-        tabFrame:SetPoint("TOPRIGHT", contentFrame, "TOPLEFT", -9, -40)
+        tabFrame:SetHeight(contentFrame:GetHeight() - 20)
+        tabFrame:SetPoint("TOPRIGHT", contentFrame, "TOPLEFT", -9, -30)
 
         local tabBg = tabFrame:CreateTexture(nil, "BACKGROUND")
         tabBg:SetTexture("Interface\\ChatFrame\\ChatFrameBackground")
