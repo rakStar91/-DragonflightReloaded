@@ -37,6 +37,8 @@ if DEBUG_MODE then
 end
 
 function DFRL_DEBUGTOOLS.DebugPrint(msg)
+    if DEBUG_MODE ~= true then return end
+
     local stack = debugstack(2, 1, 0)
     local filename = "unknown"
     if stack then
@@ -55,9 +57,7 @@ function DFRL_DEBUGTOOLS.DebugPrint(msg)
 
     tinsert(TEMPDB[filename], formattedMsg)
 
-    if DEBUG_MODE then
-        DEFAULT_CHAT_FRAME:AddMessage(filename .. ": " .. formattedMsg)
-    end
+    DEFAULT_CHAT_FRAME:AddMessage(filename .. ": " .. formattedMsg)
 end
 
 function DFRL_DEBUGTOOLS.DumpTable(tbl)
