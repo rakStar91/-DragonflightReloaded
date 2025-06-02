@@ -6,7 +6,7 @@ DFRL:SetDefaults("xprep", {
     xpTxtShow = {true, 2, "checkbox", "appearance", "Show or hide XP text on the XP bar"},
     repTxtShow = {false, 3, "checkbox", "appearance", "Show or hide reputation text on the reputation bar"},
 
-    autoTrack = {false, 4, "checkbox", "appearance", "Automatically track reputation for factions you gain reputation with"},
+    autoTrack = {true, 4, "checkbox", "appearance", "Automatically track reputation for factions you gain reputation with"},
     xpBarHeight = {12, 5, "slider", {5, 25}, "appearance", "Adjusts the height of the XP bar"},
     xpBarWidth = {400, 6, "slider", {200, 700}, "appearance", "Adjusts the width of the XP bar"},
     repBarHeight = {10, 7, "slider", {5, 25}, "appearance", "Adjusts the height of the reputation bar"},

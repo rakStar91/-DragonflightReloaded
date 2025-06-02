@@ -5,6 +5,7 @@ DFRL:SetDefaults("smallframes", {
     darkMode = {false, 1, "checkbox", "appearance", "Enable dark mode for pet and target frames"},
     textShow = {false, 2, "checkbox", "appearance", "Show pet health and mana text"},
     noPercent = {false, 3, "checkbox", "appearance", "Hide pet health and mana percent text"},
+    colorReaction = {true, 4, "checkbox", "appearance", "Color health bar based on target reaction (red=hostile, yellow=neutral, green=friendly)"},
 
 })
 
@@ -92,7 +93,7 @@ DFRL:RegisterModule("smallframes", 1, function()
 
     -- targetoftarget frame
     TargetofTargetTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\pet")
-    TargetofTargetHealthBar:SetStatusBarTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Health")
+    TargetofTargetHealthBar:SetStatusBarTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Health.tga")
 
     hooksecurefunc("TargetofTarget_Update", function()
         local powerType = UnitPowerType("targettarget")
@@ -297,6 +298,45 @@ DFRL:RegisterModule("smallframes", 1, function()
         -- updat
         UpdatePetTextsWithFormat()
     end
+
+    callbacks.colorReaction = function(value)
+        TargetofTargetHealthBar.colorReaction = value
+
+        if UnitExists("targettarget") then
+            local reaction = UnitReaction("player", "targettarget")
+
+            if value and reaction then
+                if reaction <= 2 then
+                    -- hostile
+                    TargetofTargetHealthBar:SetStatusBarColor(1, 0, 0)
+                elseif reaction == 3 or reaction == 4 then
+                    -- neutral
+                    TargetofTargetHealthBar:SetStatusBarColor(1, 1, 0)
+                else
+                    -- friendly
+                    TargetofTargetHealthBar:SetStatusBarColor(0, 1, 0)
+                end
+            else
+                -- reset
+                TargetofTargetHealthBar:SetStatusBarColor(0, 1, 0)
+            end
+        end
+    end
+
+    HookScript(_G["TargetofTargetHealthBar"], "OnValueChanged", function()
+        if _G["TargetofTargetHealthBar"].colorReaction then
+            local reaction = UnitReaction("player", "targettarget")
+            if reaction then
+                if reaction <= 2 then
+                    _G["TargetofTargetHealthBar"]:SetStatusBarColor(1, 0, 0)
+                elseif reaction <= 4 then
+                    _G["TargetofTargetHealthBar"]:SetStatusBarColor(1, 1, 0)
+                else
+                    _G["TargetofTargetHealthBar"]:SetStatusBarColor(0, 1, 0)
+                end
+            end
+        end
+    end)
 
     --  event handler update text
     local f = CreateFrame("Frame")

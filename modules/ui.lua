@@ -175,23 +175,11 @@ DFRL:RegisterModule("ui", 1, function()
             end
         end
 
-        getglobal("GuildFrameNotesText"):SetDrawLayer("OVERLAY", 10)
-        getglobal("GuildMOTDEditButton"):SetFrameStrata("TOOLTIP")
+        WhoFrameTotals:SetDrawLayer("OVERLAY", 10)
+        GuildFrameNotesText:SetDrawLayer("OVERLAY", 10)
 
-        local original_GuildStatus_Update = GuildStatus_Update
-        function GuildStatus_Update()
-            original_GuildStatus_Update()
-            GuildFrameNotesText:SetDrawLayer("OVERLAY", 7)
-        end
-        getglobal("GuildFrameTotals"):SetDrawLayer("OVERLAY", 10)
-        getglobal("GuildFrameOnlineTotals"):SetDrawLayer("OVERLAY", 10)
-
-        local original_GuildRoster_Update = GuildRoster_Update
-        function GuildRoster_Update()
-            original_GuildRoster_Update()
-            GuildFrameTotals:SetDrawLayer("OVERLAY", 10)
-            GuildFrameOnlineTotals:SetDrawLayer("OVERLAY", 10)
-        end
+        GuildFrameTotals:SetDrawLayer("OVERLAY", 10)
+        GuildFrameOnlineTotals:SetDrawLayer("OVERLAY", 10)
 
         local function ReplaceCharacterTextures()
             ApplyCustomTextures(FriendsFrame)

@@ -186,13 +186,13 @@ DFRL:RegisterModule("framemanager", 2, function()
             end
         end)
 
-        frame:SetScript("OnMouseDown", function()
+        frame:SetScript("OnDragStart", function()
             if IsControlKeyDown() and IsShiftKeyDown() and IsAltKeyDown() then
                 frame:StartMoving()
             end
         end)
 
-        frame:SetScript("OnMouseUp", function()
+        frame:SetScript("OnDragStop", function()
             frame:StopMovingOrSizing()
             SaveFramePosition(frame)
         end)

@@ -204,8 +204,6 @@ function DFRL_DEBUGTOOLS.ErrorHandler(errorMsg)
     DEFAULT_CHAT_FRAME:AddMessage("ERROR: " .. formattedError, 1, 0, 0)
 end
 
-seterrorhandler(DFRL_DEBUGTOOLS.ErrorHandler)
-
 -- event handler
 local f = CreateFrame("Frame")
 f:RegisterEvent("ADDON_LOADED")

@@ -3,7 +3,7 @@ DFRL:SetDefaults("castbar", {
     hidden = {false},
 
     darkMode = {false, 1, "checkbox", "appearance", "Use dark mode for castbar border"},
-    setFillDirection = {"center", 2, "dropdown", { "left", "right", "center" }, "appearance", "Set fill direction"},
+    setFillDirection = {"left", 2, "dropdown", { "left", "right", "center" }, "appearance", "Set fill direction"},
     timeShow = {true, 3, "checkbox", "appearance", "Show casting time"},
     castText = {true, 4, "checkbox", "appearance", "Show spell name text"},
     shadowShow = {true, 5, "checkbox", "appearance", "Show drop shadow"},
@@ -20,6 +20,14 @@ DFRL:RegisterModule("castbar", 1, function()
     d.DebugPrint("BOOTING")
 
     local GetTime = GetTime
+    local type = type
+    local tostring = tostring
+    local string = string
+    local assert = assert
+    local CreateFrame = CreateFrame
+    local UIParent = UIParent
+    local FAILED = FAILED
+    local INTERRUPTED = INTERRUPTED
 
     -- hide stuff
     do
@@ -264,11 +272,18 @@ DFRL:RegisterModule("castbar", 1, function()
             local progressDiff = targetProgress - s.currentProgress
             local step = elapsed * 2
 
+            -- handle both forward progress and pushback
             if progressDiff > 0 then
-            s.currentProgress = s.currentProgress + step
-            if s.currentProgress > targetProgress then
-                s.currentProgress = targetProgress
-            end
+                s.currentProgress = s.currentProgress + step
+                if s.currentProgress > targetProgress then
+                    s.currentProgress = targetProgress
+                end
+            elseif progressDiff < 0 then
+                -- pushback occurred - move bar backward quickly
+                s.currentProgress = s.currentProgress + (step * progressDiff * 12)
+                if s.currentProgress < targetProgress then
+                    s.currentProgress = targetProgress
+                end
             end
 
             self:UpdateBarVisual(s.currentProgress)
