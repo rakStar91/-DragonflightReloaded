@@ -941,28 +941,40 @@ DFRL:RegisterModule("gui", 2, function()
 
         -- ShaguTweaks metadata for integration
         local shaguTweaks = {
-            ["Auto Dismount"]              = { true,  1, "checkbox", "automation",    "Automatically dismount when mounting." },
-            ["Auto Stance"]                = { true,  2, "checkbox", "automation",    "Automatically switch to specified stance." },
-            ["Blue Shaman Class Colors"]   = { true,  3, "checkbox", "colors",        "Use blue-themed class colors for Shamans." },
-            ["Chat Hyperlinks"]            = { true,  4, "checkbox", "chat",          "Enable clickable hyperlinks in chat frames." },
-            ["Chat Tweaks"]                = { true,  5, "checkbox", "chat",          "Apply various chat UI enhancements." },
-            ["Cooldown Numbers"]           = { true,  6, "checkbox", "combat",        "Show numerical cooldown timers on abilities." },
-            ["Equip Compare"]              = { true,  7, "checkbox", "tooltip",       "Show side-by-side item comparison in tooltips." },
-            ["Item Rarity Borders"]        = { true,  8, "checkbox", "tooltip",       "Outline tooltips with item rarity colors." },
-            ["Nameplate Castbar"]          = { true,  9, "checkbox", "castbars & plates",     "Show castbar on unit nameplates." },
-            ["Nameplate Class Colors"]     = { true, 10, "checkbox", "colors",        "Color nameplates by unit class." },
-            ["Nameplate Scale"]            = { true, 11, "checkbox", "castbars & plates",     "Adjust the scale of unit nameplates." },
-            ["Sell Junk"]                  = { true, 12, "checkbox", "vendor",        "Automatically sell gray-quality (junk) items." },
-            ["Social Colors"]              = { true, 13, "checkbox", "chat",          "Color player names by relationship in chat." },
-            ["Super WoW Compatibility"]    = { true, 14, "checkbox", "compatibility", "Ensure compatibility with Super WoW addons." },
-            ["Enemy Castbars"]             = { true, 15, "checkbox", "castbars & plates",     "Display castbars for enemy nameplates." },
-            ["Debuff Timer"]               = { true, 16, "checkbox", "combat",        "Display remaining time on debuffs." },
-            ["Tooltip Details"]            = { true, 17, "checkbox", "tooltip",       "Add extra information to item tooltips." },
-            ["Turtle WoW Compatibility"]   = { true, 18, "checkbox", "compatibility", "Ensure compatibility with Turtle WoW server." },
-            ["Vendor Values"]              = { true, 19, "checkbox", "vendor",        "Show vendor buy/sell values in tooltips." },
-            ["WorldMap Class Colors"]      = { true, 20, "checkbox", "colors",        "Color world map icons by class." },
-            ["WorldMap Coordinates"]       = { true, 21, "checkbox", "worldmap",      "Display player/map cursor coordinates." },
-            ["WorldMap Window"]            = { true, 22, "checkbox", "worldmap",      "Open world map in a movable window." },
+            ["Bag Item Click"]           = { true, 1, "checkbox", "bags",          "Use click options in bags." },
+            ["Bag Search Bar"]           = { true, 2, "checkbox", "bags",          "Adds search bar to bags." },
+            ["Auto Dismount"]            = { true, 3, "checkbox", "automation",    "Dismounts when casting a mount." },
+            ["Auto Stance"]              = { true, 4, "checkbox", "automation",    "Auto switch stance when needed." },
+            ["Cooldown Numbers"]         = { true, 5, "checkbox", "combat",        "Show cooldowns as numbers." },
+            ["Debuff Timer"]             = { true, 6, "checkbox", "combat",        "Show debuff durations." },
+            ["Enemy Castbars"]           = { true, 7, "checkbox", "castbars & plates", "Show enemy nameplate castbars." },
+            ["Nameplate Castbar"]        = { true, 8, "checkbox", "castbars & plates", "Show castbar on nameplates." },
+            ["Nameplate Scale"]          = { true, 9, "checkbox", "castbars & plates", "Scale nameplates up or down." },
+            ["Super WoW Compatibility"]  = { true, 10, "checkbox", "compatibility", "Support Super WoW addons." },
+            ["Turtle WoW Compatibility"] = { true, 11, "checkbox", "compatibility", "Support Turtle WoW server." },
+            ["Blue Shaman Class Colors"] = { true, 12, "checkbox", "colors",        "Use blue for Shaman class color." },
+            ["Nameplate Class Colors"]   = { true, 13, "checkbox", "colors",        "Class color nameplate text." },
+            ["WorldMap Class Colors"]    = { true, 14, "checkbox", "colors",        "Class color map icons." },
+            ["Chat History"]             = { true, 15, "checkbox", "chat",          "Save recent chat messages." },
+            ["Chat Hyperlinks"]          = { true, 16, "checkbox", "chat",          "Enable clickable links in chat." },
+            ["Chat Timestamps"]          = { true, 17, "checkbox", "chat",          "Show timestamps in chat." },
+            ["Chat Tweaks"]              = { true, 18, "checkbox", "chat",          "Improves chat window behavior." },
+            ["Enable Text Shadow"]       = { true, 19, "checkbox", "chat",          "Add shadow to chat text." },
+            ["Social Colors"]            = { true, 20, "checkbox", "chat",          "Color names by social status." },
+            ["Macro Icons"]              = { true, 21, "checkbox", "macro",         "Use icons in macro list." },
+            ["Macro Tweaks"]             = { true, 22, "checkbox", "macro",         "Macro usability improvements." },
+            ["Enable Raid Frames"]       = { true, 23, "checkbox", "raid",          "Enable custom raid frames." },
+            ["Hide Party Frames"]        = { true, 24, "checkbox", "raid",          "Hide Blizzard party frames." },
+            ["Show Dispel Indicators"]   = { true, 25, "checkbox", "raid",          "Mark dispellable debuffs." },
+            ["Use Compact Layout"]       = { true, 26, "checkbox", "raid",          "Use a compact frame layout." },
+            ["Equip Compare"]            = { true, 27, "checkbox", "tooltip",       "Compare items in tooltips." },
+            ["Item Rarity Borders"]      = { true, 28, "checkbox", "tooltip",       "Outline tooltips by item quality." },
+            ["Tooltip Details"]          = { true, 29, "checkbox", "tooltip",       "Add more info to tooltips." },
+            ["Sell Junk"]                = { true, 30, "checkbox", "vendor",        "Auto sell gray items." },
+            ["Vendor Values"]            = { true, 31, "checkbox", "vendor",        "Show vendor prices in tooltips." },
+            ["Reveal World Map"]         = { true, 32, "checkbox", "worldmap",      "Remove map fog of war." },
+            ["WorldMap Coordinates"]     = { true, 33, "checkbox", "worldmap",      "Show cursor/player coordinates." },
+            ["WorldMap Window"]          = { true, 34, "checkbox", "worldmap",      "Movable windowed world map." },
         }
 
         -- generate UI
@@ -1188,6 +1200,7 @@ DFRL:RegisterModule("gui", 2, function()
 
             -- check if compatible addons are loaded
             local shaguInstalled = IsAddOnLoaded("ShaguTweaks") and "|cFF77CC77(installed)|r" or "|cFF666666(not installed)|r"
+            local shaguExtrasInstalled = IsAddOnLoaded("ShaguTweaks-extras") and "|cFF77CC77(installed)|r" or "|cFF666666(not installed)|r"
             local pfQuestInstalled = IsAddOnLoaded("pfQuest") and "|cFF77CC77(installed)|r" or "|cFF666666(not installed)|r"
             local bagShuiInstalled = IsAddOnLoaded("BagShui") and "|cFF77CC77(installed)|r" or "|cFF666666(not installed)|r"
 
@@ -1213,12 +1226,12 @@ DFRL:RegisterModule("gui", 2, function()
                 "|cFFCCCCCCLocale: |r|cFF77CC77" .. locale .. "|r\n" ..
                 "|cFFCCCCCCRealm: |r|cFF77CC77" .. realm .. "|r\n\n" ..
                 "|cFFFFFFFFCompatible with:|r\n" ..
-                "|cFFCCCCCC• |r|cFF77CC77ShaguTweaks" .. "     " .. shaguInstalled .. "|r\n" ..
-                "|cFFCCCCCC• |r|cFF77CC77pfQuest" .. "                " .. pfQuestInstalled .. "|r\n" ..
-                "|cFFCCCCCC• |r|cFF77CC77BagShui" .. "                " .. bagShuiInstalled .. "|r\n\n" ..
+                "|cFFCCCCCC• |r|cFF77CC77ShaguTweaks" .. "                    " .. shaguInstalled .. "|r\n" ..
+                "|cFFCCCCCC• |r|cFF77CC77ShaguTweaks-extras" .. "       " .. shaguExtrasInstalled .. "|r\n" ..
+                "|cFFCCCCCC• |r|cFF77CC77pfQuest" .. "                               " .. pfQuestInstalled .. "|r\n" ..
+                "|cFFCCCCCC• |r|cFF77CC77BagShui" .. "                               " .. bagShuiInstalled .. "|r\n\n" ..
                 "|cFFFFFFFFDevelopment Status:|r\n" ..
                 "|cFFCCCCCC• |r|cFFCCCCCCBag module is currently under development.\n" ..
-                "|cFFCCCCCC• |r|cFFCCCCCCShaguTweaks-extra will be integrated soon.\n" ..
                 "|cFFCCCCCC• |r|cFFCCCCCCMore config options soon.\n\n\n\n\n\n" ..
                 specialText..
                 "|cFFFF6666Please report bugs on the Turtle-WoW Forum.|r\n" ..
@@ -1527,7 +1540,7 @@ DFRL:RegisterModule("gui", 2, function()
             end)
 
             local noteText = modulesPanel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-            noteText:SetPoint("BOTTOM", reloadBtn, "TOP", 0, 10)
+            noteText:SetPoint("BOTTOM", reloadBtn, "TOP", 0, 1)
             noteText:SetWidth(400)
             noteText:SetJustifyH("CENTER")
             noteText:SetFont("Fonts\\FRIZQT__.TTF", 10, "")
