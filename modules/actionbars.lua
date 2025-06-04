@@ -9,18 +9,22 @@ DFRL:SetDefaults("actionbars", {
     multiBarOneScale = {0.95, 2, "slider", {0.2, 2}, "multibar 1", "Adjusts scale of bottom left action bar"},
     multiBarOneSpacing = {6, 3, "slider", {0.1, 20}, "multibar 1", "Adjusts spacing between bottom left action bar buttons"},
     multiBarOneAlpha = {1, 4, "slider", {0.1, 1}, "multibar 1", "Adjusts transparency of bottom left action bar"},
+    multiBarOneGrid = {1, 5, "slider", {1, 6}, "multibar 1", "Changes the grid layout of bottom left action bar"},
 
     multiBarTwoScale = {0.9, 5, "slider", {0.2, 2}, "multibar 2", "Adjusts scale of bottom right action bar"},
     multiBarTwoSpacing = {6, 6, "slider", {0.1, 20}, "multibar 2", "Adjusts spacing between bottom right action bar buttons"},
     multiBarTwoAlpha = {1, 7, "slider", {0.1, 1}, "multibar 2", "Adjusts transparency of bottom right action bar"},
+    multiBarTwoGrid = {1, 8, "slider", {1, 6}, "multibar 2", "Changes the grid layout of bottom right action bar"},
 
     multiBarThreeScale = {0.8, 8, "slider", {0.2, 2}, "multibar 3", "Adjusts scale of left action bar"},
     multiBarThreeSpacing = {6, 9, "slider", {0.1, 20}, "multibar 3", "Adjusts spacing between left action bar buttons"},
     multiBarThreeAlpha = {1, 10, "slider", {0.1, 1}, "multibar 3", "Adjusts transparency of left action bar"},
+    multiBarThreeGrid = {6, 11, "slider", {1, 6}, "multibar 3", "Changes the grid layout of left action bar"},
 
     multiBarFourScale = {0.8, 11, "slider", {0.2, 2}, "multibar 4", "Adjusts scale of right action bar"},
     multiBarFourSpacing = {6, 12, "slider", {0.1, 20}, "multibar 4", "Adjusts spacing between right action bar buttons"},
     multiBarFourAlpha = {1, 13, "slider", {0.1, 1}, "multibar 4", "Adjusts transparency of right action bar"},
+    multiBarFourGrid = {6, 14, "slider", {1, 6}, "multibar 4", "Changes the grid layout of right action bar"},
 
     showGryphoon = {true, 14, "checkbox", "multibar deco", "Show or hide the gryphon/wyvern decorations"},
     altGryphoon = {false, 15, "checkbox", "multibar deco", "Use the alternative gryphon/wyvern textures"},
@@ -1126,6 +1130,143 @@ DFRL:RegisterModule("actionbars", 2, function()
                 DFRL.pagingContainer:SetPoint("LEFT", ActionButton12, "RIGHT", value, -1)
             end
         end
+    end
+
+    local layouts = {
+        [1] = {rows = 1, cols = 12}, -- 1x12
+        [2] = {rows = 2, cols = 6},  -- 2x6
+        [3] = {rows = 3, cols = 4},  -- 3x4
+        [4] = {rows = 4, cols = 3},  -- 4x3
+        [5] = {rows = 6, cols = 2},  -- 6x2
+        [6] = {rows = 12, cols = 1}  -- 12x1
+    }
+
+    callbacks.multiBarOneGrid = function(value)
+        -- convert floating point slider value to integer "layouts" index
+        local layoutIndex = math.floor(value + 0.5)
+        if layoutIndex < 1 then layoutIndex = 1 end
+        if layoutIndex > 6 then layoutIndex = 6 end
+
+        local layout = layouts[layoutIndex]
+        if not layout then return end
+
+        local rows = layout.rows
+        local cols = layout.cols
+        local spacing = DFRL:GetConfig("actionbars", "multiBarOneSpacing")
+        local buttonSize = MultiBarBottomLeftButton1:GetWidth()
+
+        for i = 1, 12 do
+            local button = _G["MultiBarBottomLeftButton"..i]
+            if button then
+                button:ClearAllPoints()
+
+                local row = math.floor((i-1) / cols)
+                local col = (i-1) - (row * cols)
+
+                button:SetPoint("BOTTOMLEFT", MultiBarBottomLeft, "BOTTOMLEFT",
+                    col * (buttonSize + spacing),
+                    row * (buttonSize + spacing))
+            end
+        end
+
+        MultiBarBottomLeft:SetHeight((buttonSize + spacing) * rows - spacing)
+        MultiBarBottomLeft:SetWidth((buttonSize + spacing) * cols - spacing)
+    end
+
+    callbacks.multiBarTwoGrid = function(value)
+        -- convert floating point slider value to integer "layouts" index
+        local layoutIndex = math.floor(value + 0.5)
+        if layoutIndex < 1 then layoutIndex = 1 end
+        if layoutIndex > 6 then layoutIndex = 6 end
+
+        local layout = layouts[layoutIndex]
+        if not layout then return end
+
+        local rows = layout.rows
+        local cols = layout.cols
+        local spacing = DFRL:GetConfig("actionbars", "multiBarTwoSpacing")
+        local buttonSize = MultiBarBottomRightButton1:GetWidth()
+
+        for i = 1, 12 do
+            local button = _G["MultiBarBottomRightButton"..i]
+            if button then
+                button:ClearAllPoints()
+
+                local row = math.floor((i-1) / cols)
+                local col = (i-1) - (row * cols)
+
+                button:SetPoint("BOTTOMLEFT", MultiBarBottomRight, "BOTTOMLEFT",
+                    col * (buttonSize + spacing),
+                    row * (buttonSize + spacing))
+            end
+        end
+
+        MultiBarBottomRight:SetHeight((buttonSize + spacing) * rows - spacing)
+        MultiBarBottomRight:SetWidth((buttonSize + spacing) * cols - spacing)
+    end
+
+    callbacks.multiBarThreeGrid = function(value)
+        -- convert floating point slider value to integer "layouts" index
+        local layoutIndex = math.floor(value + 0.5)
+        if layoutIndex < 1 then layoutIndex = 1 end
+        if layoutIndex > 6 then layoutIndex = 6 end
+
+        local layout = layouts[layoutIndex]
+        if not layout then return end
+
+        local rows = layout.rows
+        local cols = layout.cols
+        local spacing = DFRL:GetConfig("actionbars", "multiBarThreeSpacing")
+        local buttonSize = MultiBarLeftButton1:GetWidth()
+
+        for i = 1, 12 do
+            local button = _G["MultiBarLeftButton"..i]
+            if button then
+                button:ClearAllPoints()
+
+                local row = math.floor((i-1) / cols)
+                local col = (i-1) - (row * cols)
+
+                button:SetPoint("BOTTOMLEFT", MultiBarLeft, "BOTTOMLEFT",
+                    col * (buttonSize + spacing),
+                    row * (buttonSize + spacing))
+            end
+        end
+
+        MultiBarLeft:SetHeight((buttonSize + spacing) * rows - spacing)
+        MultiBarLeft:SetWidth((buttonSize + spacing) * cols - spacing)
+    end
+
+    callbacks.multiBarFourGrid = function(value)
+        -- convert floating point slider value to integer "layouts" index
+        local layoutIndex = math.floor(value + 0.5)
+        if layoutIndex < 1 then layoutIndex = 1 end
+        if layoutIndex > 6 then layoutIndex = 6 end
+
+        local layout = layouts[layoutIndex]
+        if not layout then return end
+
+        local rows = layout.rows
+        local cols = layout.cols
+        local spacing = DFRL:GetConfig("actionbars", "multiBarFourSpacing")
+        local buttonSize = MultiBarRightButton1:GetWidth()
+
+        for i = 1, 12 do
+            local button = _G["MultiBarRightButton"..i]
+            if button then
+                button:ClearAllPoints()
+
+                local row = math.floor((i-1) / cols)
+                local col = (i-1) - (row * cols)
+
+                button:SetPoint("BOTTOMLEFT", MultiBarRight, "BOTTOMLEFT",
+                    col * (buttonSize + spacing),
+                    row * (buttonSize + spacing))
+            end
+        end
+
+        MultiBarRight:SetHeight((buttonSize + spacing) * rows - spacing)
+        MultiBarRight:SetWidth((buttonSize + spacing) * cols - spacing)
     end
 
     -- execute callbacks
