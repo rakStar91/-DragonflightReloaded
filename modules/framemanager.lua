@@ -1,4 +1,9 @@
 ---@diagnostic disable: deprecated
+DFRL:SetDefaults("framemanager", {
+    enabled = {true},
+    hidden = {true},
+})
+
 DFRL:RegisterModule("framemanager", 2, function()
     d:DebugPrint("BOOTING")
 

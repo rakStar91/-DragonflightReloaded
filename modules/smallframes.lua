@@ -227,7 +227,6 @@ DFRL:RegisterModule("smallframes", 2, function()
         return UnitIsTapped("targettarget") and not UnitIsTappedByPlayer("targettarget")
     end
 
-
     -- callbacks
     local callbacks = {}
 

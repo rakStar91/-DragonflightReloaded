@@ -1,6 +1,6 @@
 ---@diagnostic disable: redundant-parameter
 --===============================================
--- DRAGONFLIGHT RELOADED WORKFLOW
+-- DRAGONFLIGHT RELOADED WORKFLOW (outdated)
 --===============================================
 -- >> Core Initialization:
 -- Creates main frame (DFRL) and initializes
@@ -149,6 +149,53 @@ function DFRL:LoadModules()
     d:DebugPrint("TOTAL: " .. tostring(normalCount) .. " modules")
 end
 
+function DFRL:LoadDelayedModules()
+    local env = self:GetEnvironment()
+    assert(env, "Failed to get environment for modules")
+
+    -- priority 2 (delayed)
+    local delayedCount = 0
+    for moduleName, moduleData in pairs(self.modules) do
+        if moduleData.priority == 2 then
+            -- check enabled
+            local isEnabled = true
+            if self.tempDB[moduleName] and
+               self.tempDB[moduleName]["enabled"] and
+               self.tempDB[moduleName]["enabled"][1] == false then
+                isEnabled = false
+                d:DebugPrint("Skipping disabled module: " .. moduleName)
+            end
+
+            if isEnabled then
+                collectgarbage()
+
+                local startTime = GetTime()
+                local startMem = gcinfo()
+
+                -- execute module
+                setfenv(moduleData.func, env)
+                local success, errorMsg = pcall(moduleData.func)
+
+                local endTime = GetTime()
+                local endMem = gcinfo()
+
+                if success then
+                    -- store performance data
+                    self.performance[moduleName] = {
+                        loadTime = endTime - startTime,
+                        memoryUsage = endMem - startMem
+                    }
+
+                    delayedCount = delayedCount + 1
+                    d:DebugPrint(moduleName .. " loaded in " .. (endTime - startTime) .. "s using " .. (endMem - startMem) .. "KB")
+                else
+                    ErrorHandler("Failed to load module " .. moduleName .. ": " .. tostring(errorMsg))
+                end
+            end
+        end
+    end
+    d:DebugPrint("Loaded " .. tostring(delayedCount) .. " delayed priority modules")
+end
 
 function DFRL:SetDefaults(moduleName, defaultsTable)
     assert(type(moduleName) == "string", "Module name must be a string")
@@ -288,54 +335,6 @@ function DFRL:SaveDB()
 
     DFRL_DB = self.tempDB
     d:DebugPrint("DFRL:SaveDB() saved " .. count .. " modules to database")
-end
-
-function DFRL:LoadDelayedModules()
-    local env = self:GetEnvironment()
-    assert(env, "Failed to get environment for modules")
-
-    -- priority 2 (delayed)
-    local delayedCount = 0
-    for moduleName, moduleData in pairs(self.modules) do
-        if moduleData.priority == 2 then
-            -- check enabled
-            local isEnabled = true
-            if self.tempDB[moduleName] and
-               self.tempDB[moduleName]["enabled"] and
-               self.tempDB[moduleName]["enabled"][1] == false then
-                isEnabled = false
-                d:DebugPrint("Skipping disabled module: " .. moduleName)
-            end
-
-            if isEnabled then
-                collectgarbage()
-
-                local startTime = GetTime()
-                local startMem = gcinfo()
-
-                -- execute module
-                setfenv(moduleData.func, env)
-                local success, errorMsg = pcall(moduleData.func)
-
-                local endTime = GetTime()
-                local endMem = gcinfo()
-
-                if success then
-                    -- store performance data
-                    self.performance[moduleName] = {
-                        loadTime = endTime - startTime,
-                        memoryUsage = endMem - startMem
-                    }
-
-                    delayedCount = delayedCount + 1
-                    d:DebugPrint(moduleName .. " loaded in " .. (endTime - startTime) .. "s using " .. (endMem - startMem) .. "KB")
-                else
-                    ErrorHandler("Failed to load module " .. moduleName .. ": " .. tostring(errorMsg))
-                end
-            end
-        end
-    end
-    d:DebugPrint("Loaded " .. tostring(delayedCount) .. " delayed priority modules")
 end
 
 -- event handler
