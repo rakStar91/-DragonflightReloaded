@@ -27,7 +27,7 @@
 -- Debug: DebugPrint() saves logs to DFRL_LOGS.
 --===============================================
 
--- debug compatibility
+-- debug-suite compatibility
 local d
 if DBS_TOOLS then
     d = DBS_TOOLS
@@ -47,6 +47,11 @@ end
 DFRL = CreateFrame("Frame", nil, UIParent)
 
 d:DebugPrint("BOOTING")
+
+-- blizz locals
+local assert = assert
+local type = type
+local pairs = pairs
 
 -- tables
 DFRL_DB = {}

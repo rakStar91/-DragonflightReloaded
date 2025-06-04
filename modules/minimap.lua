@@ -34,7 +34,7 @@ DFRL:SetDefaults("minimap", {
 
 })
 
-DFRL:RegisterModule("minimap", 1, function()
+DFRL:RegisterModule("minimap", 2, function()
     d:DebugPrint("BOOTING")
 
     -- hide stuff

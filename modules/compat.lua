@@ -91,3 +91,38 @@ end)
 --===========================
 -- BAGSHUI FIXES
 --===========================
+
+-- local _G = _G or getfenv()
+
+-- -- Need a frame to process events.
+-- local SkinDemo = _G.CreateFrame("Frame")
+
+-- -- Event handler.
+-- -- Vanilla event parameters come via global variables, not function parameters.
+-- SkinDemo:SetScript("OnEvent", function()
+-- 	-- Interface skin registration *must* occur during ADDON_LOADED so it's done before
+-- 	-- Bagshui starts building the interface during PLAYER_LOGIN/PLAYER_ENTERING_WORLD.
+-- 	if _G.event == "ADDON_LOADED" then
+-- 		-- Only respond to the event for this addon.
+-- 		if _G.arg1 == "Bagshui-InterfaceSkin-Demo" then
+--             print("1111111111111")
+-- 			-- Make sure Bagshui is loaded and a new enough version to have the interface skin API.
+-- 			if _G.IsAddOnLoaded("Bagshui") and _G.Bagshui and _G.Bagshui.AddInterfaceSkin then
+-- 				Bagshui:AddInterfaceSkin(
+-- 					"Demo",
+-- 					{
+-- 						-- Garish, but readily apparent that it's working.
+-- 						-- This is just a demo, after all.
+-- 						inventoryBackgroundColorFromSkin = { 0.5, 0, 0.4 },
+-- 						inventoryBorderColorFromSkin = { 0, 0.3, 0.8 },
+-- 					}
+-- 				)
+-- 			end
+-- 		end
+-- 		return
+-- 	end
+
+-- end)
+
+-- -- Have WoW send us the required event.
+-- SkinDemo:RegisterEvent("ADDON_LOADED")
