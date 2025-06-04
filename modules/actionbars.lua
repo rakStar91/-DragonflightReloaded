@@ -1,10 +1,14 @@
 DFRL:SetDefaults("actionbars", {
     enabled = {true},
-    movable = {true},
     hidden = {false},
+    movable = {true},
 
-    -- key = { value, index, elementType, category, Tooltip text}
     darkMode = {false, 1, "checkbox", "appearance", "Enable dark mode for action bars"},
+
+    mainBarBG = {true, 1, "checkbox", "main bar", "Show or hide main action bar background"},
+    mainBarScale = {1, 2, "slider", {0.5, 2}, "main bar", "Adjusts the scale of the main action bar"},
+    mainBarSpacing = {6, 3, "slider", {0, 20}, "main bar", "Adjusts spacing between main action bar buttons"},
+    mainBarAlpha = {1, 4, "slider", {0.1, 1}, "main bar", "Adjusts transparency of main action bar"},
 
     multiBarOneScale = {0.95, 2, "slider", {0.2, 2}, "multibar 1", "Adjusts scale of bottom left action bar"},
     multiBarOneSpacing = {6, 3, "slider", {0.1, 20}, "multibar 1", "Adjusts spacing between bottom left action bar buttons"},
@@ -111,6 +115,7 @@ DFRL:RegisterModule("actionbars", 2, function()
         DFRL.mainBar:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 55)
         DFRL.mainBar:SetHeight(45)
         DFRL.mainBar:SetWidth(500)
+        DFRL.mainBar:SetClampedToScreen(true)
 
         ActionButton1:ClearAllPoints()
         ActionButton1:SetPoint("BOTTOMLEFT", DFRL.mainBar, "BOTTOMLEFT", -0, 0)
@@ -434,18 +439,21 @@ DFRL:RegisterModule("actionbars", 2, function()
 
         local leftTexture = DFRL.actionBarFrame:CreateTexture("DFRL_ActionBarLeftTexture", "BACKGROUND")
         leftTexture:SetTexture(barTexture)
-        leftTexture:SetPoint("RIGHT", ActionButton6, "RIGHT", 3, 0)
-        leftTexture:SetPoint("LEFT", ActionButton1, "LEFT", -5, 0)
-        leftTexture:SetPoint("TOP", ActionButton1, "TOP", 0, 14)
-        leftTexture:SetPoint("BOTTOM", ActionButton1, "BOTTOM", 0, -14)
+        leftTexture:SetPoint("LEFT", DFRL.actionBarFrame, "LEFT", -6, 0)
+        leftTexture:SetPoint("RIGHT", DFRL.actionBarFrame, "CENTER", 0, 0)
+        leftTexture:SetPoint("TOP", DFRL.actionBarFrame, "TOP", 0, 14)
+        leftTexture:SetPoint("BOTTOM", DFRL.actionBarFrame, "BOTTOM", 0, -14)
 
         local rightTexture = DFRL.actionBarFrame:CreateTexture("DFRL_ActionBarRightTexture", "BACKGROUND")
         rightTexture:SetTexture(barTexture)
-        rightTexture:SetPoint("LEFT", ActionButton7, "LEFT", -3, 0)
-        rightTexture:SetPoint("RIGHT", ActionButton12, "RIGHT", 5, 0)
-        rightTexture:SetPoint("TOP", ActionButton7, "TOP", 0, 14)
-        rightTexture:SetPoint("BOTTOM", ActionButton7, "BOTTOM", 0, -14)
+        rightTexture:SetPoint("LEFT", DFRL.actionBarFrame, "CENTER", 0, 0)
+        rightTexture:SetPoint("RIGHT", DFRL.actionBarFrame, "RIGHT", 6, 0)
+        rightTexture:SetPoint("TOP", DFRL.actionBarFrame, "TOP", 0, 14)
+        rightTexture:SetPoint("BOTTOM", DFRL.actionBarFrame, "BOTTOM", 0, -14)
         rightTexture:SetTexCoord(1, 0, 0, 1) -- flip
+
+        DFRL.actionBarBGleft = leftTexture
+        DFRL.actionBarBGright = rightTexture
     end
 
     -- button background textures and borders
@@ -1267,6 +1275,82 @@ DFRL:RegisterModule("actionbars", 2, function()
 
         MultiBarRight:SetHeight((buttonSize + spacing) * rows - spacing)
         MultiBarRight:SetWidth((buttonSize + spacing) * cols - spacing)
+    end
+
+    callbacks.mainBarScale = function(value)
+        local scale = value
+
+        DFRL.mainBar:SetScale(scale)
+        DFRL.actionBarFrame:SetScale(scale)
+
+        for i = 1, 12 do
+            local button = _G["ActionButton"..i]
+            button:SetScale(scale)
+
+            local bonusButton = _G["BonusActionButton"..i]
+            bonusButton:SetScale(scale)
+
+            if i > 1 then
+                button:ClearAllPoints()
+                button:SetPoint("LEFT", _G["ActionButton"..(i-1)], "RIGHT", 6, 0)
+
+                bonusButton:ClearAllPoints()
+                bonusButton:SetPoint("LEFT", _G["BonusActionButton"..(i-1)], "RIGHT", 6, 0)
+            end
+        end
+    end
+
+    callbacks.mainBarSpacing = function(value)
+        local spacing = value
+        local buttonSize = ActionButton1:GetWidth()
+
+        for i = 2, 12 do
+            local button = _G["ActionButton"..i]
+            button:ClearAllPoints()
+            button:SetPoint("LEFT", _G["ActionButton"..(i-1)], "RIGHT", spacing, 0)
+
+            local bonusButton = _G["BonusActionButton"..i]
+            bonusButton:ClearAllPoints()
+            bonusButton:SetPoint("LEFT", _G["BonusActionButton"..(i-1)], "RIGHT", spacing, 0)
+        end
+
+        -- Adjust width of the frames based on spacing
+        local totalWidth = (buttonSize * 12) + (spacing * 11)
+        DFRL.mainBar:SetWidth(totalWidth)
+        DFRL.actionBarFrame:SetWidth(totalWidth)
+    end
+
+    callbacks.mainBarAlpha = function(value)
+        local alpha = value
+
+        DFRL.mainBar:SetAlpha(alpha)
+        DFRL.actionBarFrame:SetAlpha(alpha)
+
+        for i = 1, 12 do
+            local button = _G["ActionButton"..i]
+            button:SetAlpha(alpha)
+
+            local bonusButton = _G["BonusActionButton"..i]
+            bonusButton:SetAlpha(alpha)
+        end
+    end
+
+    callbacks.mainBarBG = function(value)
+        if DFRL.actionBarBGleft then
+            if value then
+                DFRL.actionBarBGleft:Show()
+            else
+                DFRL.actionBarBGleft:Hide()
+            end
+        end
+
+        if DFRL.actionBarBGright then
+            if value then
+                DFRL.actionBarBGright:Show()
+            else
+                DFRL.actionBarBGright:Hide()
+            end
+        end
     end
 
     -- execute callbacks
