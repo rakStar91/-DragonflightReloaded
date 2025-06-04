@@ -55,7 +55,7 @@ DFRL:SetDefaults("actionbars", {
 
 })
 
-DFRL:RegisterModule("actionbars", 1, function()
+DFRL:RegisterModule("actionbars", 2, function()
     d:DebugPrint("BOOTING")
 
     -- hide stuff
