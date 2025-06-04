@@ -1086,8 +1086,8 @@ DFRL:RegisterModule("gui", 2, function()
             local shaggyTexture = modulesPanel:CreateTexture(nil, "ARTWORK")
             shaggyTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\gui\\shaggy2.tga")
             shaggyTexture:SetPoint("BOTTOM", noteText, "TOP", 0, 5)
-            shaggyTexture:SetWidth(90)
-            shaggyTexture:SetHeight(90)
+            shaggyTexture:SetWidth(70)
+            shaggyTexture:SetHeight(25)
             shaggyTexture:SetAlpha(0.3)
         end
     end
