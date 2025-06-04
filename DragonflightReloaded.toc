@@ -9,8 +9,8 @@
 
 core\core.lua
 core\core-api.lua
+core\compat.lua
 
-modules\compat.lua
 modules\actionbars.lua
 modules\castbar.lua
 modules\micromenu.lua

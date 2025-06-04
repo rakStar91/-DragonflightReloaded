@@ -452,7 +452,7 @@ DFRL:RegisterModule("ui", 1, function()
         end
     end
 
-    callbacks.errorMessag = function (value)
+    callbacks.errorMessage = function (value)
         if value then
             UIErrorsFrame:UnregisterEvent("UI_ERROR_MESSAGE")
         else
