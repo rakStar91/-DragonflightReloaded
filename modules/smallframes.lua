@@ -9,7 +9,7 @@ DFRL:SetDefaults("smallframes", {
 
 })
 
-DFRL:RegisterModule("smallframes", 1, function()
+DFRL:RegisterModule("smallframes", 2, function()
     d:DebugPrint("BOOTING")
 
     -- petframe
