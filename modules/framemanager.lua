@@ -153,6 +153,29 @@ DFRL:RegisterModule("framemanager", 2, function()
             SaveFramePosition(frame)
         end)
 
+        local function CreateDirectionButton(dir, xOffset, yOffset, text)
+            local button = CreateFrame("Button", nil, overlay, "UIPanelButtonTemplate")
+            button:SetWidth(14)
+            button:SetHeight(14)
+            button:SetPoint(dir, overlay, dir, 0, 0)
+            button:SetText(text)
+            button:GetNormalTexture():SetVertexColor(0, 0, 0)
+            button:GetHighlightTexture():SetVertexColor(0.3, 0.3, 0.3)
+            button:GetPushedTexture():SetVertexColor(0.2, 0.2, 0.2)
+            button:SetScript("OnClick", function()
+                frame:ClearAllPoints()
+                local x, y = frame:GetLeft() + xOffset, frame:GetTop() + yOffset
+                frame:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", x, y)
+                SaveFramePosition(frame)
+            end)
+            return button
+        end
+
+        CreateDirectionButton("TOP", 0, 1, "U")
+        CreateDirectionButton("LEFT", -1, 0, "L")
+        CreateDirectionButton("RIGHT", 1, 0, "R")
+        CreateDirectionButton("BOTTOM", 0, -1, "D")
+
         -- overlay visibility
         local controlFrame = CreateFrame("Frame")
         controlFrame:SetScript("OnUpdate", function()

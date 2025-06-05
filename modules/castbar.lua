@@ -91,7 +91,7 @@ DFRL:RegisterModule("castbar", 1, function()
     }
 
     function castbar:Create(parent)
-        local f = CreateFrame("Frame", "MyCastBarFrame", parent or UIParent)
+        local f = CreateFrame("Frame", "DFRLCastbar", parent or UIParent)
         f:SetPoint("CENTER", UIParent, "CENTER", 0, -200)
         f:SetHeight(self.config.height)
         f:SetWidth(self.config.width)
