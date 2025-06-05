@@ -10,7 +10,7 @@ DFRL:SetDefaults("ui", {
 
 })
 
-DFRL:RegisterModule("ui", 1, function()
+DFRL:RegisterModule("ui", 2, function()
     d:DebugPrint("BOOTING")
 
     -- hide stuff

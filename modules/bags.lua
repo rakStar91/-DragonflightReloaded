@@ -332,7 +332,6 @@ DFRL:RegisterModule("bags", 1, function()
         end
     end
 
-
     callbacks.bagScale = function(value)
         MainMenuBarBackpackButton:SetScale(value)
     end
@@ -361,16 +360,29 @@ DFRL:RegisterModule("bags", 1, function()
             DFRL.bagToggleButton:Hide()
         else
             MainMenuBarBackpackButton:Show()
-
-            for i = 0, 3 do
-                _G['CharacterBag' .. i .. 'Slot']:Show()
-            end
             DFRL.bagToggleButton:Show()
-            if KeyRingButton then
-                local keyringID = KEYRING_CONTAINER or 4
-                if GetContainerNumSlots(keyringID) > 0 then
-                    KeyRingButton:Show()
-                else
+
+            local toggleBagsValue = DFRL:GetConfig("bags", "toggleBags")
+            if toggleBagsValue then
+                for i = 0, 3 do
+                    _G['CharacterBag' .. i .. 'Slot']:Show()
+                end
+
+                if KeyRingButton then
+                    local keyringID = KEYRING_CONTAINER or 4
+                    if GetContainerNumSlots(keyringID) > 0 then
+                        KeyRingButton:Show()
+                    else
+                        KeyRingButton:Hide()
+                    end
+                end
+            else
+                -- keep character bags hidden if toggleBags is false
+                for i = 0, 3 do
+                    _G['CharacterBag' .. i .. 'Slot']:Hide()
+                end
+
+                if KeyRingButton then
                     KeyRingButton:Hide()
                 end
             end
