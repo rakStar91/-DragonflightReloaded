@@ -185,10 +185,17 @@ DFRL:RegisterModule("framemanager", 2, function()
             if IsControlKeyDown() and IsShiftKeyDown() and IsAltKeyDown() then
                 flag = true
 
-                DFRL.castbar:Show()
-                DFRL.castbar.bar:Hide() -- bug fix
+                if DFRL.castbar then
+                    DFRL.castbar:Show()
+                    DFRL.castbar.bar:Hide() -- bug fix
+                end
+
                 FramerateLabel:Show()
-                DFRL.netStatsFrame:Show()
+
+                if DFRL.netStatsFrame then
+                    DFRL.netStatsFrame:Show()
+                end
+
                 -- BuffButton8:Show() -- doesnt work yet
                 -- TargetUnit("player")
                 -- TargetFrame:Show()
@@ -199,10 +206,16 @@ DFRL:RegisterModule("framemanager", 2, function()
                 if flag == true then
                     -- ClearTarget()
                     -- TargetFrame:Hide()
-                    DFRL.castbar.bar:Show()
-                    DFRL.castbar:Hide()
+                    if DFRL.castbar then
+                        DFRL.castbar.bar:Show()
+                        DFRL.castbar:Hide()
+                    end
+
                     FramerateLabel:Hide()
-                    DFRL.netStatsFrame:Hide()
+
+                    if DFRL.netStatsFrame then
+                        DFRL.netStatsFrame:Hide()
+                    end
                     -- BuffButton8:Hide()
 
                     -- false to prevent from hiding again
@@ -228,7 +241,9 @@ DFRL:RegisterModule("framemanager", 2, function()
 
     -- make frames from list movable
     for i = 1, table.getn(framesToMakeMovable) do
-        MakeFrameMovable(framesToMakeMovable[i])
+        if framesToMakeMovable[i] then
+            MakeFrameMovable(framesToMakeMovable[i])
+        end
     end
 
     -- init

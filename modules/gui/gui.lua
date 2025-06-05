@@ -358,10 +358,15 @@ DFRL:RegisterModule("gui", 2, function()
             -- update frame for animation
             local updateFrame = CreateFrame("Frame")
             updateFrame:SetScript("OnUpdate", function()
-                UpdateSmoothScroll()
+                if (this.tick or 0) > GetTime() then return end
+                this.tick = GetTime() + 0.01
+
+                if gui.mainFrame:IsVisible() then
+                    UpdateSmoothScroll()
+                end
             end)
 
-            -- handler
+            -- scrollframe anim handler
             scrollFrame:EnableMouseWheel(true)
             scrollFrame:SetScript("OnMouseWheel", function()
                 local delta = arg1
