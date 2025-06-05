@@ -76,6 +76,18 @@ function AbbreviateName(name)
     end
 end
 
+function C_Timer(delay, func)
+    local timer = 0
+    local frame = CreateFrame("Frame")
+    frame:SetScript("OnUpdate", function()
+        timer = timer + arg1
+        if timer >= delay then
+            func()
+            frame:SetScript("OnUpdate", nil)
+        end
+    end)
+end
+
 local lastMessageTime = 0
 local canSendMessages = false
 local throttleFrame = CreateFrame("Frame")

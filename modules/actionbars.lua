@@ -1227,13 +1227,14 @@ DFRL:RegisterModule("actionbars", 2, function()
         local spacing = DFRL:GetConfig("actionbars", "multiBarThreeSpacing")
         local buttonSize = MultiBarLeftButton1:GetWidth()
 
-        for i = 1, 12 do
+        for i = 12, 1, -1 do  -- Loop from 12 to 1 instead of 1 to 12
             local button = _G["MultiBarLeftButton"..i]
             if button then
                 button:ClearAllPoints()
 
-                local row = math.floor((i-1) / cols)
-                local col = (i-1) - (row * cols)
+                local reverseIndex = 13 - i  -- Convert to 1-12 range
+                local row = math.floor((reverseIndex-1) / cols)
+                local col = (reverseIndex-1) - (row * cols)
 
                 button:SetPoint("BOTTOMLEFT", MultiBarLeft, "BOTTOMLEFT",
                     col * (buttonSize + spacing),
@@ -1259,13 +1260,14 @@ DFRL:RegisterModule("actionbars", 2, function()
         local spacing = DFRL:GetConfig("actionbars", "multiBarFourSpacing")
         local buttonSize = MultiBarRightButton1:GetWidth()
 
-        for i = 1, 12 do
+        for i = 12, 1, -1 do  -- Loop from 12 to 1 instead of 1 to 12
             local button = _G["MultiBarRightButton"..i]
             if button then
                 button:ClearAllPoints()
 
-                local row = math.floor((i-1) / cols)
-                local col = (i-1) - (row * cols)
+                local reverseIndex = 13 - i  -- Convert to 1-12 range
+                local row = math.floor((reverseIndex-1) / cols)
+                local col = (reverseIndex-1) - (row * cols)
 
                 button:SetPoint("BOTTOMLEFT", MultiBarRight, "BOTTOMLEFT",
                     col * (buttonSize + spacing),
