@@ -833,16 +833,16 @@ DFRL:RegisterModule("gui", 2, function()
             local function GetPerformanceRating(memory, time)
                 local memRating, timeRating
 
-                if memory < 524 then memRating = 5      -- excellent
-                elseif memory < 767 then memRating = 4  -- good
-                elseif memory < 1010 then memRating = 3  -- fair
-                elseif memory < 1415 then memRating = 2 -- poor
+                if memory < 824 then memRating = 5      -- excellent
+                elseif memory < 1067 then memRating = 4  -- good
+                elseif memory < 1310 then memRating = 3  -- fair
+                elseif memory < 1715 then memRating = 2 -- poor
                 else memRating = 1 end                  -- bad
 
-                if time < 0.05 then timeRating = 5      -- excellent
-                elseif time < 0.10 then timeRating = 4  -- good
-                elseif time < 0.15 then timeRating = 3  -- fair
-                elseif time < 0.20 then timeRating = 2  -- poor
+                if time < 0.1 then timeRating = 5      -- excellent
+                elseif time < 0.30 then timeRating = 4  -- good
+                elseif time < 0.35 then timeRating = 3  -- fair
+                elseif time < 0.40 then timeRating = 2  -- poor
                 else timeRating = 1 end                 -- bad
 
                 -- average rating

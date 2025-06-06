@@ -41,15 +41,30 @@ DFRL:SetDefaults("actionbars", {
     pagingSwap = {true, 21, "checkbox", "multibar paging", "Swap the anchorpoint of the paging buttons"},
     pagingX = {15, 22, "slider", {0, 150}, "multibar paging", "Adjusts horizontal position of paging buttons"},
 
+    hotkeyFont = {"BigNoodleTitling", 1, "dropdown", {
+        "FRIZQT__.TTF",
+        "Expressway",
+        "Homespun",
+        "Hooge",
+        "Myriad-Pro",
+        "Prototype",
+        "PT-Sans-Narrow-Bold",
+        "PT-Sans-Narrow-Regular",
+        "RobotoMono",
+        "BigNoodleTitling",
+        "Continuum",
+        "DieDieDie"
+    }, "multibar font", "Change the font used for the hotkeys and macros"},
+
     hotkeyColour = {{1, 0.82, 0}, 23, "colourslider", "multibar hotkeys", "Changes the colour of keybind text on action buttons"},
     hotkeyShow = {true, 24, "checkbox", "multibar hotkeys", "Show or hide keybind text on action buttons"},
-    hotkeyScale = {1, 25, "slider", {0.5, 2}, "multibar hotkeys", "Adjusts the size of keybind text on action buttons"},
+    hotkeyScale = {1.4, 25, "slider", {0.5, 2}, "multibar hotkeys", "Adjusts the size of keybind text on action buttons"},
     hotkeyX = {0, 26, "slider", {-50, 50}, "multibar hotkeys", "Adjusts horizontal position of keybind text"},
     hotkeyY = {-2, 27, "slider", {-50, 50}, "multibar hotkeys", "Adjusts vertical position of keybind text"},
 
     macroColour = {{1, 1, 1}, 27, "colourslider", "multibar macros", "Changes the colour of macro text on action buttons"},
     macroShow = {true, 28, "checkbox", "multibar macros", "Show or hide macro text on action buttons"},
-    macroScale = {1, 29, "slider", {0.5, 2}, "multibar macros", "Adjusts the size of macro text on action buttons"},
+    macroScale = {1.3, 29, "slider", {0.5, 2}, "multibar macros", "Adjusts the size of macro text on action buttons"},
     macroX = {0, 30, "slider", {-50, 50}, "multibar macros", "Adjusts horizontal position of macro text"},
     macroY = {2, 31, "slider", {-50, 50}, "multibar macros", "Adjusts vertical position of macro text"},
 
@@ -106,7 +121,7 @@ DFRL:RegisterModule("actionbars", 2, function()
 
     end
 
-    -- reposition bars
+    -- create/reposition bars
     do
         UIPARENT_MANAGED_FRAME_POSITIONS["FramerateLabel"] = nil
         UIPARENT_MANAGED_FRAME_POSITIONS["MultiBarBottomLeft"] = nil
@@ -278,9 +293,7 @@ DFRL:RegisterModule("actionbars", 2, function()
         local function UpdateBarPositions()
             -- check if bars are user placed
             local movable = DFRL:GetConfig("actionbars", "movable")
-            if movable ~= true then
-                return
-            end
+            if movable ~= true then return end
 
             -- get blizz interface setting
             local bottomLeftState, bottomRightState = GetActionBarToggles()
@@ -288,7 +301,7 @@ DFRL:RegisterModule("actionbars", 2, function()
             -- MultiBarBottomRight
             MultiBarBottomRight:ClearAllPoints()
             if bottomLeftState then
-                MultiBarBottomRight:SetPoint("BOTTOM", MultiBarBottomLeft, "TOP", 0, 5)
+                MultiBarBottomRight:SetPoint("BOTTOM", MultiBarBottomLeft, "TOP", 0, 10)
             else
                 MultiBarBottomRight:SetPoint("BOTTOM", DFRL.actionBarFrame, "TOP", 0, 10)
             end
@@ -318,7 +331,7 @@ DFRL:RegisterModule("actionbars", 2, function()
             end
         end
 
-        -- small delay otherwise it bugs
+        -- small delay otherwise it bugs (need to use new C_Timer func)
         local updateTimer = 0
         local barPositionFrame = CreateFrame("Frame")
         barPositionFrame:RegisterEvent("CVAR_UPDATE")
@@ -337,7 +350,7 @@ DFRL:RegisterModule("actionbars", 2, function()
         UpdateBarPositions()
     end
 
-    --hotkey text
+    -- hotkey text
     do
         local buttonTypes = {
             "ActionButton", "MultiBarBottomLeftButton", "MultiBarBottomRightButton",
@@ -425,7 +438,7 @@ DFRL:RegisterModule("actionbars", 2, function()
                     if macroName then
                         macroName:ClearAllPoints()
                         macroName:SetPoint("TOP", button, "TOP", 0, 2)
-                        macroName:SetFont("Fonts\\FRIZQT__.TTF", 9, "OUTLINE")
+                        macroName:SetFont(DFRL:GetConfig("actionbars", "hotkeyFont"), 9, "OUTLINE")
                         macroName:SetTextColor(1, 1, 1, 1)
                     end
                 end
@@ -825,7 +838,8 @@ DFRL:RegisterModule("actionbars", 2, function()
 
         local buttonTypes = {
             "ActionButton", "MultiBarBottomLeftButton", "MultiBarBottomRightButton",
-            "MultiBarRightButton", "MultiBarLeftButton", "BonusActionButton"
+            "MultiBarRightButton", "MultiBarLeftButton", "BonusActionButton",
+            "ShapeshiftButton", "PetActionButton"
         }
 
         for _, buttonType in ipairs(buttonTypes) do
@@ -860,6 +874,35 @@ DFRL:RegisterModule("actionbars", 2, function()
 
     callbacks.hotkeyScale = function(value)
         local scale = value
+        local fontName = DFRL:GetConfig("actionbars", "hotkeyFont")
+        local fontPath
+
+        if fontName == "Expressway" then
+            fontPath = "Interface\\AddOns\\DragonflightReloaded\\media\\fnt\\Expressway.ttf"
+        elseif fontName == "Homespun" then
+            fontPath = "Interface\\AddOns\\DragonflightReloaded\\media\\fnt\\Homespun.ttf"
+        elseif fontName == "Hooge" then
+            fontPath = "Interface\\AddOns\\DragonflightReloaded\\media\\fnt\\Hooge.ttf"
+        elseif fontName == "Myriad-Pro" then
+            fontPath = "Interface\\AddOns\\DragonflightReloaded\\media\\fnt\\Myriad-Pro.ttf"
+        elseif fontName == "Prototype" then
+            fontPath = "Interface\\AddOns\\DragonflightReloaded\\media\\fnt\\Prototype.ttf"
+        elseif fontName == "PT-Sans-Narrow-Bold" then
+            fontPath = "Interface\\AddOns\\DragonflightReloaded\\media\\fnt\\PT-Sans-Narrow-Bold.ttf"
+        elseif fontName == "PT-Sans-Narrow-Regular" then
+            fontPath = "Interface\\AddOns\\DragonflightReloaded\\media\\fnt\\PT-Sans-Narrow-Regular.ttf"
+        elseif fontName == "RobotoMono" then
+            fontPath = "Interface\\AddOns\\DragonflightReloaded\\media\\fnt\\RobotoMono.ttf"
+        elseif fontName == "BigNoodleTitling" then
+            fontPath = "Interface\\AddOns\\DragonflightReloaded\\media\\fnt\\BigNoodleTitling.ttf"
+        elseif fontName == "Continuum" then
+            fontPath = "Interface\\AddOns\\DragonflightReloaded\\media\\fnt\\Continuum.ttf"
+        elseif fontName == "DieDieDie" then
+            fontPath = "Interface\\AddOns\\DragonflightReloaded\\media\\fnt\\DieDieDie.ttf"
+        else
+            fontPath = "Fonts\\FRIZQT__.TTF"
+        end
+
         local buttonTypes = {
             "ActionButton", "MultiBarBottomLeftButton", "MultiBarBottomRightButton",
             "MultiBarRightButton", "MultiBarLeftButton", "BonusActionButton"
@@ -869,7 +912,7 @@ DFRL:RegisterModule("actionbars", 2, function()
             for i = 1, 12 do
                 local button = _G[buttonType .. i]
                 if button and button.DFRL_KeybindText then
-                    button.DFRL_KeybindText:SetFont("Fonts\\FRIZQT__.TTF", 10 * scale, "OUTLINE")
+                    button.DFRL_KeybindText:SetFont(fontPath, 10 * scale, "OUTLINE")
                 end
             end
         end
@@ -877,6 +920,8 @@ DFRL:RegisterModule("actionbars", 2, function()
 
     callbacks.hotkeyX = function(value)
         local xOffset = value
+        local yOffset = DFRL.tempDB["actionbars"]["hotkeyY"][1]
+
         local buttonTypes = {
             "ActionButton", "MultiBarBottomLeftButton", "MultiBarBottomRightButton",
             "MultiBarRightButton", "MultiBarLeftButton", "BonusActionButton"
@@ -887,7 +932,7 @@ DFRL:RegisterModule("actionbars", 2, function()
                 local button = _G[buttonType .. i]
                 if button and button.DFRL_KeybindText then
                     button.DFRL_KeybindText:ClearAllPoints()
-                    button.DFRL_KeybindText:SetPoint("BOTTOM", button, "BOTTOM", xOffset, DFRL:GetConfig("actionbars", "hotkeyY"))
+                    button.DFRL_KeybindText:SetPoint("BOTTOM", button, "BOTTOM", xOffset, yOffset)
                 end
             end
         end
@@ -895,6 +940,8 @@ DFRL:RegisterModule("actionbars", 2, function()
 
     callbacks.hotkeyY = function(value)
         local yOffset = value
+        local xOffset = DFRL.tempDB["actionbars"]["hotkeyX"][1]
+
         local buttonTypes = {
             "ActionButton", "MultiBarBottomLeftButton", "MultiBarBottomRightButton",
             "MultiBarRightButton", "MultiBarLeftButton", "BonusActionButton"
@@ -905,7 +952,7 @@ DFRL:RegisterModule("actionbars", 2, function()
                 local button = _G[buttonType .. i]
                 if button and button.DFRL_KeybindText then
                     button.DFRL_KeybindText:ClearAllPoints()
-                    button.DFRL_KeybindText:SetPoint("BOTTOM", button, "BOTTOM", DFRL:GetConfig("actionbars", "hotkeyX"), yOffset)
+                    button.DFRL_KeybindText:SetPoint("BOTTOM", button, "BOTTOM", xOffset, yOffset)
                 end
             end
         end
@@ -957,6 +1004,35 @@ DFRL:RegisterModule("actionbars", 2, function()
 
     callbacks.macroScale = function(value)
         local scale = value
+        local fontName = DFRL:GetConfig("actionbars", "hotkeyFont")
+        local fontPath
+
+        if fontName == "Expressway" then
+            fontPath = "Interface\\AddOns\\DragonflightReloaded\\media\\fnt\\Expressway.ttf"
+        elseif fontName == "Homespun" then
+            fontPath = "Interface\\AddOns\\DragonflightReloaded\\media\\fnt\\Homespun.ttf"
+        elseif fontName == "Hooge" then
+            fontPath = "Interface\\AddOns\\DragonflightReloaded\\media\\fnt\\Hooge.ttf"
+        elseif fontName == "Myriad-Pro" then
+            fontPath = "Interface\\AddOns\\DragonflightReloaded\\media\\fnt\\Myriad-Pro.ttf"
+        elseif fontName == "Prototype" then
+            fontPath = "Interface\\AddOns\\DragonflightReloaded\\media\\fnt\\Prototype.ttf"
+        elseif fontName == "PT-Sans-Narrow-Bold" then
+            fontPath = "Interface\\AddOns\\DragonflightReloaded\\media\\fnt\\PT-Sans-Narrow-Bold.ttf"
+        elseif fontName == "PT-Sans-Narrow-Regular" then
+            fontPath = "Interface\\AddOns\\DragonflightReloaded\\media\\fnt\\PT-Sans-Narrow-Regular.ttf"
+        elseif fontName == "RobotoMono" then
+            fontPath = "Interface\\AddOns\\DragonflightReloaded\\media\\fnt\\RobotoMono.ttf"
+        elseif fontName == "BigNoodleTitling" then
+            fontPath = "Interface\\AddOns\\DragonflightReloaded\\media\\fnt\\BigNoodleTitling.ttf"
+        elseif fontName == "Continuum" then
+            fontPath = "Interface\\AddOns\\DragonflightReloaded\\media\\fnt\\Continuum.ttf"
+        elseif fontName == "DieDieDie" then
+            fontPath = "Interface\\AddOns\\DragonflightReloaded\\media\\fnt\\DieDieDie.ttf"
+        else
+            fontPath = "Fonts\\FRIZQT__.TTF"
+        end
+
         local buttonTypes = {
             "ActionButton", "MultiBarBottomLeftButton", "MultiBarBottomRightButton",
             "MultiBarRightButton", "MultiBarLeftButton", "BonusActionButton"
@@ -968,7 +1044,7 @@ DFRL:RegisterModule("actionbars", 2, function()
                 if button then
                     local macroName = _G[button:GetName() .. "Name"]
                     if macroName then
-                        macroName:SetFont("Fonts\\FRIZQT__.TTF", 9 * scale, "OUTLINE")
+                        macroName:SetFont(fontPath, 9 * scale, "OUTLINE")
                     end
                 end
             end
@@ -977,6 +1053,8 @@ DFRL:RegisterModule("actionbars", 2, function()
 
     callbacks.macroX = function(value)
         local xOffset = value
+        local yOffset = DFRL.tempDB["actionbars"]["macroY"][1]
+
         local buttonTypes = {
             "ActionButton", "MultiBarBottomLeftButton", "MultiBarBottomRightButton",
             "MultiBarRightButton", "MultiBarLeftButton", "BonusActionButton"
@@ -989,7 +1067,7 @@ DFRL:RegisterModule("actionbars", 2, function()
                     local macroName = _G[button:GetName() .. "Name"]
                     if macroName then
                         macroName:ClearAllPoints()
-                        macroName:SetPoint("TOP", button, "TOP", xOffset, DFRL:GetConfig("actionbars", "macroY"))
+                        macroName:SetPoint("TOP", button, "TOP", xOffset, yOffset)
                     end
                 end
             end
@@ -998,6 +1076,8 @@ DFRL:RegisterModule("actionbars", 2, function()
 
     callbacks.macroY = function(value)
         local yOffset = value
+        local xOffset = DFRL.tempDB["actionbars"]["macroX"][1]
+
         local buttonTypes = {
             "ActionButton", "MultiBarBottomLeftButton", "MultiBarBottomRightButton",
             "MultiBarRightButton", "MultiBarLeftButton", "BonusActionButton"
@@ -1010,7 +1090,7 @@ DFRL:RegisterModule("actionbars", 2, function()
                     local macroName = _G[button:GetName() .. "Name"]
                     if macroName then
                         macroName:ClearAllPoints()
-                        macroName:SetPoint("TOP", button, "TOP", DFRL:GetConfig("actionbars", "macroX"), yOffset)
+                        macroName:SetPoint("TOP", button, "TOP", xOffset, yOffset)
                     end
                 end
             end
@@ -1141,12 +1221,12 @@ DFRL:RegisterModule("actionbars", 2, function()
     end
 
     local layouts = {
-        [1] = {rows = 1, cols = 12}, -- 1x12
-        [2] = {rows = 2, cols = 6},  -- 2x6
-        [3] = {rows = 3, cols = 4},  -- 3x4
-        [4] = {rows = 4, cols = 3},  -- 4x3
-        [5] = {rows = 6, cols = 2},  -- 6x2
-        [6] = {rows = 12, cols = 1}  -- 12x1
+        [1] = {rows = 1, cols = 12},
+        [2] = {rows = 2, cols = 6},
+        [3] = {rows = 3, cols = 4},
+        [4] = {rows = 4, cols = 3},
+        [5] = {rows = 6, cols = 2},
+        [6] = {rows = 12, cols = 1}
     }
 
     callbacks.multiBarOneGrid = function(value)
@@ -1227,12 +1307,12 @@ DFRL:RegisterModule("actionbars", 2, function()
         local spacing = DFRL:GetConfig("actionbars", "multiBarThreeSpacing")
         local buttonSize = MultiBarLeftButton1:GetWidth()
 
-        for i = 12, 1, -1 do  -- Loop from 12 to 1 instead of 1 to 12
+        for i = 12, 1, -1 do
             local button = _G["MultiBarLeftButton"..i]
             if button then
                 button:ClearAllPoints()
 
-                local reverseIndex = 13 - i  -- Convert to 1-12 range
+                local reverseIndex = 13 - i
                 local row = math.floor((reverseIndex-1) / cols)
                 local col = (reverseIndex-1) - (row * cols)
 
@@ -1260,12 +1340,12 @@ DFRL:RegisterModule("actionbars", 2, function()
         local spacing = DFRL:GetConfig("actionbars", "multiBarFourSpacing")
         local buttonSize = MultiBarRightButton1:GetWidth()
 
-        for i = 12, 1, -1 do  -- Loop from 12 to 1 instead of 1 to 12
+        for i = 12, 1, -1 do
             local button = _G["MultiBarRightButton"..i]
             if button then
                 button:ClearAllPoints()
 
-                local reverseIndex = 13 - i  -- Convert to 1-12 range
+                local reverseIndex = 13 - i
                 local row = math.floor((reverseIndex-1) / cols)
                 local col = (reverseIndex-1) - (row * cols)
 
@@ -1316,7 +1396,7 @@ DFRL:RegisterModule("actionbars", 2, function()
             bonusButton:SetPoint("LEFT", _G["BonusActionButton"..(i-1)], "RIGHT", spacing, 0)
         end
 
-        -- Adjust width of the frames based on spacing
+        -- adjust width
         local totalWidth = (buttonSize * 12) + (spacing * 11)
         DFRL.mainBar:SetWidth(totalWidth)
         DFRL.actionBarFrame:SetWidth(totalWidth)
@@ -1351,6 +1431,59 @@ DFRL:RegisterModule("actionbars", 2, function()
                 DFRL.actionBarBGright:Show()
             else
                 DFRL.actionBarBGright:Hide()
+            end
+        end
+    end
+
+    callbacks.hotkeyFont = function(value)
+        local fontPath
+        if value == "Expressway" then
+            fontPath = "Interface\\AddOns\\DragonflightReloaded\\media\\fnt\\Expressway.ttf"
+        elseif value == "Homespun" then
+            fontPath = "Interface\\AddOns\\DragonflightReloaded\\media\\fnt\\Homespun.ttf"
+        elseif value == "Hooge" then
+            fontPath = "Interface\\AddOns\\DragonflightReloaded\\media\\fnt\\Hooge.ttf"
+        elseif value == "Myriad-Pro" then
+            fontPath = "Interface\\AddOns\\DragonflightReloaded\\media\\fnt\\Myriad-Pro.ttf"
+        elseif value == "Prototype" then
+            fontPath = "Interface\\AddOns\\DragonflightReloaded\\media\\fnt\\Prototype.ttf"
+        elseif value == "PT-Sans-Narrow-Bold" then
+            fontPath = "Interface\\AddOns\\DragonflightReloaded\\media\\fnt\\PT-Sans-Narrow-Bold.ttf"
+        elseif value == "PT-Sans-Narrow-Regular" then
+            fontPath = "Interface\\AddOns\\DragonflightReloaded\\media\\fnt\\PT-Sans-Narrow-Regular.ttf"
+        elseif value == "RobotoMono" then
+            fontPath = "Interface\\AddOns\\DragonflightReloaded\\media\\fnt\\RobotoMono.ttf"
+        elseif value == "BigNoodleTitling" then
+            fontPath = "Interface\\AddOns\\DragonflightReloaded\\media\\fnt\\BigNoodleTitling.ttf"
+        elseif value == "Continuum" then
+            fontPath = "Interface\\AddOns\\DragonflightReloaded\\media\\fnt\\Continuum.ttf"
+        elseif value == "DieDieDie" then
+            fontPath = "Interface\\AddOns\\DragonflightReloaded\\media\\fnt\\DieDieDie.ttf"
+        else
+            fontPath = "Fonts\\FRIZQT__.TTF"
+        end
+
+        local buttonTypes = {
+            "ActionButton", "MultiBarBottomLeftButton", "MultiBarBottomRightButton",
+            "MultiBarRightButton", "MultiBarLeftButton", "BonusActionButton",
+            "ShapeshiftButton", "PetActionButton"
+        }
+
+        for _, buttonType in ipairs(buttonTypes) do
+            for i = 1, 12 do
+                local button = _G[buttonType .. i]
+                if button then
+                    -- Update keybind text
+                    if button.DFRL_KeybindText then
+                        button.DFRL_KeybindText:SetFont(fontPath, 10 * DFRL:GetConfig("actionbars", "hotkeyScale"), "OUTLINE")
+                    end
+
+                    -- Update macro name text
+                    local macroName = _G[buttonType .. i .. "Name"]
+                    if macroName then
+                        macroName:SetFont(fontPath, 10 * DFRL:GetConfig("actionbars", "macroScale"), "OUTLINE")
+                    end
+                end
             end
         end
     end

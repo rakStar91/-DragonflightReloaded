@@ -10,7 +10,7 @@ DFRL:SetDefaults("bags", {
     hideBags = {false, 5, "checkbox", "tweaks", "Show or hide the bag frame"},
 })
 
-DFRL:RegisterModule("bags", 1, function()
+DFRL:RegisterModule("bags", 2, function()
     d:DebugPrint("BOOTING")
 
     -- move big bag
@@ -22,11 +22,6 @@ DFRL:RegisterModule("bags", 1, function()
 
     -- retexture all bags
     do
-        function GetBagSlots(id)
-            local slots = GetContainerNumSlots(id)
-            return slots
-        end
-
         -- main func to change the bag textures
         function ChangeBackpack()
             local bagAtlas = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\bags\\bagslots2x"
@@ -111,7 +106,7 @@ DFRL:RegisterModule("bags", 1, function()
                     pushed:SetHeight(size)
                     pushed:ClearAllPoints()
                     pushed:SetPoint('CENTER', 2, -1)
-                    pushed:SetDrawLayer('BORDER', 0)
+                    pushed:SetDrawLayer('BORDER', 1)
 
                     local iconTexture = _G['CharacterBag' .. i .. 'SlotIconTexture']
                     iconTexture:ClearAllPoints()
@@ -151,7 +146,7 @@ DFRL:RegisterModule("bags", 1, function()
                 normal:SetHeight(size)
                 normal:ClearAllPoints()
                 normal:SetPoint('CENTER', 2, -1)
-                normal:SetDrawLayer('BORDER', 0)
+                normal:SetDrawLayer('BORDER', 1)
 
                 local highlight = KeyRingButton:GetHighlightTexture()
                 highlight:SetTexture(bagAtlas)
@@ -168,17 +163,17 @@ DFRL:RegisterModule("bags", 1, function()
                 pushed:SetHeight(size)
                 pushed:ClearAllPoints()
                 pushed:SetPoint('CENTER', 2, -1)
+                pushed:SetDrawLayer('OVERLAY', 7)
 
                 if not KeyRingButton.Icon then
                     local icon = KeyRingButton:CreateTexture('KeyRingIconTexture')
                     icon:SetTexture('Interface\\AddOns\\DragonflightReloaded\\media\\tex\\bags\\KeyRing-Bag-Icon')
-                    KeyRingButton.Icon = icon
-
                     icon:SetWidth(20.5)
                     icon:SetHeight(20.5)
                     icon:SetPoint('CENTER', 0, 0)
-                    icon:SetDrawLayer('BORDER', 2)
+                    icon:SetDrawLayer('ARTWORK', 2)
 
+                    KeyRingButton.Icon = icon
                 end
 
                 if not KeyRingButton.Border then
@@ -188,6 +183,7 @@ DFRL:RegisterModule("bags", 1, function()
                     border:SetWidth(size)
                     border:SetHeight(size)
                     border:SetPoint('CENTER', 2, -1)
+                    border:SetDrawLayer('OVERLAY', 1)
 
                     KeyRingButton.Border = border
                 end
@@ -244,6 +240,25 @@ DFRL:RegisterModule("bags", 1, function()
         ChangeBackpack()
         UpdateBagSlotIcons()
     end
+
+    -- keyring hook
+    hooksecurefunc("MainMenuBar_UpdateKeyRing", function()
+        local toggleBagsValue = DFRL:GetConfig("bags", "toggleBags")
+        local hideBagsValue = DFRL:GetConfig("bags", "hideBags")
+
+        if not toggleBagsValue and hideBagsValue and KeyRingButton then
+            -- print("123")
+            KeyRingButton:Hide()
+        end
+        if not toggleBagsValue and not hideBagsValue and KeyRingButton then
+            -- print("567")
+            KeyRingButton:Hide()
+        end
+        if toggleBagsValue and hideBagsValue and KeyRingButton then
+            -- print("890")
+            KeyRingButton:Hide()
+        end
+    end, true)
 
     -- callbacks
     local callbacks = {}
@@ -307,8 +322,7 @@ DFRL:RegisterModule("bags", 1, function()
         -- KeyRingButton
         if KeyRingButton then
             if value and not bagHideValue then
-                local keyringID = KEYRING_CONTAINER or 4
-                if GetContainerNumSlots(keyringID) > 0 then
+                if HasKey() then
                     KeyRingButton:Show()
                 else
                     KeyRingButton:Hide()
@@ -351,14 +365,16 @@ DFRL:RegisterModule("bags", 1, function()
     callbacks.hideBags = function (value)
         if value then
             MainMenuBarBackpackButton:Hide()
+
             for i = 0, 3 do
                 _G['CharacterBag' .. i .. 'Slot']:Hide()
             end
-            if KeyRingButton then
-                KeyRingButton:Hide()
-            end
+
+            KeyRingButton:Hide()
             DFRL.bagToggleButton:Hide()
         else
+
+
             MainMenuBarBackpackButton:Show()
             DFRL.bagToggleButton:Show()
 
@@ -369,13 +385,13 @@ DFRL:RegisterModule("bags", 1, function()
                 end
 
                 if KeyRingButton then
-                    local keyringID = KEYRING_CONTAINER or 4
-                    if GetContainerNumSlots(keyringID) > 0 then
+                    if HasKey() then
                         KeyRingButton:Show()
                     else
                         KeyRingButton:Hide()
                     end
                 end
+
             else
                 -- keep character bags hidden if toggleBags is false
                 for i = 0, 3 do

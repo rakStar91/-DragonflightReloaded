@@ -33,7 +33,7 @@ DFRL:RegisterModule("micromenu", 1, function()
         SocialsMicroButton,
         WorldMapMicroButton,
         MainMenuMicroButton,
-        HelpMicroButton
+        HelpMicroButton,
     }
 
     for _, button in ipairs(buttons) do
@@ -187,6 +187,49 @@ DFRL:RegisterModule("micromenu", 1, function()
         TWMiniMapBattlefieldFrame:Hide()
     end
 
+    -- low level button
+    local function CreateLowLevelTalentsButton()
+        if not DFRL.lowLevelTalentsButton then
+            local lowLevelTalentsButton = CreateFrame("Button", "DFRLLowLevelTalentsButton", microMenuContainer)
+            lowLevelTalentsButton:SetWidth(buttonWidth)
+            lowLevelTalentsButton:SetHeight(buttonHeight)
+            lowLevelTalentsButton:SetPoint("TOPLEFT", buttons[2], "TOPLEFT", buttonWidth + buttonSpacing, 0)
+            lowLevelTalentsButton:SetNormalTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\talents-disabled.tga")
+            lowLevelTalentsButton:GetNormalTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
+
+            lowLevelTalentsButton:SetScript("OnEnter", function()
+                GameTooltip:SetOwner(lowLevelTalentsButton, "ANCHOR_RIGHT")
+                GameTooltip:SetText("Talents", 1, 1, 1)
+                GameTooltip:AddLine("You must reach level 10 to use talents.")
+                GameTooltip:Show()
+            end)
+
+            lowLevelTalentsButton:SetScript("OnLeave", function()
+                GameTooltip:Hide()
+            end)
+
+            DFRL.lowLevelTalentsButton = lowLevelTalentsButton
+
+            local function UpdateTalentButtonVisibility()
+                local playerLevel = UnitLevel("player")
+                if playerLevel < 10 then
+                    lowLevelTalentsButton:Show()
+                    buttons[3]:Hide()
+                else
+                    lowLevelTalentsButton:Hide()
+                    buttons[3]:Show()
+                end
+            end
+
+            local talentVisibilityFrame = CreateFrame("Frame")
+            talentVisibilityFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+            talentVisibilityFrame:RegisterEvent("PLAYER_LEVEL_UP")
+            talentVisibilityFrame:SetScript("OnEvent", UpdateTalentButtonVisibility)
+
+            UpdateTalentButtonVisibility()
+        end
+    end
+
     -- fps and network stats
     local netStatsFrame
     do
@@ -296,6 +339,13 @@ DFRL:RegisterModule("micromenu", 1, function()
                 normalTexture:SetVertexColor(color[1], color[2], color[3])
             end
         end
+
+        if DFRL.lowLevelTalentsButton then
+            local normalTexture = DFRL.lowLevelTalentsButton:GetNormalTexture()
+            if normalTexture then
+                normalTexture:SetVertexColor(color[1], color[2], color[3])
+            end
+        end
     end
 
     callbacks.microScale = function(value)
@@ -325,107 +375,78 @@ DFRL:RegisterModule("micromenu", 1, function()
 
     callbacks.switchColor = function(value)
         if value then
-            local tempFrame = CreateFrame("Frame")
-            local tempTexture = tempFrame:CreateTexture()
+            local colorpath = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\"
 
-            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\spellbook-regular.tga")
-            buttons[2]:SetNormalTexture(tempTexture:GetTexture())
+            buttons[2]:SetNormalTexture(colorpath .. "spellbook-regular.tga")
             buttons[2]:GetNormalTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
-            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\spellbook-faded.tga")
-            buttons[2]:SetPushedTexture(tempTexture:GetTexture())
+            buttons[2]:SetPushedTexture(colorpath .. "spellbook-faded.tga")
             buttons[2]:GetPushedTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
-            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\spellbook-highlight.tga")
-            buttons[2]:SetHighlightTexture(tempTexture:GetTexture())
+            buttons[2]:SetHighlightTexture(colorpath .. "spellbook-highlight.tga")
             buttons[2]:GetHighlightTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
 
-            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\talents-regular.tga")
-            buttons[3]:SetNormalTexture(tempTexture:GetTexture())
+            buttons[3]:SetNormalTexture(colorpath .. "talents-regular.tga")
             buttons[3]:GetNormalTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
-            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\talents-faded.tga")
-            buttons[3]:SetPushedTexture(tempTexture:GetTexture())
+            buttons[3]:SetPushedTexture(colorpath .. "talents-faded.tga")
             buttons[3]:GetPushedTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
-            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\talents-highlight.tga")
-            buttons[3]:SetHighlightTexture(tempTexture:GetTexture())
+            buttons[3]:SetHighlightTexture(colorpath .. "talents-highlight.tga")
             buttons[3]:GetHighlightTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
 
-            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\quest-regular.tga")
-            buttons[4]:SetNormalTexture(tempTexture:GetTexture())
+            CreateLowLevelTalentsButton()
+
+            buttons[4]:SetNormalTexture(colorpath .. "quest-regular.tga")
             buttons[4]:GetNormalTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
-            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\quest-faded.tga")
-            buttons[4]:SetPushedTexture(tempTexture:GetTexture())
+            buttons[4]:SetPushedTexture(colorpath .. "quest-faded.tga")
             buttons[4]:GetPushedTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
-            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\quest-highlight.tga")
-            buttons[4]:SetHighlightTexture(tempTexture:GetTexture())
+            buttons[4]:SetHighlightTexture(colorpath .. "quest-highlight.tga")
             buttons[4]:GetHighlightTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
 
-            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\tabard-regular.tga")
-            buttons[5]:SetNormalTexture(tempTexture:GetTexture())
+            buttons[5]:SetNormalTexture(colorpath .. "tabard-regular.tga")
             buttons[5]:GetNormalTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
-            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\tabard-faded.tga")
-            buttons[5]:SetPushedTexture(tempTexture:GetTexture())
+            buttons[5]:SetPushedTexture(colorpath .. "tabard-faded.tga")
             buttons[5]:GetPushedTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
-            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\tabard-highlight.tga")
-            buttons[5]:SetHighlightTexture(tempTexture:GetTexture())
+            buttons[5]:SetHighlightTexture(colorpath .. "tabard-highlight.tga")
             buttons[5]:GetHighlightTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
 
-            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\book-regular.tga")
-            buttons[6]:SetNormalTexture(tempTexture:GetTexture())
+            buttons[6]:SetNormalTexture(colorpath .. "book-regular.tga")
             buttons[6]:GetNormalTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
-            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\book-faded.tga")
-            buttons[6]:SetPushedTexture(tempTexture:GetTexture())
+            buttons[6]:SetPushedTexture(colorpath .. "book-faded.tga")
             buttons[6]:GetPushedTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
-            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\book-highlight.tga")
-            buttons[6]:SetHighlightTexture(tempTexture:GetTexture())
+            buttons[6]:SetHighlightTexture(colorpath .. "book-highlight.tga")
             buttons[6]:GetHighlightTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
 
-            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\eye-regular.tga")
-            buttons[7]:SetNormalTexture(tempTexture:GetTexture())
+            buttons[7]:SetNormalTexture(colorpath .. "eye-regular.tga")
             buttons[7]:GetNormalTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
-            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\eye-faded.tga")
-            buttons[7]:SetPushedTexture(tempTexture:GetTexture())
+            buttons[7]:SetPushedTexture(colorpath .. "eye-faded.tga")
             buttons[7]:GetPushedTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
-            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\eye-highlight.tga")
-            buttons[7]:SetHighlightTexture(tempTexture:GetTexture())
+            buttons[7]:SetHighlightTexture(colorpath .. "eye-highlight.tga")
             buttons[7]:GetHighlightTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
 
-            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\horseshoe-regular.tga")
-            buttons[8]:SetNormalTexture(tempTexture:GetTexture())
+            buttons[8]:SetNormalTexture(colorpath .. "horseshoe-regular.tga")
             buttons[8]:GetNormalTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
-            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\horseshoe-faded.tga")
-            buttons[8]:SetPushedTexture(tempTexture:GetTexture())
+            buttons[8]:SetPushedTexture(colorpath .. "horseshoe-faded.tga")
             buttons[8]:GetPushedTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
-            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\horseshoe-highlight.tga")
-            buttons[8]:SetHighlightTexture(tempTexture:GetTexture())
+            buttons[8]:SetHighlightTexture(colorpath .. "horseshoe-highlight.tga")
             buttons[8]:GetHighlightTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
 
-            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\shield-regular.tga")
-            buttons[9]:SetNormalTexture(tempTexture:GetTexture())
+            buttons[9]:SetNormalTexture(colorpath .. "shield-regular.tga")
             buttons[9]:GetNormalTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
-            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\shield-faded.tga")
-            buttons[9]:SetPushedTexture(tempTexture:GetTexture())
+            buttons[9]:SetPushedTexture(colorpath .. "shield-faded.tga")
             buttons[9]:GetPushedTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
-            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\shield-highlight.tga")
-            buttons[9]:SetHighlightTexture(tempTexture:GetTexture())
+            buttons[9]:SetHighlightTexture(colorpath .. "shield-highlight.tga")
             buttons[9]:GetHighlightTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
 
-            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\wow-regular.tga")
-            buttons[10]:SetNormalTexture(tempTexture:GetTexture())
+            buttons[10]:SetNormalTexture(colorpath .. "wow-regular.tga")
             buttons[10]:GetNormalTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
-            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\wow-faded.tga")
-            buttons[10]:SetPushedTexture(tempTexture:GetTexture())
+            buttons[10]:SetPushedTexture(colorpath .. "wow-faded.tga")
             buttons[10]:GetPushedTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
-            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\wow-highlight.tga")
-            buttons[10]:SetHighlightTexture(tempTexture:GetTexture())
+            buttons[10]:SetHighlightTexture(colorpath .. "wow-highlight.tga")
             buttons[10]:GetHighlightTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
 
-            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\question-regular.tga")
-            buttons[11]:SetNormalTexture(tempTexture:GetTexture())
+            buttons[11]:SetNormalTexture(colorpath .. "question-regular.tga")
             buttons[11]:GetNormalTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
-            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\question-faded.tga")
-            buttons[11]:SetPushedTexture(tempTexture:GetTexture())
+            buttons[11]:SetPushedTexture(colorpath .. "question-faded.tga")
             buttons[11]:GetPushedTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
-            tempTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\question-highlight.tga")
-            buttons[11]:SetHighlightTexture(tempTexture:GetTexture())
+            buttons[11]:SetHighlightTexture(colorpath .. "question-highlight.tga")
             buttons[11]:GetHighlightTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
         else
             buttons[2]:SetNormalTexture(path)
@@ -441,6 +462,8 @@ DFRL:RegisterModule("micromenu", 1, function()
             buttons[3]:GetPushedTexture():SetTexCoord(82/256, 117/256, 0/512, 48/512)
             buttons[3]:SetHighlightTexture(path)
             buttons[3]:GetHighlightTexture():SetTexCoord(82/256, 117/256, 0/512, 48/512)
+
+            CreateLowLevelTalentsButton()
 
             buttons[4]:SetNormalTexture(path)
             buttons[4]:GetNormalTexture():SetTexCoord(202/256, 237/256, 270/512, 318/512)

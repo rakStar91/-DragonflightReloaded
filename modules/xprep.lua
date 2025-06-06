@@ -118,7 +118,8 @@ DFRL:RegisterModule("xprep", 1, function()
                 d:DebugPrint("Setting XP bar to blue (rested)")
             else
                 -- purple
-                xpBar:SetStatusBarColor(0.58, 0, 0.55)
+                xpBar:SetStatusBarColor(0.7, 0.2, 0.7)
+
                 d:DebugPrint("Setting XP bar to purple (normal)")
             end
 

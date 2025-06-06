@@ -4,7 +4,7 @@ DFRL:SetDefaults("chat", {
 
     darkMode = {false, 1, "checkbox", "appearance", "Enable dark mode for the chat"},
     showButtons = {true, 2, "checkbox", "chat basic", "Show or hide chat buttons"},
-    blizzardButtons = {true, 3, "checkbox", "chat basic", "Use original Blizzard chat buttons"},
+    blizzardButtons = {false, 3, "checkbox", "chat basic", "Use original Blizzard chat buttons"},
     fadeChat = {false, 4, "checkbox", "tweaks", "Fade out chat text after 10 seconds"}
 
 })

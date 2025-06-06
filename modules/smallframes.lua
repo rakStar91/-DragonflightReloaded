@@ -12,6 +12,8 @@ DFRL:SetDefaults("smallframes", {
 DFRL:RegisterModule("smallframes", 2, function()
     d:DebugPrint("BOOTING")
 
+    local path = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\"
+
     -- petframe
     PetFrameHealthBar:SetScript("OnEnter", nil)
     PetFrameHealthBar:SetScript("OnLeave", nil)
@@ -64,8 +66,8 @@ DFRL:RegisterModule("smallframes", 2, function()
     local new_PetFrame_Update = _G.PetFrame_Update
     _G.PetFrame_Update = function()
         new_PetFrame_Update()
-        PetFrameTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\pet")
-        PetFrameHealthBar:SetStatusBarTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Health")
+        PetFrameTexture:SetTexture(path .. "pet")
+        PetFrameHealthBar:SetStatusBarTexture(path .. "UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Health")
 
         PetFrameTexture:SetDrawLayer("BACKGROUND")
         PetFrame:ClearAllPoints()
@@ -77,9 +79,9 @@ DFRL:RegisterModule("smallframes", 2, function()
 
         local class = UnitClass("player")
         if class == "Hunter" then
-            PetFrameManaBar:SetStatusBarTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Focus")
+            PetFrameManaBar:SetStatusBarTexture(path .. "UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Focus")
         else
-            PetFrameManaBar:SetStatusBarTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Mana")
+            PetFrameManaBar:SetStatusBarTexture(path .. "UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Mana")
         end
 
         PetFrameManaBar:ClearAllPoints()
@@ -92,19 +94,19 @@ DFRL:RegisterModule("smallframes", 2, function()
     end
 
     -- targetoftarget frame
-    TargetofTargetTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\pet")
-    TargetofTargetHealthBar:SetStatusBarTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Health.tga")
+    TargetofTargetTexture:SetTexture(path .. "pet")
+    TargetofTargetHealthBar:SetStatusBarTexture(path .. "UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Health.tga")
 
     hooksecurefunc("TargetofTarget_Update", function()
         local powerType = UnitPowerType("targettarget")
         local tex
 
         if powerType == 0 then
-            tex = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Mana"
+            tex = path .. "UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Mana"
         elseif powerType == 1 then
-            tex = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Rage"
+            tex = path .. "UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Rage"
         elseif powerType == 2 then
-            tex = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Focus"
+            tex = path .. "UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Focus"
         end
 
         if tex then
@@ -170,7 +172,7 @@ DFRL:RegisterModule("smallframes", 2, function()
         partyHealthPercentTexts[i] = partyHealthText
 
         local customBorder = frame:CreateTexture(nil, "OVERLAY")
-        customBorder:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\pet")
+        customBorder:SetTexture(path .. "pet")
         customBorder:SetDrawLayer("BORDER", 1)
         customBorder:SetPoint("CENTER", frame, 0, 0)
         customBorder:SetWidth(128)
@@ -193,8 +195,8 @@ DFRL:RegisterModule("smallframes", 2, function()
         end
 
         if healthBar and manaBar and frame then
-            healthBar:SetStatusBarTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Health")
-            manaBar:SetStatusBarTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\UI-HUD-UnitFrame-Target-MinusMob-PortraitOn-Bar-Health-Status.tga")
+            healthBar:SetStatusBarTexture(path .. "UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Health")
+            manaBar:SetStatusBarTexture(path .. "UI-HUD-UnitFrame-Target-MinusMob-PortraitOn-Bar-Health-Status.tga")
 
             healthBar:SetHeight(11)
             healthBar:ClearAllPoints()
@@ -203,20 +205,6 @@ DFRL:RegisterModule("smallframes", 2, function()
             manaBar:SetHeight(5)
             manaBar:ClearAllPoints()
             manaBar:SetPoint("CENTER", frame, "CENTER", 15, 0.5)
-        end
-    end
-
-    local function UpdatePartyTexts()
-        for i = 1, 4 do
-            if UnitExists("party" .. i) then
-                local health = UnitHealth("party" .. i)
-                local maxHealth = UnitHealthMax("party" .. i)
-                local healthPercent = maxHealth > 0 and math.floor((health / maxHealth) * 100) or 0
-
-                partyHealthPercentTexts[i]:SetText(healthPercent .. "%")
-            else
-                partyHealthPercentTexts[i]:SetText("")
-            end
         end
     end
 
@@ -266,7 +254,53 @@ DFRL:RegisterModule("smallframes", 2, function()
     end
 
     callbacks.noPercent = function(value)
-        local function UpdatePetTextsWithFormat()
+        if UnitExists("pet") then
+            local health = UnitHealth("pet")
+            local maxHealth = UnitHealthMax("pet")
+            local healthPercent = maxHealth > 0 and math.floor((health / maxHealth) * 100) or 0
+
+            local mana = UnitMana("pet")
+            local maxMana = UnitManaMax("pet")
+            local manaPercent = maxMana > 0 and math.floor((mana / maxMana) * 100) or 0
+
+            if value then
+                healthPercentText:SetText("")
+                healthValueText:SetText(health)
+                healthValueText:ClearAllPoints()
+                healthValueText:SetPoint("CENTER", PetFrameHealthBar, "CENTER", 0, 0)
+
+                manaPercentText:SetText("")
+                manaValueText:SetText(mana)
+                manaValueText:ClearAllPoints()
+                manaValueText:SetPoint("CENTER", PetFrameManaBar, "CENTER", 0, 0)
+            else
+                healthPercentText:SetText(healthPercent .. "%")
+                healthValueText:SetText(health)
+                healthValueText:ClearAllPoints()
+                healthValueText:SetPoint("RIGHT", PetFrameHealthBar, "RIGHT", -5, 0)
+
+                manaPercentText:SetText(manaPercent .. "%")
+                manaValueText:SetText(mana)
+                manaValueText:ClearAllPoints()
+                manaValueText:SetPoint("RIGHT", PetFrameManaBar, "RIGHT", -5, 0)
+            end
+        end
+
+        for i = 1, 4 do
+            if UnitExists("party" .. i) then
+                local health = UnitHealth("party" .. i)
+                local maxHealth = UnitHealthMax("party" .. i)
+
+                if value then
+                    partyHealthPercentTexts[i]:SetText(health)
+                else
+                    local healthPercent = maxHealth > 0 and math.floor((health / maxHealth) * 100) or 0
+                    partyHealthPercentTexts[i]:SetText(healthPercent .. "%")
+                end
+            end
+        end
+
+        UpdatePetTexts = function()
             if not UnitExists("pet") then return end
 
             local health = UnitHealth("pet")
@@ -299,11 +333,6 @@ DFRL:RegisterModule("smallframes", 2, function()
                 manaValueText:SetPoint("RIGHT", PetFrameManaBar, "RIGHT", -5, 0)
             end
         end
-
-        UpdatePetTexts = UpdatePetTextsWithFormat
-
-        -- updat
-        UpdatePetTextsWithFormat()
     end
 
     callbacks.colorReaction = function(value)
@@ -335,6 +364,7 @@ DFRL:RegisterModule("smallframes", 2, function()
         end
     end
 
+    -- tot hook
     HookScript(_G["TargetofTargetHealthBar"], "OnValueChanged", function()
         if IsTargetOfTargetTaggedByOther() then
             _G["TargetofTargetHealthBar"]:SetStatusBarColor(0.5, 0.5, 0.5)
@@ -377,13 +407,27 @@ DFRL:RegisterModule("smallframes", 2, function()
 
         if event == "PLAYER_ENTERING_WORLD" or event == "PARTY_MEMBERS_CHANGED" or
             (event == "UNIT_HEALTH" and string.find(arg1, "party")) then
-            UpdatePartyTexts()
+            local value = DFRL:GetConfig("smallframes", "noPercent")
+            for i = 1, 4 do
+                if UnitExists("party" .. i) then
+                    local health = UnitHealth("party" .. i)
+                    local maxHealth = UnitHealthMax("party" .. i)
+
+                    if value then
+                        partyHealthPercentTexts[i]:SetText(health)
+                    else
+                        local healthPercent = maxHealth > 0 and math.floor((health / maxHealth) * 100) or 0
+                        partyHealthPercentTexts[i]:SetText(healthPercent .. "%")
+                    end
+                else
+                    partyHealthPercentTexts[i]:SetText("")
+                end
+            end
         end
     end)
 
     -- init
     UpdatePetTexts()
-    UpdatePartyTexts()
 
     -- execute callbacks
     DFRL:RegisterCallback("smallframes", callbacks)

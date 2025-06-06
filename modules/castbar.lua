@@ -21,14 +21,14 @@ DFRL:SetDefaults("castbar", {
 DFRL:RegisterModule("castbar", 1, function()
     d:DebugPrint("BOOTING")
 
-    local GetTime = GetTime
     local type = type
-    local tostring = tostring
-    local string = string
     local assert = assert
-    local CreateFrame = CreateFrame
-    local UIParent = UIParent
+    local string = string
     local FAILED = FAILED
+    local GetTime = GetTime
+    local tostring = tostring
+    local UIParent = UIParent
+    local CreateFrame = CreateFrame
     local INTERRUPTED = INTERRUPTED
 
     -- hide stuff
@@ -38,6 +38,7 @@ DFRL:RegisterModule("castbar", 1, function()
         CastingBarFrame:SetScript("OnUpdate", nil)
     end
 
+    local path = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\castbar\\"
     local castbar = {
         frame       = nil,
         barTexture  = nil,
@@ -53,11 +54,11 @@ DFRL:RegisterModule("castbar", 1, function()
         config = {
             width            = 200,
             height           = 16,
-            bgTexture        = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\castbar\\CastingBarBackground.blp",
-            barTexture       = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\castbar\\CastingBarStandard3.blp",
-            dropshadow       = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\castbar\\CastingBarFrameDropShadow.blp",
+            bgTexture        = path .. "CastingBarBackground.blp",
+            barTexture       = path .. "CastingBarStandard3.blp",
+            dropshadow       = path .. "CastingBarFrameDropShadow.blp",
             spark            = "Interface\\CastingBar\\UI-CastingBar-Spark",
-            flashTex         = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\castbar\\CastingBarFrameFlash.tga",
+            flashTex         = path .. "CastingBarFrameFlash.tga",
             barColor         = { r = 1, g = 0.82, b = 0 },
             alphaSpeed       = 3.0,
             flashSpeed       = 5.0,
@@ -116,7 +117,7 @@ DFRL:RegisterModule("castbar", 1, function()
 
         local borderFrame = f:CreateTexture(nil, "ARTWORK")
         borderFrame:SetAllPoints(f)
-        borderFrame:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\castbar\\CastingBarFrame.blp")
+        borderFrame:SetTexture(path .. "CastingBarFrame.blp")
         self.borderframe = borderFrame
 
         local dropshadow = f:CreateTexture(nil, "BACKGROUND", 1)
@@ -377,7 +378,6 @@ DFRL:RegisterModule("castbar", 1, function()
         end
     end
 
-    -- event handler
     function castbar:HandleEvent(event, arg1, arg2)
         assert(event, "Event name cannot be nil")
         assert(self.frame, "Frame must exist before handling events")
