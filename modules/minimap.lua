@@ -1,3 +1,4 @@
+---@diagnostic disable: deprecated
 DFRL:SetDefaults("minimap", {
     enabled = {true},
     hidden = {false},
@@ -19,7 +20,6 @@ DFRL:SetDefaults("minimap", {
 
     showTopPanel   = {true,  12, "checkbox",                       "top panel",         "Show or hide the top information panel"},
     showPfQuest    = {true,  13, "checkbox",                       "top panel",         "Show or hide the pfQuest icon"},
-    -- radioShow      = {true,  14, "checkbox", "top panel",         "Show or hide the Everlook Broadcasting Radio"},
     topPanelWidth  = {180,   15, "slider",   {100, 600},          "top panel",         "Adjusts the width of the top panel"},
     topPanelHeight = {12,    16, "slider",   {5, 50},             "top panel",         "Adjusts the height of the top panel"},
 
@@ -52,11 +52,13 @@ DFRL:RegisterModule("minimap", 2, function()
     end
 
     -- minimap
+    local texpath = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\minimap\\"
+
     local minimapBorder = Minimap:CreateTexture("MinimapBorder", "OVERLAY")
-    minimapBorder:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\minimap\\uiminimapborder.tga")
+    minimapBorder:SetTexture(texpath.. "uiminimapborder.tga")
 
     local minimapShadow = Minimap:CreateTexture("MinimapShadow", "BORDER")
-    minimapShadow:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\minimap\\uiminimapshadow.tga")
+    minimapShadow:SetTexture(texpath.. "uiminimapshadow.tga")
 
     Minimap:EnableMouseWheel(true)
     Minimap:SetScript("OnMouseWheel", function()
@@ -77,7 +79,7 @@ DFRL:RegisterModule("minimap", 2, function()
         topPanel:SetPoint("BOTTOM", Minimap, "TOP", 0, 30)
 
         local bgTexture = topPanel:CreateTexture(nil, "BACKGROUND")
-        bgTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\minimap\\uiminimap_toppanel.tga")
+        bgTexture:SetTexture(texpath.. "uiminimap_toppanel.tga")
         bgTexture:SetPoint("TOPLEFT", topPanel, "TOPLEFT", -0, 0)
         bgTexture:SetPoint("BOTTOMRIGHT", topPanel, "BOTTOMRIGHT", 5, -20)
 
@@ -132,27 +134,27 @@ DFRL:RegisterModule("minimap", 2, function()
         MinimapZoomIn:SetPoint("TOPLEFT", Minimap, "BOTTOMRIGHT", -5, 40)
         MinimapZoomIn:SetScale(0.9)
 
-        MinimapZoomIn:SetNormalTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\minimap\\ZoomIn32.tga")
-        MinimapZoomIn:SetDisabledTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\minimap\\ZoomIn32-disabled.tga")
-        MinimapZoomIn:SetHighlightTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\minimap\\ZoomIn32-over.tga")
-        MinimapZoomIn:SetPushedTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\minimap\\ZoomIn32-push.tga")
+        MinimapZoomIn:SetNormalTexture(texpath.. "ZoomIn32.tga")
+        MinimapZoomIn:SetDisabledTexture(texpath.. "ZoomIn32-disabled.tga")
+        MinimapZoomIn:SetHighlightTexture(texpath.. "ZoomIn32-over.tga")
+        MinimapZoomIn:SetPushedTexture(texpath.. "ZoomIn32-push.tga")
 
         MinimapZoomOut:ClearAllPoints()
         MinimapZoomOut:SetParent(Minimap)
         MinimapZoomOut:SetPoint("TOPRIGHT", MinimapZoomIn, "BOTTOMLEFT", 0, 0)
         MinimapZoomOut:SetScale(0.9)
 
-        MinimapZoomOut:SetNormalTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\minimap\\ZoomOut32.tga")
-        MinimapZoomOut:SetDisabledTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\minimap\\ZoomOut32-disabled.tga")
-        MinimapZoomOut:SetHighlightTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\minimap\\ZoomOut32-over.tga")
-        MinimapZoomOut:SetPushedTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\minimap\\ZoomOut32-push.tga")
+        MinimapZoomOut:SetNormalTexture(texpath.. "ZoomOut32.tga")
+        MinimapZoomOut:SetDisabledTexture(texpath.. "ZoomOut32-disabled.tga")
+        MinimapZoomOut:SetHighlightTexture(texpath.. "ZoomOut32-over.tga")
+        MinimapZoomOut:SetPushedTexture(texpath.. "ZoomOut32-push.tga")
     end
 
     -- mail
     do
         MiniMapMailFrame:ClearAllPoints()
         MiniMapMailFrame:SetPoint("TOPLEFT", topPanel, "BOTTOMLEFT", -2, -1)
-        MiniMapMailIcon:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\minimap\\mail.tga")
+        MiniMapMailIcon:SetTexture(texpath.. "mail.tga")
         MiniMapMailIcon:SetWidth(32)
         MiniMapMailIcon:SetHeight(32)
         MiniMapMailBorder:Hide()
@@ -216,14 +218,216 @@ DFRL:RegisterModule("minimap", 2, function()
         -- end
     end
 
-    -- pf quest
+    -- collector
+    DFRL.MinimapButtonsPerRow = 3
     do
-        if pfBrowserIcon then
-            pfBrowserIcon:ClearAllPoints()
-            pfBrowserIcon:SetPoint("TOPRIGHT", topPanel, "BOTTOMRIGHT", -50, -25)
-            pfBrowserIcon:SetScale(0.6)
-            pfBrowserIcon.overlay:SetTexture("")
+        KillFrame(_G.MBB_MinimapButtonFrame)
+        KillFrame(_G.MinimapButtonFrame)
+        KillFrame(_G.MBFMiniButtonFrame)
+
+        local collector = CreateFrame("Frame", "MinimapButtonCollector", UIParent)
+        collector:SetFrameStrata("MEDIUM")
+        collector:SetPoint("RIGHT", Minimap, "LEFT", -35, 0)
+        collector:SetWidth(40)
+        collector:SetHeight(150)
+
+        -- Create background with gradient
+        collector.bg = collector:CreateTexture(nil, "BACKGROUND")
+        collector.bg:SetTexture("Interface\\Buttons\\WHITE8X8")
+        collector.bg:SetAllPoints()
+        ---@diagnostic disable-next-line: undefined-field
+        collector.bg:SetGradientAlpha("HORIZONTAL", 0.1, 0.1, 0.1, 0, 0.1, 0.1, 0.1, 1)
+
+        local function CollectMinimapButtons()
+            d:DebugPrint("Starting minimap button collection...")
+
+            local buttons = {}
+            local children = { Minimap:GetChildren() }
+            local numChildren = table.getn(children)
+
+            d:DebugPrint("Found " .. numChildren .. " children on Minimap")
+            -- get children
+            for i = 1, numChildren do
+                local child = children[i]
+                if child and child:IsVisible() then
+                    local childName = child:GetName() or "unnamed"
+                    local childType = child:GetObjectType()
+
+                    d:DebugPrint("Child " .. i .. ": " .. childName .. " (Type: " .. childType .. ", Visible: true)")
+
+                    local isMinimapButton = false
+
+                    -- check if its a direct Button or Frame with Button
+                    if child:IsObjectType("Button") then
+                        isMinimapButton = true
+                        d:DebugPrint("Found direct Button: " .. childName)
+                    elseif child:IsObjectType("Frame") then
+                        local frameChildren = { child:GetChildren() }
+                        for j = 1, table.getn(frameChildren) do
+                            if frameChildren[j] and frameChildren[j]:IsObjectType("Button") then
+                                isMinimapButton = true
+                                d:DebugPrint("Found Frame with Button inside: " .. childName)
+                                break
+                            end
+                        end
+                        if not isMinimapButton then
+                            d:DebugPrint("Frame has no Button children: " .. childName)
+                        end
+                    else
+                        d:DebugPrint("Skipped non-Button/Frame: " .. childName .. " (Type: " .. childType .. ")")
+                    end
+
+                    if isMinimapButton then
+                        -- skip known UI elements
+                        local skipNames = {
+                            "MinimapBorder", "MinimapBackdrop", "MiniMapWorldMapButton",
+                            "MinimapZoomIn", "MinimapZoomOut", "MiniMapMailFrame",
+                            "MiniMapBattlefieldFrame", "MiniMapTrackingFrame",
+                            "MiniMapZoneTextButton", "MiniMapMeetingStoneFrame",
+                            "TWMiniMapBattlefieldFrame", "EBC_Minimap", "LFTMinimapButton"
+                        }
+
+                        local shouldSkip = false
+                        for k = 1, table.getn(skipNames) do
+                            if childName == skipNames[k] then
+                                shouldSkip = true
+                                break
+                            end
+                        end
+
+                        if not shouldSkip then
+                            local parentName = ""
+                            if child:GetParent() and child:GetParent():GetName() then
+                                parentName = child:GetParent():GetName()
+                            end
+
+                            local lowerName = string.lower(childName)
+                            local lowerParent = string.lower(parentName)
+
+                            -- skip UI panels, arrows, and player buttons
+                            if not (string.find(lowerName, "panel") or
+                                    string.find(lowerParent, "panel") or
+                                    string.find(lowerName, "arrow") or
+                                    string.find(lowerName, "player")) then
+
+                                table.insert(buttons, child)
+                                d:DebugPrint("Added minimap button: " .. childName)
+                            else
+                                d:DebugPrint("Skipped UI panel/arrow button: " .. childName .. " (parent: " .. parentName .. ")")
+                            end
+                        else
+                            d:DebugPrint("Skipped known UI element: " .. childName)
+                        end
+                    end
+                end
+            end
+
+            d:DebugPrint("Total buttons found: " .. table.getn(buttons))
+
+            -- arrange buttons
+            local buttonSize = 24
+            local padding = 4
+            local buttonsPerRow = DFRL.MinimapButtonsPerRow
+            local count = 0
+
+            for i = 1, table.getn(buttons) do
+                local button = buttons[i]
+                button:SetParent(collector)
+                button:ClearAllPoints()
+
+                local row = math.floor(count / buttonsPerRow)
+                local col = count - (row * buttonsPerRow)
+
+                button:SetPoint("TOPRIGHT", collector, "TOPRIGHT",
+                    -3 - (row * (buttonSize + padding)),
+                    -6 - (col * (buttonSize + padding)))
+
+                -- disable setpoint so buttons dont escape (like atlas for ex.)
+                if not button.originalSetPoint then
+                    button.originalSetPoint = button.SetPoint
+                    button.SetPoint = function(self, point, relativeTo, relativePoint, xOfs, yOfs)
+                        return
+                    end
+                end
+
+                d:DebugPrint("Positioned button " .. (button:GetName() or "unnamed") .. " at position " .. count)
+                count = count + 1
+            end
+
+            -- resize collector
+            local rows = math.ceil(count / buttonsPerRow)
+            local newWidth = 42 + (rows * (buttonSize + padding))
+            local newHeight = math.max(30, 12 + (math.min(count, buttonsPerRow) * (buttonSize + padding)))
+            collector:SetWidth(newWidth)
+            collector:SetHeight(newHeight)
+
+            d:DebugPrint("Collector resized to height: " .. newHeight .. " for " .. count .. " buttons")
         end
+
+        local function DelayedCollect()
+            d:DebugPrint("Starting delayed collection timer...")
+            local timer = 0
+            collector:SetScript("OnUpdate", function()
+                timer = timer + arg1
+                if timer > 0.1 then
+                    d:DebugPrint("Timer expired, collecting buttons now...")
+                    CollectMinimapButtons()
+                    collector:SetScript("OnUpdate", nil)
+                    collector:Hide()
+                end
+            end)
+        end
+
+        local function AddGoldenBorder()
+            local positions = {
+                {point1="BOTTOMLEFT", point2="TOPLEFT", point3="BOTTOMRIGHT", point4="TOPRIGHT", width=nil, height=1, gradient=true},
+                {point1="TOPLEFT", point2="TOPRIGHT", point3="BOTTOMLEFT", point4="BOTTOMRIGHT", width=1, height=nil, gradient=false},
+                {point1="TOPLEFT", point2="BOTTOMLEFT", point3="TOPRIGHT", point4="BOTTOMRIGHT", width=nil, height=1, gradient=true}
+            }
+
+            local names = {"topBorder", "bottomBorder", "rightBorder"}
+
+            for i = 1, 3 do
+                local border = collector:CreateTexture(nil, "OVERLAY")
+                collector[names[i]] = border
+                border:SetTexture("Interface\\Buttons\\WHITE8X8")
+                border:SetPoint(positions[i].point1, collector, positions[i].point2, 0, 0)
+                border:SetPoint(positions[i].point3, collector, positions[i].point4, 0, 0)
+                if positions[i].width then border:SetWidth(positions[i].width) end
+                if positions[i].height then border:SetHeight(positions[i].height) end
+                border:SetVertexColor(1, 0.82, 0, 1)
+                if positions[i].gradient then
+                    ---@diagnostic disable-next-line: undefined-field
+                    border:SetGradientAlpha("HORIZONTAL", 1, 0.82, 0, 0, 1, 0.82, 0, 1)
+                end
+            end
+        end
+
+        -- on load
+        DelayedCollect()
+        AddGoldenBorder()
+
+        -- toggle button
+        local toggleButton = CreateFrame("Button", "MinimapButtonCollectorToggle", UIParent)
+        toggleButton:SetWidth(16)
+        toggleButton:SetHeight(16)
+        toggleButton:SetPoint("RIGHT", Minimap, "LEFT", -12, 0)
+        toggleButton:SetNormalTexture(texpath.. "dfrl_collector_toggle.tga")
+        toggleButton:SetPushedTexture(texpath.. "dfrl_collector_toggle.tga")
+        toggleButton:SetHighlightTexture(texpath.. "dfrl_collector_toggle.tga")
+
+        -- show/hide
+        toggleButton:SetScript("OnClick", function()
+            if collector:IsVisible() then
+                UIFrameFadeOut(collector, 0.3, 1, 0)
+                collector.fadeInfo.finishedFunc = collector.Hide
+                collector.fadeInfo.finishedArg1 = collector
+            else
+                collector:SetAlpha(0)
+                collector:Show()
+                UIFrameFadeIn(collector, 0.3, 0, 1)
+            end
+        end)
     end
 
     -- callbacks
@@ -359,16 +563,6 @@ DFRL:RegisterModule("minimap", 2, function()
         end
     end
 
-    -- callbacks.radioShow = function (value)
-    --     if EBC_Minimap then
-    --         if value then
-    --             EBC_Minimap:Show()
-    --         else
-    --             EBC_Minimap:Hide()
-    --         end
-    --     end
-    -- end
-
     callbacks.showPfQuest = function (value)
         if pfBrowserIcon then
             if value then
@@ -381,12 +575,12 @@ DFRL:RegisterModule("minimap", 2, function()
 
     callbacks.mapSquare = function(value)
         if value then
-            minimapBorder:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\minimap\\map_dragonflight_square2.tga")
-            minimapShadow:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\minimap\\map_dragonflight_square_shadow.tga")
+            minimapBorder:SetTexture(texpath.. "map_dragonflight_square2.tga")
+            minimapShadow:SetTexture(texpath.. "map_dragonflight_square_shadow.tga")
             Minimap:SetMaskTexture("Interface\\BUTTONS\\WHITE8X8")
         else
-            minimapBorder:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\minimap\\uiminimapborder.tga")
-            minimapShadow:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\minimap\\uiminimapshadow.tga")
+            minimapBorder:SetTexture(texpath.. "uiminimapborder.tga")
+            minimapShadow:SetTexture(texpath.. "uiminimapshadow.tga")
             Minimap:SetMaskTexture("Textures\\MinimapMask")
         end
     end
