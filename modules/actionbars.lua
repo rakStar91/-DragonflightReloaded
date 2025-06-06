@@ -11,13 +11,13 @@ DFRL:SetDefaults("actionbars", {
     mainBarAlpha = {1, 4, "slider", {0.1, 1}, "main bar", "Adjusts transparency of main action bar"},
 
     multiBarOneShow = {true, 1, "checkbox", "multibar 1", "Show or hide bottom left action bar"},
-    multiBarOneScale = {0.95, 2, "slider", {0.2, 2}, "multibar 1", "Adjusts scale of bottom left action bar"},
+    multiBarOneScale = {1, 2, "slider", {0.2, 2}, "multibar 1", "Adjusts scale of bottom left action bar"},
     multiBarOneSpacing = {6, 3, "slider", {0.1, 20}, "multibar 1", "Adjusts spacing between bottom left action bar buttons"},
     multiBarOneAlpha = {1, 4, "slider", {0.1, 1}, "multibar 1", "Adjusts transparency of bottom left action bar"},
     multiBarOneGrid = {1, 5, "slider", {1, 6}, "multibar 1", "Changes the grid layout of bottom left action bar"},
 
-    multiBarTwoShow = {true, 1, "checkbox", "multibar 2", "Show or hide bottom right action bar"},
-    multiBarTwoScale = {0.9, 2, "slider", {0.2, 2}, "multibar 2", "Adjusts scale of bottom right action bar"},
+    multiBarTwoShow = {false, 1, "checkbox", "multibar 2", "Show or hide bottom right action bar"},
+    multiBarTwoScale = {1, 2, "slider", {0.2, 2}, "multibar 2", "Adjusts scale of bottom right action bar"},
     multiBarTwoSpacing = {6, 3, "slider", {0.1, 20}, "multibar 2", "Adjusts spacing between bottom right action bar buttons"},
     multiBarTwoAlpha = {1, 4, "slider", {0.1, 1}, "multibar 2", "Adjusts transparency of bottom right action bar"},
     multiBarTwoGrid = {1, 5, "slider", {1, 6}, "multibar 2", "Changes the grid layout of bottom right action bar"},
@@ -148,12 +148,17 @@ DFRL:RegisterModule("actionbars", 2, function()
 
         MultiBarBottomLeft:ClearAllPoints()
         MultiBarBottomLeft:SetPoint("BOTTOM", actionBarFrame, "TOP", 0, 12)
+        MultiBarBottomLeft:SetClampedToScreen(true)
 
         MultiBarBottomRight:ClearAllPoints()
         MultiBarBottomRight:SetPoint("BOTTOM", MultiBarBottomLeft, "TOP", 0, 10)
+        MultiBarBottomRight:SetClampedToScreen(true)
 
         MultiBarRight:ClearAllPoints()
         MultiBarRight:SetPoint("RIGHT", UIParent, "RIGHT", -15, -50)
+        MultiBarRight:SetClampedToScreen(true)
+
+        MultiBarLeft:SetClampedToScreen(true)
 
         local newPetBar = CreateFrame("Frame", "DFRL_PetBar", UIParent)
         newPetBar:SetPoint("BOTTOM", actionBarFrame, "TOP", 0, 8)
