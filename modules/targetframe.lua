@@ -294,6 +294,9 @@ DFRL:RegisterModule("targetframe", 1, function()
             (event == "UNIT_RAGE" and arg1 == "target") or
             (event == "UNIT_FOCUS" and arg1 == "target") then
             UpdateTexts()
+            if IsTargetTaggedByOther() then
+                TargetFrameHealthBar:SetStatusBarColor(0.5, 0.5, 0.5)
+            end
         end
     end)
 
