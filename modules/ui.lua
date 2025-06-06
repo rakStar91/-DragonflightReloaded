@@ -20,6 +20,8 @@ DFRL:RegisterModule("ui", 2, function()
     local GetTime = GetTime
     local sin = math.sin
 
+    local DFRL = DFRL
+
     -- hide stuff
     do
         PetPaperDollCloseButton:Hide()
@@ -533,7 +535,7 @@ DFRL:RegisterModule("ui", 2, function()
 
                     -- calculate pulse speed
                     -- lower health = faster pulsing
-                    local pulseSpeed = 1 + (3 * alphaMultiplier)
+                    local pulseSpeed = 1 + (7 * alphaMultiplier)
 
                     -- update pulse time
                     DFRL.lowHpWarnFrame.pulseTime = DFRL.lowHpWarnFrame.pulseTime + (arg1 * pulseSpeed)
