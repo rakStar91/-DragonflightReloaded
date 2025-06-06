@@ -6,7 +6,7 @@ DFRL:SetDefaults("smallframes", {
     textShow = {false, 2, "checkbox", "text", "Show pet health and mana text"},
     noPercent = {false, 3, "checkbox", "text", "Hide pet health and mana percent text"},
     colorReaction = {true, 4, "checkbox", "bar color", "Color health bar based on target reaction"},
-    colorClass = {true, 5, "checkbox", "bar color", "Color health bar based on target class"},
+    colorClass = {false, 5, "checkbox", "bar color", "Color health bar based on target class"},
 
 })
 

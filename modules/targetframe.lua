@@ -7,7 +7,7 @@ DFRL:SetDefaults("targetframe", {
     noPercent = {true, 3, "checkbox", "text", "Show only current values without percentages"},
     textColoring = {false, 4, "checkbox", "text", "Color text based on health/mana percentage"},
     colorReaction = {true, 5, "checkbox", "bar color", "Color health bar based on target reaction"},
-    colorClass = {true, 6, "checkbox", "bar color", "Color health bar based on target class"},
+    colorClass = {false, 6, "checkbox", "bar color", "Color health bar based on target class"},
 
 })
 
