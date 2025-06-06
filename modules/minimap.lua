@@ -246,6 +246,7 @@ DFRL:RegisterModule("minimap", 2, function()
             local numChildren = table.getn(children)
 
             d:DebugPrint("Found " .. numChildren .. " children on Minimap")
+
             -- get children
             for i = 1, numChildren do
                 local child = children[i]
@@ -320,6 +321,12 @@ DFRL:RegisterModule("minimap", 2, function()
                         end
                     end
                 end
+            end
+
+            -- gatherer fix since they decided to call it "GathererUI_IconFrame" -,-
+            if _G["GathererUI_IconFrame"] then
+                table.insert(buttons, _G["GathererUI_IconFrame"])
+                d:DebugPrint("Added Gatherer button manually")
             end
 
             d:DebugPrint("Total buttons found: " .. table.getn(buttons))
