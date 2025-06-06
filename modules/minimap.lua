@@ -19,9 +19,8 @@ DFRL:SetDefaults("minimap", {
     zoomY          = {40,    11, "slider",   {-100, 100},         "map zoom",          "Adjusts vertical position of zoom buttons"},
 
     showTopPanel   = {true,  12, "checkbox",                       "top panel",         "Show or hide the top information panel"},
-    showPfQuest    = {true,  13, "checkbox",                       "top panel",         "Show or hide the pfQuest icon"},
-    topPanelWidth  = {180,   15, "slider",   {100, 600},          "top panel",         "Adjusts the width of the top panel"},
-    topPanelHeight = {12,    16, "slider",   {5, 50},             "top panel",         "Adjusts the height of the top panel"},
+    topPanelWidth  = {180,   13, "slider",   {100, 600},          "top panel",         "Adjusts the width of the top panel"},
+    topPanelHeight = {12,    14, "slider",   {5, 50},             "top panel",         "Adjusts the height of the top panel"},
 
     zoneTextSize   = {10,    17, "slider",   {6, 30},             "top panel zone",    "Adjusts font size of the zone text"},
     zoneTextY      = {-3,    18, "slider",   {-50, 50},           "top panel zone",    "Adjusts vertical position of the zone text"},
@@ -36,6 +35,8 @@ DFRL:SetDefaults("minimap", {
 
 DFRL:RegisterModule("minimap", 2, function()
     d:DebugPrint("BOOTING")
+
+    local texpath = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\minimap\\"
 
     -- hide stuff
     do
@@ -52,8 +53,6 @@ DFRL:RegisterModule("minimap", 2, function()
     end
 
     -- minimap
-    local texpath = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\minimap\\"
-
     local minimapBorder = Minimap:CreateTexture("MinimapBorder", "OVERLAY")
     minimapBorder:SetTexture(texpath.. "uiminimapborder.tga")
 
@@ -221,8 +220,11 @@ DFRL:RegisterModule("minimap", 2, function()
     -- collector
     DFRL.MinimapButtonsPerRow = 3
     do
+        ---@diagnostic disable-next-line: undefined-field
         KillFrame(_G.MBB_MinimapButtonFrame)
+        ---@diagnostic disable-next-line: undefined-field
         KillFrame(_G.MinimapButtonFrame)
+        ---@diagnostic disable-next-line: undefined-field
         KillFrame(_G.MBFMiniButtonFrame)
 
         local collector = CreateFrame("Frame", "MinimapButtonCollector", UIParent)
@@ -231,7 +233,7 @@ DFRL:RegisterModule("minimap", 2, function()
         collector:SetWidth(40)
         collector:SetHeight(150)
 
-        -- Create background with gradient
+        -- create background with gradient
         collector.bg = collector:CreateTexture(nil, "BACKGROUND")
         collector.bg:SetTexture("Interface\\Buttons\\WHITE8X8")
         collector.bg:SetAllPoints()

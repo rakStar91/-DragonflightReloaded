@@ -85,6 +85,8 @@ DFRL:SetDefaults("actionbars", {
 DFRL:RegisterModule("actionbars", 2, function()
     d:DebugPrint("BOOTING")
 
+    local texpath = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\actionbars\\"
+
     -- hide stuff
     do
         HideFrameTextures(MainMenuBar)
@@ -208,8 +210,8 @@ DFRL:RegisterModule("actionbars", 2, function()
 
     -- retexture buttons
     do
-        local borderTexture = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\actionbars\\border.blp"
-        local highlightTexture = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\actionbars\\uiactionbariconframehighlight.tga"
+        local borderTexture = texpath.. "border.blp"
+        local highlightTexture = texpath.. "uiactionbariconframehighlight.tga"
 
         local function AddBorderOverlay(button)
             local overlay = button:CreateTexture(button:GetName() .. "DFRL_BorderOverlay", "OVERLAY")
@@ -268,13 +270,13 @@ DFRL:RegisterModule("actionbars", 2, function()
         pagingContainer:SetFrameStrata("DIALOG")
         pagingContainer:SetFrameLevel(5)
 
-        ActionBarUpButton:SetNormalTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\actionbars\\page_up_normal.tga")
-        ActionBarUpButton:SetPushedTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\actionbars\\page_up_pushed.tga")
-        ActionBarUpButton:SetHighlightTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\actionbars\\page_up_highlight.tga")
+        ActionBarUpButton:SetNormalTexture(texpath.. "page_up_normal.tga")
+        ActionBarUpButton:SetPushedTexture(texpath.. "page_up_pushed.tga")
+        ActionBarUpButton:SetHighlightTexture(texpath.. "page_up_highlight.tga")
 
-        ActionBarDownButton:SetNormalTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\actionbars\\page_down_normal.tga")
-        ActionBarDownButton:SetPushedTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\actionbars\\page_down_pushed.tga")
-        ActionBarDownButton:SetHighlightTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\actionbars\\page_down_highlight.tga")
+        ActionBarDownButton:SetNormalTexture(texpath.. "page_down_normal.tga")
+        ActionBarDownButton:SetPushedTexture(texpath.. "page_down_pushed.tga")
+        ActionBarDownButton:SetHighlightTexture(texpath.. "page_down_highlight.tga")
 
         ActionBarUpButton:ClearAllPoints()
         ActionBarUpButton:SetPoint("TOP", pagingContainer, "TOP", -1, 0)
@@ -458,7 +460,7 @@ DFRL:RegisterModule("actionbars", 2, function()
 
     -- action bar background textures
     do
-        local barTexture = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\actionbars\\HDActionBar.tga"
+        local barTexture = texpath.. "HDActionBar.tga"
 
         local leftTexture = DFRL.actionBarFrame:CreateTexture("DFRL_ActionBarLeftTexture", "BACKGROUND")
         leftTexture:SetTexture(barTexture)
@@ -481,8 +483,8 @@ DFRL:RegisterModule("actionbars", 2, function()
 
     -- button background textures and borders
     do
-        local buttonBgTexture = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\actionbars\\HDActionBarBtn.tga"
-        local borderTexture = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\actionbars\\border.blp"
+        local buttonBgTexture = texpath.. "HDActionBarBtn.tga"
+        local borderTexture = texpath.. "border.blp"
 
         for i = 1, 12 do
             local bgTexture = DFRL.actionBarFrame:CreateTexture("DFRL_ActionButtonBg" .. i, "BORDER")
@@ -515,9 +517,9 @@ DFRL:RegisterModule("actionbars", 2, function()
         local faction = UnitFactionGroup("player")
         local texturePath
         if faction == "Alliance" then
-            texturePath = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\actionbars\\GryphonNew.tga"
+            texturePath = texpath.. "GryphonNew.tga"
         else
-            texturePath = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\actionbars\\WyvernNew.tga"
+            texturePath = texpath.. "WyvernNew.tga"
         end
 
         leftGryphon:SetTexture(texturePath)
@@ -1179,15 +1181,15 @@ DFRL:RegisterModule("actionbars", 2, function()
 
         if value then
             if faction == "Alliance" then
-                texturePath = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\actionbars\\altGyph.tga"
+                texturePath = texpath.. "altGyph.tga"
             else
-                texturePath = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\actionbars\\altWyv.tga"
+                texturePath = texpath.. "altWyv.tga"
             end
         else
             if faction == "Alliance" then
-                texturePath = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\actionbars\\GryphonNew.tga"
+                texturePath = texpath.. "GryphonNew.tga"
             else
-                texturePath = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\actionbars\\WyvernNew.tga"
+                texturePath = texpath.. "WyvernNew.tga"
             end
         end
 

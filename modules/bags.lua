@@ -13,6 +13,8 @@ DFRL:SetDefaults("bags", {
 DFRL:RegisterModule("bags", 2, function()
     d:DebugPrint("BOOTING")
 
+    local texpath = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\bags\\"
+
     -- move big bag
     do
         MainMenuBarBackpackButton:ClearAllPoints()
@@ -24,11 +26,11 @@ DFRL:RegisterModule("bags", 2, function()
     do
         -- main func to change the bag textures
         function ChangeBackpack()
-            local bagAtlas = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\bags\\bagslots2x"
+            local bagAtlas = texpath.. "bagslots2x"
             -- main bag
             do
-                local texture = 'Interface\\AddOns\\DragonflightReloaded\\media\\tex\\bags\\bigbag'
-                local highlight = 'Interface\\AddOns\\DragonflightReloaded\\media\\tex\\bags\\bigbagHighlight'
+                local texture = texpath.. "bigbag"
+                local highlight = texpath.. "bigbagHighlight"
 
                 MainMenuBarBackpackButton:SetScale(DFRL:GetConfig("bags", "bagScale"))
 
@@ -43,14 +45,14 @@ DFRL:RegisterModule("bags", 2, function()
                 MainMenuBarBackpackButtonNormalTexture:SetTexture()
 
                 if not MainMenuBarBackpackButton.Border then
-                    local cutout = 'Interface\\AddOns\\DragonflightReloaded\\media\\tex\\bags\\bagslotCutout'
+                    local cutout = texpath.. "bagslotCutout"
 
-                    local border = MainMenuBarBackpackButton:CreateTexture('DragonflightUIBigBagBorder')
+                    local border = MainMenuBarBackpackButton:CreateTexture("DragonflightUIBigBagBorder")
                     border:SetTexture(cutout)
                     border:SetWidth(30)
                     border:SetHeight(30)
-                    border:SetPoint('TOPLEFT', MainMenuBarBackpackButton, 'TOPLEFT', 0, 0)
-                    border:SetPoint('BOTTOMRIGHT', MainMenuBarBackpackButton, 'BOTTOMRIGHT', 0, 0)
+                    border:SetPoint("TOPLEFT", MainMenuBarBackpackButton, "TOPLEFT", 0, 0)
+                    border:SetPoint("BOTTOMRIGHT", MainMenuBarBackpackButton, "BOTTOMRIGHT", 0, 0)
 
                     MainMenuBarBackpackButton.Border = border
                 end
@@ -58,15 +60,15 @@ DFRL:RegisterModule("bags", 2, function()
 
             -- small bags
             do
-                CharacterBag0Slot:SetPoint('RIGHT', MainMenuBarBackpackButton, 'LEFT', -12, 0)
+                CharacterBag0Slot:SetPoint("RIGHT", MainMenuBarBackpackButton, "LEFT", -12, 0)
 
                 for i = 1, 3 do
                     local gap = 0
-                    _G['CharacterBag' .. i .. 'Slot']:SetPoint('RIGHT', _G['CharacterBag' .. (i - 1) .. 'Slot'], 'LEFT', -gap, 0)
+                    _G["CharacterBag" .. i .. "Slot"]:SetPoint("RIGHT", _G["CharacterBag" .. (i - 1) .. "Slot"], "LEFT", -gap, 0)
                 end
 
                 for i = 0, 3 do
-                    local slot = _G['CharacterBag' .. i .. 'Slot']
+                    local slot = _G["CharacterBag" .. i .. "Slot"]
                     slot:SetScale(1)
                     slot:SetWidth(30)
                     slot:SetHeight(30)
@@ -78,8 +80,8 @@ DFRL:RegisterModule("bags", 2, function()
                     normal:SetTexCoord(0.576172, 0.695312, 0.5, 0.976562)
                     normal:SetWidth(size)
                     normal:SetHeight(size)
-                    normal:SetPoint('CENTER', 2, -1)
-                    normal:SetDrawLayer('BACKGROUND', 0)
+                    normal:SetPoint("CENTER", 2, -1)
+                    normal:SetDrawLayer("BACKGROUND", 0)
 
                     local highlight = slot:GetHighlightTexture()
                     highlight:SetTexture(bagAtlas)
@@ -87,7 +89,7 @@ DFRL:RegisterModule("bags", 2, function()
                     highlight:SetWidth(size)
                     highlight:SetHeight(size)
                     highlight:ClearAllPoints()
-                    highlight:SetPoint('CENTER', 2, -1)
+                    highlight:SetPoint("CENTER", 2, -1)
 
                     local checked = slot:GetCheckedTexture()
                     if checked then
@@ -96,7 +98,7 @@ DFRL:RegisterModule("bags", 2, function()
                         checked:SetWidth(size)
                         checked:SetHeight(size)
                         checked:ClearAllPoints()
-                        checked:SetPoint('CENTER', 2, -1)
+                        checked:SetPoint("CENTER", 2, -1)
                     end
 
                     local pushed = slot:GetPushedTexture()
@@ -105,24 +107,24 @@ DFRL:RegisterModule("bags", 2, function()
                     pushed:SetWidth(size)
                     pushed:SetHeight(size)
                     pushed:ClearAllPoints()
-                    pushed:SetPoint('CENTER', 2, -1)
-                    pushed:SetDrawLayer('BORDER', 1)
+                    pushed:SetPoint("CENTER", 2, -1)
+                    pushed:SetDrawLayer("BORDER", 1)
 
-                    local iconTexture = _G['CharacterBag' .. i .. 'SlotIconTexture']
+                    local iconTexture = _G["CharacterBag" .. i .. "SlotIconTexture"]
                     iconTexture:ClearAllPoints()
-                    iconTexture:SetPoint('CENTER', 0, 0)
+                    iconTexture:SetPoint("CENTER", 0, 0)
 
                     iconTexture:SetWidth(20)
                     iconTexture:SetHeight(21)
-                    iconTexture:SetDrawLayer('BORDER', 2)
+                    iconTexture:SetDrawLayer("BORDER", 2)
 
                     if not slot.Border then
-                        local border = slot:CreateTexture('DragonflightUIBagBorder' .. i)
+                        local border = slot:CreateTexture("DragonflightUIBagBorder" .. i)
                         border:SetTexture(bagAtlas)
                         border:SetTexCoord(0.576172, 0.695312, 0.0078125, 0.484375)
                         border:SetWidth(size)
                         border:SetHeight(size)
-                        border:SetPoint('CENTER', 2, -1)
+                        border:SetPoint("CENTER", 2, -1)
 
                         slot.Border = border
                     end
@@ -134,7 +136,7 @@ DFRL:RegisterModule("bags", 2, function()
                 KeyRingButton:SetWidth(30)
                 KeyRingButton:SetHeight(30)
                 KeyRingButton:ClearAllPoints()
-                KeyRingButton:SetPoint('RIGHT', _G['CharacterBag3Slot'], 'LEFT', 0, 0)
+                KeyRingButton:SetPoint("RIGHT", _G["CharacterBag3Slot"], "LEFT", 0, 0)
                 KeyRingButton:SetScale(1)
 
                 local size = 30.5
@@ -145,8 +147,8 @@ DFRL:RegisterModule("bags", 2, function()
                 normal:SetWidth(size)
                 normal:SetHeight(size)
                 normal:ClearAllPoints()
-                normal:SetPoint('CENTER', 2, -1)
-                normal:SetDrawLayer('BORDER', 1)
+                normal:SetPoint("CENTER", 2, -1)
+                normal:SetDrawLayer("BORDER", 1)
 
                 local highlight = KeyRingButton:GetHighlightTexture()
                 highlight:SetTexture(bagAtlas)
@@ -154,7 +156,7 @@ DFRL:RegisterModule("bags", 2, function()
                 highlight:SetWidth(size)
                 highlight:SetHeight(size)
                 highlight:ClearAllPoints()
-                highlight:SetPoint('CENTER', 2, -1)
+                highlight:SetPoint("CENTER", 2, -1)
 
                 local pushed = KeyRingButton:GetPushedTexture()
                 pushed:SetTexture(bagAtlas)
@@ -162,28 +164,28 @@ DFRL:RegisterModule("bags", 2, function()
                 pushed:SetWidth(size)
                 pushed:SetHeight(size)
                 pushed:ClearAllPoints()
-                pushed:SetPoint('CENTER', 2, -1)
-                pushed:SetDrawLayer('OVERLAY', 7)
+                pushed:SetPoint("CENTER", 2, -1)
+                pushed:SetDrawLayer("OVERLAY", 7)
 
                 if not KeyRingButton.Icon then
-                    local icon = KeyRingButton:CreateTexture('KeyRingIconTexture')
-                    icon:SetTexture('Interface\\AddOns\\DragonflightReloaded\\media\\tex\\bags\\KeyRing-Bag-Icon')
+                    local icon = KeyRingButton:CreateTexture("KeyRingIconTexture")
+                    icon:SetTexture(texpath.. "KeyRing-Bag-Icon")
                     icon:SetWidth(20.5)
                     icon:SetHeight(20.5)
-                    icon:SetPoint('CENTER', 0, 0)
-                    icon:SetDrawLayer('ARTWORK', 2)
+                    icon:SetPoint("CENTER", 0, 0)
+                    icon:SetDrawLayer("ARTWORK", 2)
 
                     KeyRingButton.Icon = icon
                 end
 
                 if not KeyRingButton.Border then
-                    local border = KeyRingButton:CreateTexture('KeyRingBorder')
+                    local border = KeyRingButton:CreateTexture("KeyRingBorder")
                     border:SetTexture(bagAtlas)
                     border:SetTexCoord(0.699219, 0.818359, 0.5, 0.976562)
                     border:SetWidth(size)
                     border:SetHeight(size)
-                    border:SetPoint('CENTER', 2, -1)
-                    border:SetDrawLayer('OVERLAY', 1)
+                    border:SetPoint("CENTER", 2, -1)
+                    border:SetDrawLayer("OVERLAY", 1)
 
                     KeyRingButton.Border = border
                 end
@@ -198,7 +200,7 @@ DFRL:RegisterModule("bags", 2, function()
                 bagToggleButton:ClearAllPoints()
                 bagToggleButton:SetPoint("RIGHT", MainMenuBarBackpackButton, "LEFT", 11, 0)
 
-                local expandTexture = 'Interface\\AddOns\\DragonflightReloaded\\media\\tex\\bags\\expand'
+                local expandTexture = texpath.. "expand"
                 bagToggleButton:SetNormalTexture(expandTexture)
                 bagToggleButton:SetPushedTexture(expandTexture)
                 bagToggleButton:SetHighlightTexture(expandTexture)
@@ -218,7 +220,7 @@ DFRL:RegisterModule("bags", 2, function()
         -- update func
         function UpdateBagSlotIcons()
             for i = 0, 3 do
-                local iconTexture = _G['CharacterBag' .. i .. 'SlotIconTexture']
+                local iconTexture = _G["CharacterBag" .. i .. "SlotIconTexture"]
                 local bagID = i + 1
                 local texture = GetInventoryItemTexture("player", ContainerIDToInventoryID(bagID))
 
@@ -273,7 +275,7 @@ DFRL:RegisterModule("bags", 2, function()
         end
 
         for i = 0, 3 do
-            local slot = _G['CharacterBag' .. i .. 'Slot']
+            local slot = _G["CharacterBag" .. i .. "Slot"]
             if slot.Border then
                 slot.Border:SetVertexColor(color[1], color[2], color[3])
             end
@@ -311,7 +313,7 @@ DFRL:RegisterModule("bags", 2, function()
         local bagHideValue = DFRL:GetConfig("bags", "hideBags")
 
         for i = 0, 3 do
-            local slot = _G['CharacterBag' .. i .. 'Slot']
+            local slot = _G["CharacterBag" .. i .. "Slot"]
             if value and not bagHideValue then
                 slot:Show()
             else
@@ -354,7 +356,7 @@ DFRL:RegisterModule("bags", 2, function()
         MainMenuBarBackpackButton:SetAlpha(value)
 
         for i = 0, 3 do
-            _G['CharacterBag' .. i .. 'Slot']:SetAlpha(value)
+            _G["CharacterBag" .. i .. "Slot"]:SetAlpha(value)
         end
 
         if KeyRingButton then
@@ -367,7 +369,7 @@ DFRL:RegisterModule("bags", 2, function()
             MainMenuBarBackpackButton:Hide()
 
             for i = 0, 3 do
-                _G['CharacterBag' .. i .. 'Slot']:Hide()
+                _G["CharacterBag" .. i .. "Slot"]:Hide()
             end
 
             KeyRingButton:Hide()
@@ -381,7 +383,7 @@ DFRL:RegisterModule("bags", 2, function()
             local toggleBagsValue = DFRL:GetConfig("bags", "toggleBags")
             if toggleBagsValue then
                 for i = 0, 3 do
-                    _G['CharacterBag' .. i .. 'Slot']:Show()
+                    _G["CharacterBag" .. i .. "Slot"]:Show()
                 end
 
                 if KeyRingButton then
@@ -395,7 +397,7 @@ DFRL:RegisterModule("bags", 2, function()
             else
                 -- keep character bags hidden if toggleBags is false
                 for i = 0, 3 do
-                    _G['CharacterBag' .. i .. 'Slot']:Hide()
+                    _G["CharacterBag" .. i .. "Slot"]:Hide()
                 end
 
                 if KeyRingButton then

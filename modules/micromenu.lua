@@ -14,7 +14,9 @@ DFRL:SetDefaults("micromenu", {
 DFRL:RegisterModule("micromenu", 1, function()
     d:DebugPrint("BOOTING")
 
-    local path = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\uimicromenu2x.tga"
+    local texpath = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\"
+
+    local path = texpath.. "uimicromenu2x.tga"
     local buttonWidth = 20
     local buttonHeight = 30
     local buttonSpacing = 2
@@ -194,7 +196,7 @@ DFRL:RegisterModule("micromenu", 1, function()
             lowLevelTalentsButton:SetWidth(buttonWidth)
             lowLevelTalentsButton:SetHeight(buttonHeight)
             lowLevelTalentsButton:SetPoint("TOPLEFT", buttons[2], "TOPLEFT", buttonWidth + buttonSpacing, 0)
-            lowLevelTalentsButton:SetNormalTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\talents-disabled.tga")
+            lowLevelTalentsButton:SetNormalTexture(texpath.. "color_micro\\talents-disabled.tga")
             lowLevelTalentsButton:GetNormalTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)
 
             lowLevelTalentsButton:SetScript("OnEnter", function()
@@ -297,11 +299,11 @@ DFRL:RegisterModule("micromenu", 1, function()
             local _, _, latencyHome = GetNetStats()
 
             if latencyHome < 100 then
-                latencyTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\LatencyGreen.tga")
+                latencyTexture:SetTexture(texpath.. "LatencyGreen.tga")
             elseif latencyHome < 200 then
-                latencyTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\LatencyYellow.tga")
+                latencyTexture:SetTexture(texpath.. "LatencyYellow.tga")
             else
-                latencyTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\LatencyRed.tga")
+                latencyTexture:SetTexture(texpath.. "LatencyRed.tga")
             end
         end)
 
@@ -375,7 +377,7 @@ DFRL:RegisterModule("micromenu", 1, function()
 
     callbacks.switchColor = function(value)
         if value then
-            local colorpath = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\micromenu\\color_micro\\"
+            local colorpath = texpath.. "color_micro\\"
 
             buttons[2]:SetNormalTexture(colorpath .. "spellbook-regular.tga")
             buttons[2]:GetNormalTexture():SetTexCoord(36/128, 86/128, 29/128, 98/128)

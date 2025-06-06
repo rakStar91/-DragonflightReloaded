@@ -6,6 +6,7 @@ DFRL:SetDefaults("smallframes", {
     textShow = {false, 2, "checkbox", "text", "Show pet health and mana text"},
     noPercent = {false, 3, "checkbox", "text", "Hide pet health and mana percent text"},
     colorReaction = {true, 4, "checkbox", "bar color", "Color health bar based on target reaction"},
+    colorClass = {true, 5, "checkbox", "bar color", "Color health bar based on target class"},
 
 })
 
@@ -97,6 +98,7 @@ DFRL:RegisterModule("smallframes", 2, function()
     TargetofTargetTexture:SetTexture(path .. "pet")
     TargetofTargetHealthBar:SetStatusBarTexture(path .. "UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Health.tga")
 
+    -- mana/rage hook
     hooksecurefunc("TargetofTarget_Update", function()
         local powerType = UnitPowerType("targettarget")
         local tex
@@ -335,57 +337,145 @@ DFRL:RegisterModule("smallframes", 2, function()
         end
     end
 
-    callbacks.colorReaction = function(value)
-        TargetofTargetHealthBar.colorReaction = value
+    -- callbacks.colorReaction = function(value)
+    --     TargetofTargetHealthBar.colorReaction = value
 
-        if UnitExists("targettarget") then
+    --     if UnitExists("targettarget") then
+    --         if IsTargetOfTargetTaggedByOther() then
+    --             TargetofTargetHealthBar:SetStatusBarColor(0.5, 0.5, 0.5)
+    --             return
+    --         end
+
+    --         local reaction = UnitReaction("player", "targettarget")
+
+    --         if value and reaction then
+    --             if reaction <= 2 then
+    --                 -- hostile
+    --                 TargetofTargetHealthBar:SetStatusBarColor(1, 0, 0)
+    --             elseif reaction == 3 or reaction == 4 then
+    --                 -- neutral
+    --                 TargetofTargetHealthBar:SetStatusBarColor(1, 1, 0)
+    --             else
+    --                 -- friendly
+    --                 TargetofTargetHealthBar:SetStatusBarColor(0, 1, 0)
+    --             end
+    --         else
+    --             -- reset
+    --             TargetofTargetHealthBar:SetStatusBarColor(0, 1, 0)
+    --         end
+    --     end
+    -- end
+
+    -- -- tot hook
+    -- HookScript(_G["TargetofTargetHealthBar"], "OnValueChanged", function()
+    --     if IsTargetOfTargetTaggedByOther() then
+    --         _G["TargetofTargetHealthBar"]:SetStatusBarColor(0.5, 0.5, 0.5)
+    --         return
+    --     end
+
+    --     if _G["TargetofTargetHealthBar"].colorReaction then
+    --         local reaction = UnitReaction("player", "targettarget")
+    --         if reaction then
+    --             if reaction <= 2 then
+    --                 _G["TargetofTargetHealthBar"]:SetStatusBarColor(1, 0, 0)
+    --             elseif reaction <= 4 then
+    --                 _G["TargetofTargetHealthBar"]:SetStatusBarColor(1, 1, 0)
+    --             else
+    --                 _G["TargetofTargetHealthBar"]:SetStatusBarColor(0, 1, 0)
+    --             end
+    --         end
+    --     end
+    -- end)
+
+    -- ill try out a new way to create our callbacks by using  State Object Patterns
+    local framesState = {
+        colorReaction = false,
+        colorClass = false,
+
+        updateToTColor = function(self)
+            if not UnitExists("targettarget") then return end
+
             if IsTargetOfTargetTaggedByOther() then
                 TargetofTargetHealthBar:SetStatusBarColor(0.5, 0.5, 0.5)
                 return
             end
 
-            local reaction = UnitReaction("player", "targettarget")
-
-            if value and reaction then
-                if reaction <= 2 then
-                    -- hostile
-                    TargetofTargetHealthBar:SetStatusBarColor(1, 0, 0)
-                elseif reaction == 3 or reaction == 4 then
-                    -- neutral
-                    TargetofTargetHealthBar:SetStatusBarColor(1, 1, 0)
-                else
-                    -- friendly
-                    TargetofTargetHealthBar:SetStatusBarColor(0, 1, 0)
+            if self.colorClass then
+                if UnitIsPlayer("targettarget") then
+                    local _, class = UnitClass("targettarget")
+                    if class and RAID_CLASS_COLORS[class] then
+                        local color = RAID_CLASS_COLORS[class]
+                        TargetofTargetHealthBar:SetStatusBarColor(color.r, color.g, color.b)
+                        return
+                    end
                 end
-            else
-                -- reset
-                TargetofTargetHealthBar:SetStatusBarColor(0, 1, 0)
             end
+
+            if self.colorReaction then
+                local reaction = UnitReaction("player", "targettarget")
+                if reaction then
+                    if reaction <= 2 then
+                        -- hostile
+                        TargetofTargetHealthBar:SetStatusBarColor(1, 0, 0)
+                    elseif reaction == 3 or reaction == 4 then
+                        -- neutral
+                        TargetofTargetHealthBar:SetStatusBarColor(1, 1, 0)
+                    else
+                        -- friendly
+                        TargetofTargetHealthBar:SetStatusBarColor(0, 1, 0)
+                    end
+                    return
+                end
+            end
+
+            -- default color
+            TargetofTargetHealthBar:SetStatusBarColor(0, 1, 0)
+        end,
+
+        -- party frames
+        updatePartyColors = function(self)
+            for i = 1, 4 do
+                if UnitExists("party" .. i) then
+                    local healthBar = _G["PartyMemberFrame" .. i .. "HealthBar"]
+
+                    if self.colorClass then
+                        local _, class = UnitClass("party" .. i)
+                        if class and RAID_CLASS_COLORS[class] then
+                            local color = RAID_CLASS_COLORS[class]
+                            healthBar:SetStatusBarColor(color.r, color.g, color.b)
+                        else
+                            healthBar:SetStatusBarColor(0, 1, 0)
+                        end
+                    else
+                        healthBar:SetStatusBarColor(0, 1, 0)
+                    end
+                end
+            end
+        end,
+
+        -- update
+        updateAllColors = function(self)
+            self:updateToTColor()
+            self:updatePartyColors()
         end
+    }
+
+    callbacks.colorReaction = function(value)
+        framesState.colorReaction = value
+        framesState:updateAllColors()
     end
 
-    -- tot hook
-    HookScript(_G["TargetofTargetHealthBar"], "OnValueChanged", function()
-        if IsTargetOfTargetTaggedByOther() then
-            _G["TargetofTargetHealthBar"]:SetStatusBarColor(0.5, 0.5, 0.5)
-            return
-        end
+    callbacks.colorClass = function(value)
+        framesState.colorClass = value
+        framesState:updateAllColors()
+    end
 
-        if _G["TargetofTargetHealthBar"].colorReaction then
-            local reaction = UnitReaction("player", "targettarget")
-            if reaction then
-                if reaction <= 2 then
-                    _G["TargetofTargetHealthBar"]:SetStatusBarColor(1, 0, 0)
-                elseif reaction <= 4 then
-                    _G["TargetofTargetHealthBar"]:SetStatusBarColor(1, 1, 0)
-                else
-                    _G["TargetofTargetHealthBar"]:SetStatusBarColor(0, 1, 0)
-                end
-            end
-        end
+    -- hook
+    HookScript(TargetofTargetHealthBar, "OnValueChanged", function()
+        framesState:updateToTColor()
     end)
 
-    --  event handler
+    -- event handler
     local f = CreateFrame("Frame")
     f:RegisterEvent("PLAYER_ENTERING_WORLD")
     f:RegisterEvent("UNIT_HEALTH")
@@ -405,6 +495,8 @@ DFRL:RegisterModule("smallframes", 2, function()
             UpdatePetTexts()
         end
 
+        local partyUpdateTimer = nil
+
         if event == "PLAYER_ENTERING_WORLD" or event == "PARTY_MEMBERS_CHANGED" or
             (event == "UNIT_HEALTH" and string.find(arg1, "party")) then
             local value = DFRL:GetConfig("smallframes", "noPercent")
@@ -423,6 +515,26 @@ DFRL:RegisterModule("smallframes", 2, function()
                     partyHealthPercentTexts[i]:SetText("")
                 end
             end
+
+            if event == "PARTY_MEMBERS_CHANGED" then
+                if partyUpdateTimer then
+                    partyUpdateTimer:SetScript("OnUpdate", nil)
+                else
+                    partyUpdateTimer = CreateFrame("Frame")
+                end
+
+                partyUpdateTimer:SetScript("OnUpdate", function()
+                    framesState:updatePartyColors()
+                    partyUpdateTimer:SetScript("OnUpdate", nil)
+                end)
+            else
+                framesState:updatePartyColors()
+            end
+        end
+
+
+        if event == "PLAYER_ENTERING_WORLD" or (event == "UNIT_HEALTH" and arg1 == "targettarget") then
+            framesState:updateToTColor()
         end
     end)
 

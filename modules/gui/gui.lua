@@ -8,6 +8,8 @@ DFRL:SetDefaults("gui", {
 DFRL:RegisterModule("gui", 2, function()
     d:DebugPrint("BOOTING GUI MODULE")
 
+    local texpath = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\"
+
     -- control settings
     local debugMode = false
     local enableAnim = not debugMode -- will use later
@@ -52,25 +54,25 @@ DFRL:RegisterModule("gui", 2, function()
 
         -- DFRL bg tex
         local topLeft = mainFrame:CreateTexture(nil, "ARTWORK")
-        topLeft:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\gui\\gui_topleft.tga")
+        topLeft:SetTexture(texpath.. "gui\\gui_topleft.tga")
         topLeft:SetPoint("BOTTOMRIGHT", mainFrame, "CENTER", -0, 0)
         topLeft:SetWidth(512)
         topLeft:SetHeight(512)
 
         local topRight = mainFrame:CreateTexture(nil, "ARTWORK")
-        topRight:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\gui\\gui_topright.tga")
+        topRight:SetTexture(texpath.. "gui\\gui_topright.tga")
         topRight:SetPoint("BOTTOMLEFT", mainFrame, "CENTER", 0, 0)
         topRight:SetWidth(512)
         topRight:SetHeight(512)
 
         local botLeft = mainFrame:CreateTexture(nil, "ARTWORK")
-        botLeft:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\gui\\gui_botleft.tga")
+        botLeft:SetTexture(texpath.. "gui\\gui_botleft.tga")
         botLeft:SetPoint("TOPRIGHT", mainFrame, "CENTER", -0, -0)
         botLeft:SetWidth(512)
         botLeft:SetHeight(512)
 
         local botRight = mainFrame:CreateTexture(nil, "ARTWORK")
-        botRight:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\gui\\gui_botright.tga")
+        botRight:SetTexture(texpath.. "gui\\gui_botright.tga")
         botRight:SetPoint("TOPLEFT", mainFrame, "CENTER", 0, -0)
         botRight:SetWidth(512)
         botRight:SetHeight(512)
@@ -116,9 +118,9 @@ DFRL:RegisterModule("gui", 2, function()
         closeButton:SetWidth(21)
         closeButton:SetHeight(21)
         closeButton:SetPoint("TOPRIGHT", mainFrame, "TOPRIGHT", -15, -35)
-        closeButton:SetNormalTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\ui\\close_normal.tga")
-        closeButton:SetPushedTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\ui\\close_pushed.tga")
-        closeButton:SetHighlightTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\ui\\close_normal.tga")
+        closeButton:SetNormalTexture(texpath.. "ui\\close_normal.tga")
+        closeButton:SetPushedTexture(texpath.. "ui\\close_pushed.tga")
+        closeButton:SetHighlightTexture(texpath.. "ui\\close_normal.tga")
         closeButton:SetScript("OnClick", function()
             gui.Toggle()
         end)

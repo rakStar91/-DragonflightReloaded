@@ -7,11 +7,14 @@ DFRL:SetDefaults("targetframe", {
     noPercent = {true, 3, "checkbox", "text", "Show only current values without percentages"},
     textColoring = {false, 4, "checkbox", "text", "Color text based on health/mana percentage"},
     colorReaction = {true, 5, "checkbox", "bar color", "Color health bar based on target reaction"},
+    colorClass = {true, 6, "checkbox", "bar color", "Color health bar based on target class"},
 
 })
 
 DFRL:RegisterModule("targetframe", 1, function()
     d:DebugPrint("BOOTING")
+
+    local texpath = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\"
 
     -- blizz
     do
@@ -65,15 +68,15 @@ DFRL:RegisterModule("targetframe", 1, function()
     function _G.TargetFrame_CheckClassification()
         local classification = UnitClassification("target")
         if ( classification == "worldboss" ) then
-            TargetFrameTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\UI-TargetingFrame-Boss.blp")
+            TargetFrameTexture:SetTexture(texpath.. "UI-TargetingFrame-Boss.blp")
         elseif ( classification == "rareelite"  ) then
-            TargetFrameTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\UI-TargetingFrame-RareElite.blp")
+            TargetFrameTexture:SetTexture(texpath.. "UI-TargetingFrame-RareElite.blp")
         elseif ( classification == "elite"  ) then
-            TargetFrameTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\UI-TargetingFrame-Elite.blp")
+            TargetFrameTexture:SetTexture(texpath.. "UI-TargetingFrame-Elite.blp")
         elseif ( classification == "rare"  ) then
-            TargetFrameTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\UI-TargetingFrame-Rare.blp")
+            TargetFrameTexture:SetTexture(texpath.. "UI-TargetingFrame-Rare.blp")
         else
-            TargetFrameTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\UI-TargetingFrameDF1.blp")
+            TargetFrameTexture:SetTexture(texpath.. "UI-TargetingFrameDF1.blp")
         end
     end
 
@@ -199,56 +202,69 @@ DFRL:RegisterModule("targetframe", 1, function()
         UpdateTexts()
     end
 
-    callbacks.colorReaction = function(value)
-        TargetFrameHealthBar.colorReaction = value
+    -- ill try out a new way to create our callbacks by using  State Object Patterns
+    local targetState = {
+        colorReaction = false,
+        colorClass = false,
 
-        if UnitExists("target") then
-            -- Check for tagged mobs first
+        updateColor = function(self)
+            -- early return if no target
+            if not UnitExists("target") then return end
+
             if IsTargetTaggedByOther() then
                 TargetFrameHealthBar:SetStatusBarColor(0.5, 0.5, 0.5)
                 return
             end
 
-            local reaction = UnitReaction("player", "target")
-            if value and reaction then
-                if reaction <= 2 then
-                    -- hostile
-                    TargetFrameHealthBar:SetStatusBarColor(1, 0, 0)
-                elseif reaction == 3 or reaction == 4 then
-                    -- neutral
-                    TargetFrameHealthBar:SetStatusBarColor(1, 1, 0)
-                else
-                    -- friendly
-                    TargetFrameHealthBar:SetStatusBarColor(0, 1, 0)
+            if self.colorClass then
+                if UnitIsPlayer("target") then
+                    local _, class = UnitClass("target")
+                    if class and RAID_CLASS_COLORS[class] then
+                        local color = RAID_CLASS_COLORS[class]
+                        TargetFrameHealthBar:SetStatusBarColor(color.r, color.g, color.b)
+                        return
+                    end
                 end
-            else
-                -- reset
-                TargetFrameHealthBar:SetStatusBarColor(0, 1, 0)
             end
+
+            if self.colorReaction then
+                local reaction = UnitReaction("player", "target")
+                if reaction then
+                    if reaction <= 2 then
+                        -- hostile
+                        TargetFrameHealthBar:SetStatusBarColor(1, 0, 0)
+                    elseif reaction == 3 or reaction == 4 then
+                        -- neutral
+                        TargetFrameHealthBar:SetStatusBarColor(1, 1, 0)
+                    else
+                        -- friendly
+                        TargetFrameHealthBar:SetStatusBarColor(0, 1, 0)
+                    end
+                    return
+                end
+            end
+
+            -- default color
+            TargetFrameHealthBar:SetStatusBarColor(0, 1, 0)
         end
+    }
+
+    callbacks.colorReaction = function(value)
+        targetState.colorReaction = value
+        targetState:updateColor()
     end
 
-    HookScript(_G["TargetFrameHealthBar"], "OnValueChanged", function()
-        if IsTargetTaggedByOther() then
-            _G["TargetFrameHealthBar"]:SetStatusBarColor(0.5, 0.5, 0.5)
-            return
-        end
+    callbacks.colorClass = function(value)
+        targetState.colorClass = value
+        targetState:updateColor()
+    end
 
-        if _G["TargetFrameHealthBar"].colorReaction then
-            local reaction = UnitReaction("player", "target")
-            if reaction then
-                if reaction <= 2 then
-                    _G["TargetFrameHealthBar"]:SetStatusBarColor(1, 0, 0)
-                elseif reaction <= 4 then
-                    _G["TargetFrameHealthBar"]:SetStatusBarColor(1, 1, 0)
-                else
-                    _G["TargetFrameHealthBar"]:SetStatusBarColor(0, 1, 0)
-                end
-            end
-        end
+    -- hook health bar value change
+    HookScript(_G["TargetFrameHealthBar"], "OnValueChanged", function()
+        targetState:updateColor()
     end)
 
-    -- event handler
+    -- Event handler
     local f = CreateFrame("Frame")
     f:RegisterEvent("PLAYER_TARGET_CHANGED")
     f:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -259,46 +275,125 @@ DFRL:RegisterModule("targetframe", 1, function()
     f:RegisterEvent("UNIT_FOCUS")
     f:SetScript("OnEvent", function()
         if event == "PLAYER_TARGET_CHANGED" or event == "PLAYER_ENTERING_WORLD" then
-            TargetFrameTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\UI-TargetingFrameDF1.blp")
-            TargetFrameHealthBar:SetStatusBarTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\healthDF2.tga")
-            TargetFrameManaBar:SetStatusBarTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\UI-HUD-UnitFrame-Target-PortraitOn-Bar-Mana-Status.blp")
-            TargetFrameBackground:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\UI-TargetingFrameDF1-Background.blp")
+            TargetFrameTexture:SetTexture(texpath.. "UI-TargetingFrameDF1.blp")
+            TargetFrameHealthBar:SetStatusBarTexture(texpath.. "healthDF2.tga")
+            TargetFrameManaBar:SetStatusBarTexture(texpath.. "UI-HUD-UnitFrame-Target-PortraitOn-Bar-Mana-Status.blp")
+            TargetFrameBackground:SetTexture(texpath.. "UI-TargetingFrameDF1-Background.blp")
             TargetFrameNameBackground:SetTexture(nil)
 
             _G.TargetFrame_CheckClassification()
             UpdateTexts()
-
-            if IsTargetTaggedByOther() then
-                TargetFrameHealthBar:SetStatusBarColor(0.5, 0.5, 0.5)
-            elseif TargetFrameHealthBar.colorReaction then
-                local reaction = UnitReaction("player", "target")
-                if reaction then
-                    if reaction <= 2 then
-                        -- hostile - red
-                        TargetFrameHealthBar:SetStatusBarColor(1, 0, 0)
-                    elseif reaction == 3 or reaction == 4 then
-                        -- neutral - yellow
-                        TargetFrameHealthBar:SetStatusBarColor(1, 1, 0)
-                    else
-                        -- friendly - green
-                        TargetFrameHealthBar:SetStatusBarColor(0, 1, 0)
-                    end
-                else
-                    -- reset to default color
-                    TargetFrameHealthBar:SetStatusBarColor(0, 1, 0)
-                end
-            end
+            targetState:updateColor()
         elseif (event == "UNIT_HEALTH" and arg1 == "target") or
             (event == "UNIT_MANA" and arg1 == "target") or
             (event == "UNIT_ENERGY" and arg1 == "target") or
             (event == "UNIT_RAGE" and arg1 == "target") or
             (event == "UNIT_FOCUS" and arg1 == "target") then
             UpdateTexts()
-            if IsTargetTaggedByOther() then
-                TargetFrameHealthBar:SetStatusBarColor(0.5, 0.5, 0.5)
-            end
+            targetState:updateColor()
         end
     end)
+
+    -- callbacks.colorReaction = function(value)
+    --     TargetFrameHealthBar.colorReaction = value
+
+    --     if UnitExists("target") then
+    --         -- Check for tagged mobs first
+    --         if IsTargetTaggedByOther() then
+    --             TargetFrameHealthBar:SetStatusBarColor(0.5, 0.5, 0.5)
+    --             return
+    --         end
+
+    --         local reaction = UnitReaction("player", "target")
+    --         if value and reaction then
+    --             if reaction <= 2 then
+    --                 -- hostile
+    --                 TargetFrameHealthBar:SetStatusBarColor(1, 0, 0)
+    --             elseif reaction == 3 or reaction == 4 then
+    --                 -- neutral
+    --                 TargetFrameHealthBar:SetStatusBarColor(1, 1, 0)
+    --             else
+    --                 -- friendly
+    --                 TargetFrameHealthBar:SetStatusBarColor(0, 1, 0)
+    --             end
+    --         else
+    --             -- reset
+    --             TargetFrameHealthBar:SetStatusBarColor(0, 1, 0)
+    --         end
+    --     end
+    -- end
+
+    -- HookScript(_G["TargetFrameHealthBar"], "OnValueChanged", function()
+    --     if IsTargetTaggedByOther() then
+    --         _G["TargetFrameHealthBar"]:SetStatusBarColor(0.5, 0.5, 0.5)
+    --         return
+    --     end
+
+    --     if _G["TargetFrameHealthBar"].colorReaction then
+    --         local reaction = UnitReaction("player", "target")
+    --         if reaction then
+    --             if reaction <= 2 then
+    --                 _G["TargetFrameHealthBar"]:SetStatusBarColor(1, 0, 0)
+    --             elseif reaction <= 4 then
+    --                 _G["TargetFrameHealthBar"]:SetStatusBarColor(1, 1, 0)
+    --             else
+    --                 _G["TargetFrameHealthBar"]:SetStatusBarColor(0, 1, 0)
+    --             end
+    --         end
+    --     end
+    -- end)
+
+    -- -- event handler
+    -- local f = CreateFrame("Frame")
+    -- f:RegisterEvent("PLAYER_TARGET_CHANGED")
+    -- f:RegisterEvent("PLAYER_ENTERING_WORLD")
+    -- f:RegisterEvent("UNIT_HEALTH")
+    -- f:RegisterEvent("UNIT_MANA")
+    -- f:RegisterEvent("UNIT_ENERGY")
+    -- f:RegisterEvent("UNIT_RAGE")
+    -- f:RegisterEvent("UNIT_FOCUS")
+    -- f:SetScript("OnEvent", function()
+    --     if event == "PLAYER_TARGET_CHANGED" or event == "PLAYER_ENTERING_WORLD" then
+    --         TargetFrameTexture:SetTexture(texpath.. "UI-TargetingFrameDF1.blp")
+    --         TargetFrameHealthBar:SetStatusBarTexture(texpath.. "healthDF2.tga")
+    --         TargetFrameManaBar:SetStatusBarTexture(texpath.. "UI-HUD-UnitFrame-Target-PortraitOn-Bar-Mana-Status.blp")
+    --         TargetFrameBackground:SetTexture(texpath.. "UI-TargetingFrameDF1-Background.blp")
+    --         TargetFrameNameBackground:SetTexture(nil)
+
+    --         _G.TargetFrame_CheckClassification()
+    --         UpdateTexts()
+
+    --         if IsTargetTaggedByOther() then
+    --             TargetFrameHealthBar:SetStatusBarColor(0.5, 0.5, 0.5)
+    --         elseif TargetFrameHealthBar.colorReaction then
+    --             local reaction = UnitReaction("player", "target")
+    --             if reaction then
+    --                 if reaction <= 2 then
+    --                     -- hostile - red
+    --                     TargetFrameHealthBar:SetStatusBarColor(1, 0, 0)
+    --                 elseif reaction == 3 or reaction == 4 then
+    --                     -- neutral - yellow
+    --                     TargetFrameHealthBar:SetStatusBarColor(1, 1, 0)
+    --                 else
+    --                     -- friendly - green
+    --                     TargetFrameHealthBar:SetStatusBarColor(0, 1, 0)
+    --                 end
+    --             else
+    --                 -- reset to default color
+    --                 TargetFrameHealthBar:SetStatusBarColor(0, 1, 0)
+    --             end
+    --         end
+    --     elseif (event == "UNIT_HEALTH" and arg1 == "target") or
+    --         (event == "UNIT_MANA" and arg1 == "target") or
+    --         (event == "UNIT_ENERGY" and arg1 == "target") or
+    --         (event == "UNIT_RAGE" and arg1 == "target") or
+    --         (event == "UNIT_FOCUS" and arg1 == "target") then
+    --         UpdateTexts()
+    --         if IsTargetTaggedByOther() then
+    --             TargetFrameHealthBar:SetStatusBarColor(0.5, 0.5, 0.5)
+    --         end
+    --     end
+    -- end)
 
     -- execute callbacks
     DFRL:RegisterCallback("targetframe", callbacks)

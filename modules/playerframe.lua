@@ -4,21 +4,27 @@ DFRL:SetDefaults("playerframe", {
     hidden = {false},
 
     darkMode = {false, 1, "checkbox", "appearance", "Enable dark mode for the player frame"},
+
     textShow = {true, 2, "checkbox", "text", "Show health and mana text"},
     noPercent = {true, 3, "checkbox", "text", "Show only current values without percentages"},
     textColoring = {false, 4, "checkbox", "text", "Color text based on health/mana percentage from white to red"},
+
+    classColor = {false, 1, "checkbox", "bar color", "Activate 2D class portrait icons"},
+
     classPortrait = {false, 5, "checkbox", "tweaks", "Activate 2D class portrait icons"},
-    frameHide = {false, 6, "checkbox", "tweaks", "Hide frame at full HP when not in combat"},
+    frameHide = {false, 7, "checkbox", "tweaks", "Hide frame at full HP when not in combat"},
 })
 
 DFRL:RegisterModule("playerframe", 2, function()
     d:DebugPrint("BOOTING")
 
-    PlayerFrameTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\UI-TargetingFrameDF.blp")
-    PlayerStatusTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\UI-Player-Status.blp")
-    PlayerFrameHealthBar:SetStatusBarTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\healthDF2.tga")
-    PlayerFrameManaBar:SetStatusBarTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana-Status.tga")
-    PlayerFrameBackground:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\UI-TargetingFrameDF-Background.blp")
+    local texpath = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\"
+
+    PlayerFrameTexture:SetTexture(texpath.. "UI-TargetingFrameDF.blp")
+    PlayerStatusTexture:SetTexture(texpath.. "UI-Player-Status.blp")
+    PlayerFrameHealthBar:SetStatusBarTexture(texpath.. "healthDF2.tga")
+    PlayerFrameManaBar:SetStatusBarTexture(texpath.. "UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana-Status.tga")
+    PlayerFrameBackground:SetTexture(texpath.. "UI-TargetingFrameDF-Background.blp")
 
     PlayerFrameHealthBar:SetWidth(130)
     PlayerFrameHealthBar:SetHeight(30)
@@ -73,7 +79,7 @@ DFRL:RegisterModule("playerframe", 2, function()
         combatOverlay:SetFrameStrata("HIGH")
 
         local texture = combatOverlay:CreateTexture(nil, "OVERLAY")
-        texture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\UI-Player-Status.blp")
+        texture:SetTexture(texpath.. "UI-Player-Status.blp")
         texture:SetPoint("CENTER", PlayerFrame, "CENTER", 45, -21)
         texture:SetVertexColor(1, 0, 0)
         texture:SetBlendMode("ADD")
@@ -143,7 +149,7 @@ DFRL:RegisterModule("playerframe", 2, function()
         restingAnimation:SetHeight(24)
 
         local texture = restingAnimation:CreateTexture(nil, "OVERLAY")
-        texture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\UIUnitFrameRestingFlipbook")
+        texture:SetTexture(texpath.. "UIUnitFrameRestingFlipbook")
         texture:SetAllPoints(restingAnimation)
 
         local texCoords = {
@@ -210,9 +216,9 @@ DFRL:RegisterModule("playerframe", 2, function()
 
             local cutoutTexture = cutoutFrame:CreateTexture(nil, "OVERLAY")
             if barType == "health" then
-                cutoutTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\healthDF2.tga")
+                cutoutTexture:SetTexture(texpath.. "healthDF2.tga")
             else
-                cutoutTexture:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana-Status.tga")
+                cutoutTexture:SetTexture(texpath.. "UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana-Status.tga")
             end
             cutoutTexture:SetVertexColor(1, 1, 1, 0.7)
             cutoutTexture:SetAllPoints(cutoutFrame)
@@ -412,6 +418,29 @@ DFRL:RegisterModule("playerframe", 2, function()
     end
 
     local callbacks = {}
+
+    -- ill try out a new way to create our callbacks by using  State Object Patterns
+    local playerState = {
+        colorClass = false,
+
+        updateColor = function(self)
+            if self.colorClass then
+                local _, class = UnitClass("player")
+                if class and RAID_CLASS_COLORS[class] then
+                    local color = RAID_CLASS_COLORS[class]
+                    PlayerFrameHealthBar:SetStatusBarColor(color.r, color.g, color.b)
+                    return
+                end
+            end
+
+            PlayerFrameHealthBar:SetStatusBarColor(0, 1, 0)
+        end
+    }
+
+    callbacks.classColor = function(value)
+        playerState.colorClass = value
+        playerState:updateColor()
+    end
 
     callbacks.textShow = function(value)
         if value then
@@ -654,6 +683,10 @@ DFRL:RegisterModule("playerframe", 2, function()
     powerUpdateFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
     powerUpdateFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
     powerUpdateFrame:SetScript("OnEvent", function()
+        if event == "PLAYER_ENTERING_WORLD" then
+            playerState:updateColor()
+        end
+
         if event == "PLAYER_ENTERING_WORLD" or
         event == "PLAYER_REGEN_ENABLED" or
         event == "PLAYER_REGEN_DISABLED" or
