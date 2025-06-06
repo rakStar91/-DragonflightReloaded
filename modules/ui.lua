@@ -6,12 +6,19 @@ DFRL:SetDefaults("ui", {
     questLog = {false, 1, "checkbox", "appearance", "Enable dark mode for the questlog"},
     gameMenu = {false, 2, "checkbox", "appearance", "Enable dark mode for the game menu"},
     characterPanel = {false, 3, "checkbox", "appearance", "Enable dark mode for the character panel"},
-    errorMessage = {false, 4, "checkbox", "tweaks", "Hide the top UI error message (e.g. 'Spell is not ready')"},
-
+    hideErrorMessage = {false, 4, "checkbox", "tweaks", "Hide the top UI error message (e.g. 'Spell is not ready')"},
+    lowHpWarn = {true, 5, "checkbox", "tweaks", "Show red border when health is low"},
+    lowHpThreshold = {40, 6, "slider", {5, 95}, "tweaks", "Health threshold for low HP warning", 10, 90, 5},
 })
 
 DFRL:RegisterModule("ui", 2, function()
     d:DebugPrint("BOOTING")
+
+    -- locals
+    local UnitHealth = UnitHealth
+    local UnitHealthMax = UnitHealthMax
+    local GetTime = GetTime
+    local sin = math.sin
 
     -- hide stuff
     do
@@ -452,11 +459,132 @@ DFRL:RegisterModule("ui", 2, function()
         end
     end
 
-    callbacks.errorMessage = function (value)
+    callbacks.hideErrorMessage = function (value)
         if value then
             UIErrorsFrame:UnregisterEvent("UI_ERROR_MESSAGE")
         else
             UIErrorsFrame:RegisterEvent("UI_ERROR_MESSAGE")
+        end
+    end
+
+    callbacks.lowHpWarn = function(value)
+        if not DFRL.lowHpWarnFrame then
+            local frame = CreateFrame("Frame", "DFRL_LowHpWarnFrame", UIParent)
+            frame:SetFrameStrata("BACKGROUND")
+            frame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 0, 0)
+            frame:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", 0, 0)
+            frame:Hide()
+
+            local top = frame:CreateTexture(nil, "BACKGROUND")
+            top:SetTexture("Interface\\Buttons\\WHITE8X8")
+            top:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, 0)
+            top:SetPoint("TOPRIGHT", frame, "TOPRIGHT", 0, 0)
+            top:SetHeight(64)
+            ---@diagnostic disable-next-line: undefined-field
+            top:SetGradientAlpha("VERTICAL", 1, 0, 0, 0, 1, 0, 0, 0.7)
+
+            local bottom = frame:CreateTexture(nil, "BACKGROUND")
+            bottom:SetTexture("Interface\\Buttons\\WHITE8X8")
+            bottom:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 0, 0)
+            bottom:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 0, 0)
+            bottom:SetHeight(64)
+            ---@diagnostic disable-next-line: undefined-field
+            bottom:SetGradientAlpha("VERTICAL", 1, 0, 0, 0.7, 1, 0, 0, 0)
+
+            local left = frame:CreateTexture(nil, "BACKGROUND")
+            left:SetTexture("Interface\\Buttons\\WHITE8X8")
+            left:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, 0)
+            left:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 0, 0)
+            left:SetWidth(64)
+            ---@diagnostic disable-next-line: undefined-field
+            left:SetGradientAlpha("HORIZONTAL", 1, 0, 0, 0.7, 1, 0, 0, 0)
+
+            local right = frame:CreateTexture(nil, "BACKGROUND")
+            right:SetTexture("Interface\\Buttons\\WHITE8X8")
+            right:SetPoint("TOPRIGHT", frame, "TOPRIGHT", 0, 0)
+            right:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 0, 0)
+            right:SetWidth(64)
+            ---@diagnostic disable-next-line: undefined-field
+            right:SetGradientAlpha("HORIZONTAL", 1, 0, 0, 0, 1, 0, 0, 0.7)
+
+            -- store
+            frame.textures = {top, bottom, left, right}
+            frame.pulseTime = 0
+            frame.baseAlpha = 0.1
+
+            DFRL.lowHpWarnFrame = frame
+
+            local healthCheckFrame = CreateFrame("Frame")
+            local updateFunc = function()
+                if (this.tick or 0) > GetTime() then return end
+                this.tick = GetTime() + 0.01
+
+                local healthPercent = UnitHealth("player") / UnitHealthMax("player") * 100
+
+                local threshold = DFRL:GetConfig("ui", "lowHpThreshold")
+                if healthPercent <= threshold then
+                    DFRL.lowHpWarnFrame:Show()
+
+                    -- calculate alpha
+                    -- at 45% hp: alpha = 0.1, at 0% hp: alpha = 1.0
+                    local warningRange = threshold * 0.9  -- start fading at 90% of threshold
+                    local alphaMultiplier = (warningRange - healthPercent) / warningRange
+                    local baseAlpha = 0.1 + (0.9 * alphaMultiplier)
+
+                    -- calculate pulse speed
+                    -- lower health = faster pulsing
+                    local pulseSpeed = 1 + (3 * alphaMultiplier)
+
+                    -- update pulse time
+                    DFRL.lowHpWarnFrame.pulseTime = DFRL.lowHpWarnFrame.pulseTime + (arg1 * pulseSpeed)
+
+                    -- calculate pulse factor using sine wave
+                    local pulseFactor = (sin(DFRL.lowHpWarnFrame.pulseTime) + 1) / 2 -- normalized to 0-1
+
+                    -- apply pulsing to alpha
+                    local finalAlpha = baseAlpha * (0.3 + 0.7 * pulseFactor) -- pulse between 30% and 100% of base alpha
+
+                    -- update
+                    for i = 1, 4 do
+                        local texture = DFRL.lowHpWarnFrame.textures[i]
+                        if i == 1 then -- top
+                            ---@diagnostic disable-next-line: undefined-field
+                            texture:SetGradientAlpha("VERTICAL", 1, 0, 0, 0, 1, 0, 0, 0.7 * finalAlpha)
+                        elseif i == 2 then -- bottom
+                            ---@diagnostic disable-next-line: undefined-field
+                            texture:SetGradientAlpha("VERTICAL", 1, 0, 0, 0.7 * finalAlpha, 1, 0, 0, 0)
+                        elseif i == 3 then -- left
+                            ---@diagnostic disable-next-line: undefined-field
+                            texture:SetGradientAlpha("HORIZONTAL", 1, 0, 0, 0.7 * finalAlpha, 1, 0, 0, 0)
+                        else -- right
+                            ---@diagnostic disable-next-line: undefined-field
+                            texture:SetGradientAlpha("HORIZONTAL", 1, 0, 0, 0, 1, 0, 0, 0.7 * finalAlpha)
+                        end
+                    end
+                else
+                    DFRL.lowHpWarnFrame:Hide()
+                    -- reset pulse time
+                    DFRL.lowHpWarnFrame.pulseTime = 0
+                end
+            end
+
+            healthCheckFrame:SetScript("OnUpdate", updateFunc)
+            healthCheckFrame.updateFunc = updateFunc
+
+            DFRL.healthCheckFrame = healthCheckFrame
+        end
+
+        if value then
+            DFRL.healthCheckFrame:SetScript("OnUpdate", DFRL.healthCheckFrame.updateFunc)
+        else
+            DFRL.lowHpWarnFrame:Hide()
+            DFRL.healthCheckFrame:SetScript("OnUpdate", nil)
+        end
+    end
+
+    callbacks.lowHpThreshold = function(value)
+        if DFRL.lowHpWarnFrame and DFRL.lowHpWarnFrame:IsShown() then
+            DFRL.healthCheckFrame.tick = 0
         end
     end
 

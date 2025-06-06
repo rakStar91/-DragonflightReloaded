@@ -10,25 +10,29 @@ DFRL:SetDefaults("actionbars", {
     mainBarSpacing = {6, 3, "slider", {0, 20}, "main bar", "Adjusts spacing between main action bar buttons"},
     mainBarAlpha = {1, 4, "slider", {0.1, 1}, "main bar", "Adjusts transparency of main action bar"},
 
+    multiBarOneShow = {true, 1, "checkbox", "multibar 1", "Show or hide bottom left action bar"},
     multiBarOneScale = {0.95, 2, "slider", {0.2, 2}, "multibar 1", "Adjusts scale of bottom left action bar"},
     multiBarOneSpacing = {6, 3, "slider", {0.1, 20}, "multibar 1", "Adjusts spacing between bottom left action bar buttons"},
     multiBarOneAlpha = {1, 4, "slider", {0.1, 1}, "multibar 1", "Adjusts transparency of bottom left action bar"},
     multiBarOneGrid = {1, 5, "slider", {1, 6}, "multibar 1", "Changes the grid layout of bottom left action bar"},
 
-    multiBarTwoScale = {0.9, 5, "slider", {0.2, 2}, "multibar 2", "Adjusts scale of bottom right action bar"},
-    multiBarTwoSpacing = {6, 6, "slider", {0.1, 20}, "multibar 2", "Adjusts spacing between bottom right action bar buttons"},
-    multiBarTwoAlpha = {1, 7, "slider", {0.1, 1}, "multibar 2", "Adjusts transparency of bottom right action bar"},
-    multiBarTwoGrid = {1, 8, "slider", {1, 6}, "multibar 2", "Changes the grid layout of bottom right action bar"},
+    multiBarTwoShow = {true, 1, "checkbox", "multibar 2", "Show or hide bottom right action bar"},
+    multiBarTwoScale = {0.9, 2, "slider", {0.2, 2}, "multibar 2", "Adjusts scale of bottom right action bar"},
+    multiBarTwoSpacing = {6, 3, "slider", {0.1, 20}, "multibar 2", "Adjusts spacing between bottom right action bar buttons"},
+    multiBarTwoAlpha = {1, 4, "slider", {0.1, 1}, "multibar 2", "Adjusts transparency of bottom right action bar"},
+    multiBarTwoGrid = {1, 5, "slider", {1, 6}, "multibar 2", "Changes the grid layout of bottom right action bar"},
 
-    multiBarThreeScale = {0.8, 8, "slider", {0.2, 2}, "multibar 3", "Adjusts scale of left action bar"},
-    multiBarThreeSpacing = {6, 9, "slider", {0.1, 20}, "multibar 3", "Adjusts spacing between left action bar buttons"},
-    multiBarThreeAlpha = {1, 10, "slider", {0.1, 1}, "multibar 3", "Adjusts transparency of left action bar"},
-    multiBarThreeGrid = {6, 11, "slider", {1, 6}, "multibar 3", "Changes the grid layout of left action bar"},
+    multiBarThreeShow = {false, 1, "checkbox", "multibar 3", "Show or hide left side action bar"},
+    multiBarThreeScale = {0.8, 2, "slider", {0.2, 2}, "multibar 3", "Adjusts scale of left action bar"},
+    multiBarThreeSpacing = {6, 3, "slider", {0.1, 20}, "multibar 3", "Adjusts spacing between left action bar buttons"},
+    multiBarThreeAlpha = {1, 4, "slider", {0.1, 1}, "multibar 3", "Adjusts transparency of left action bar"},
+    multiBarThreeGrid = {6, 5, "slider", {1, 6}, "multibar 3", "Changes the grid layout of left action bar"},
 
-    multiBarFourScale = {0.8, 11, "slider", {0.2, 2}, "multibar 4", "Adjusts scale of right action bar"},
-    multiBarFourSpacing = {6, 12, "slider", {0.1, 20}, "multibar 4", "Adjusts spacing between right action bar buttons"},
-    multiBarFourAlpha = {1, 13, "slider", {0.1, 1}, "multibar 4", "Adjusts transparency of right action bar"},
-    multiBarFourGrid = {6, 14, "slider", {1, 6}, "multibar 4", "Changes the grid layout of right action bar"},
+    multiBarFourShow = {true, 1, "checkbox", "multibar 4", "Show or hide right side action bar"},
+    multiBarFourScale = {0.8, 2, "slider", {0.2, 2}, "multibar 4", "Adjusts scale of right action bar"},
+    multiBarFourSpacing = {6, 3, "slider", {0.1, 20}, "multibar 4", "Adjusts spacing between right action bar buttons"},
+    multiBarFourAlpha = {1, 4, "slider", {0.1, 1}, "multibar 4", "Adjusts transparency of right action bar"},
+    multiBarFourGrid = {6, 5, "slider", {1, 6}, "multibar 4", "Changes the grid layout of right action bar"},
 
     showGryphoon = {true, 14, "checkbox", "multibar deco", "Show or hide the gryphon/wyvern decorations"},
     altGryphoon = {false, 15, "checkbox", "multibar deco", "Use the alternative gryphon/wyvern textures"},
@@ -290,13 +294,14 @@ DFRL:RegisterModule("actionbars", 2, function()
     -- move bars on conditional
     do
         -- this func will position the actionbars if not user placed
-        local function UpdateBarPositions()
+        function UpdateBarPositions()
             -- check if bars are user placed
             local movable = DFRL:GetConfig("actionbars", "movable")
             if movable ~= true then return end
 
             -- get blizz interface setting
-            local bottomLeftState, bottomRightState = GetActionBarToggles()
+            local bottomLeftState = _G["SHOW_MULTI_ACTIONBAR_1"]
+            local bottomRightState = _G["SHOW_MULTI_ACTIONBAR_2"]
 
             -- MultiBarBottomRight
             MultiBarBottomRight:ClearAllPoints()
@@ -1485,6 +1490,50 @@ DFRL:RegisterModule("actionbars", 2, function()
                     end
                 end
             end
+        end
+    end
+
+    callbacks.multiBarOneShow = function(value)
+        if value then
+            MultiBarBottomLeft:Show()
+            _G["SHOW_MULTI_ACTIONBAR_1"] = 1
+            UpdateBarPositions()
+        else
+            MultiBarBottomLeft:Hide()
+            _G["SHOW_MULTI_ACTIONBAR_1"] = nil
+            UpdateBarPositions()
+        end
+    end
+
+    callbacks.multiBarTwoShow = function(value)
+        if value then
+            MultiBarBottomRight:Show()
+            _G["SHOW_MULTI_ACTIONBAR_2"] = 1
+            UpdateBarPositions()
+        else
+            MultiBarBottomRight:Hide()
+            _G["SHOW_MULTI_ACTIONBAR_2"] = nil
+            UpdateBarPositions()
+        end
+    end
+
+    callbacks.multiBarThreeShow = function(value)
+        if value then
+            MultiBarLeft:Show()
+            _G["SHOW_MULTI_ACTIONBAR_3"] = 1
+        else
+            MultiBarLeft:Hide()
+            _G["SHOW_MULTI_ACTIONBAR_3"] = nil
+        end
+    end
+
+    callbacks.multiBarFourShow = function(value)
+        if value then
+            MultiBarRight:Show()
+            _G["SHOW_MULTI_ACTIONBAR_4"] = 1
+        else
+            MultiBarRight:Hide()
+            _G["SHOW_MULTI_ACTIONBAR_4"] = nil
         end
     end
 
