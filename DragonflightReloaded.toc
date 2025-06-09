@@ -1,7 +1,7 @@
 ## Interface: 11200
 ## Title: Dragonflight: |cFFFFFFFFReloaded
 ## Notes: A World of Warcraft UI replacement.
-## Version: 1.1.10 (Alpha)
+## Version: 1.1.11
 ## Author: Guzruul (sitting in the crossroads tavern 24/7)
 ## SavedVariablesPerCharacter: DFRL_DB, DFRL_FRAMEPOS
 
@@ -29,4 +29,5 @@ modules\framemanager.lua
 modules\gui\gui-support.lua
 modules\gui\gui.lua
 
+modules\welcomepage.lua
 modules\test.lua

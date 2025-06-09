@@ -286,19 +286,6 @@ function CreateCheckbox(parent, name, moduleName, key)
     return checkbox
 end
 
-function CreateConfigDropdown(parent, name, moduleName, key, options)
-    -- get current value
-    local currentValue = DFRL:GetConfig(moduleName, key)
-    local defaultText = currentValue or "Select Option"
-
-    local dropdown = CreateDropDownMenu(name, parent, options, defaultText, function(selectedText)
-        DFRL:SetConfig(moduleName, key, selectedText)
-        d:DebugPrint("Dropdown config saved: " .. moduleName .. "." .. key .. " = " .. selectedText)
-    end)
-
-    return dropdown
-end
-
 local DROPDOWN_WIDTH = 165
 local DROPDOWN_HEIGHT = 27
 local OPTION_HEIGHT = 18
@@ -307,196 +294,153 @@ local LIST_PADDING = 5
 local ARROW_WIDTH = 20
 local TEXT_PADDING = 15
 
-function CreateDropDownMenu(name, parent, options, defaultText, onSelectCallback)
+function CreateConfigDropdown(parent, name, moduleName, key, options)
     d:DebugPrint("Creating custom dropdown: " .. name)
 
-    -- validate parameters
+    local currentValue = DFRL:GetConfig(moduleName, key)
+    local defaultText = currentValue or "Select Option"
+
     if not name or not parent or not options then
         d:DebugPrint("ERROR: Missing required parameters for dropdown creation")
         return nil
     end
 
-    -- defaults
-    defaultText = defaultText or "Select Option"
-
     d:DebugPrint("Custom dropdown parameters - options count: " .. table.getn(options))
 
-    -- dropdown containe
+    -- dropdown frame
     local dropdown = CreateFrame("Frame", name, parent)
     dropdown:SetWidth(DROPDOWN_WIDTH)
     dropdown:SetHeight(DROPDOWN_HEIGHT)
     dropdown:SetPoint("CENTER", parent, "CENTER", 0, 0)
     dropdown:SetFrameStrata("TOOLTIP")
-    dropdown:SetBackdrop({
-        bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
-    })
+    dropdown:SetBackdrop({bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background"})
     dropdown:SetBackdropColor(0, 0, 0, 1)
 
     d:DebugPrint("Main dropdown frame created: " .. name)
 
-    -- text label for current selection
     local currentText = dropdown:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     currentText:SetPoint("LEFT", dropdown, "LEFT", TEXT_PADDING, 0)
     currentText:SetPoint("RIGHT", dropdown, "RIGHT", -(ARROW_WIDTH + 5), 0)
     currentText:SetText(defaultText)
     currentText:SetJustifyH("CENTER")
 
-    -- dropdown arrow button
     local arrowButton = CreateFrame("Button", name .. "Arrow", dropdown)
     arrowButton:SetWidth(ARROW_WIDTH)
     arrowButton:SetHeight(ARROW_WIDTH)
     arrowButton:SetPoint("RIGHT", dropdown, "RIGHT", -5, 0)
-
-    -- arrow texture
     local arrowTexture = arrowButton:CreateTexture(nil, "OVERLAY")
     arrowTexture:SetAllPoints(arrowButton)
     arrowTexture:SetTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Up")
 
     d:DebugPrint("Dropdown button and text created")
 
-    -- store data
-    dropdown.options = options
+    -- store state
     dropdown.isOpen = false
     dropdown.optionsList = nil
-    dropdown.selectedIndex = nil
-    dropdown.selectedValue = nil
-    dropdown.currentText = currentText
-    dropdown.defaultText = defaultText
-    dropdown.onSelectCallback = onSelectCallback
 
     d:DebugPrint("Stored " .. table.getn(options) .. " options in custom dropdown")
 
-    local function CloseDropdownList()
-        if dropdown.optionsList and dropdown.optionsList:IsVisible() then
-            d:DebugPrint("Closing dropdown list")
-            dropdown.optionsList:Hide()
-            dropdown.isOpen = false
-        end
-    end
-
-    local function ShowDropdownList()
-        d:DebugPrint("Opening dropdown list")
-
-        -- close if already open
+    local function ToggleDropdown()
         if dropdown.isOpen then
-            CloseDropdownList()
+            d:DebugPrint("Closing dropdown list")
+            if dropdown.optionsList then
+                dropdown.optionsList:Hide()
+            end
+            dropdown.isOpen = false
             return
         end
 
-        -- options list frame if dont exist
+        d:DebugPrint("Opening dropdown list")
+
+        -- options list
         if not dropdown.optionsList then
             d:DebugPrint("Creating new options list frame")
 
-            -- calculate list height
-            local listHeight = (table.getn(dropdown.options) * (OPTION_HEIGHT + OPTION_PADDING)) + (LIST_PADDING * 2) - OPTION_PADDING
-
+            local listHeight = (table.getn(options) * (OPTION_HEIGHT + OPTION_PADDING)) + (LIST_PADDING * 2) - OPTION_PADDING
             local listFrame = CreateFrame("Frame", name .. "List", dropdown)
             listFrame:SetWidth(DROPDOWN_WIDTH)
             listFrame:SetHeight(listHeight)
             listFrame:SetPoint("TOP", dropdown, "BOTTOM", 0, 5)
-            listFrame:SetBackdrop({
-                bgFile = "Interface\\Buttons\\White8X8",
-            })
+            listFrame:SetFrameStrata("TOOLTIP")
+            listFrame:SetToplevel(true)
+            listFrame:SetBackdrop({bgFile = "Interface\\Buttons\\White8X8"})
             listFrame:SetBackdropColor(0, 0, 0, 1)
             listFrame:SetBackdropBorderColor(0.3, 0.3, 0.3, 1)
-
             dropdown.optionsList = listFrame
-            dropdown.optionButtons = {}
 
             d:DebugPrint("Options list frame created with height: " .. listFrame:GetHeight())
 
-            -- option buttons
-            for i = 1, table.getn(dropdown.options) do
+            for i = 1, table.getn(options) do
                 local optionButton = CreateFrame("Button", name .. "Option" .. i, listFrame)
                 optionButton:SetWidth(DROPDOWN_WIDTH - (LIST_PADDING * 2) - 22)
                 optionButton:SetHeight(OPTION_HEIGHT)
-
-                local yOffset = LIST_PADDING + ((i-1) * (OPTION_HEIGHT + OPTION_PADDING))
-                optionButton:SetPoint("TOP", listFrame, "TOP", 0, -yOffset)
+                optionButton:SetPoint("TOP", listFrame, "TOP", 0, -(LIST_PADDING + ((i-1) * (OPTION_HEIGHT + OPTION_PADDING))))
 
                 local buttonText = optionButton:CreateFontString(nil, "OVERLAY", "GameFontNormal")
                 buttonText:SetPoint("LEFT", optionButton, "LEFT", TEXT_PADDING - 10, 0)
                 buttonText:SetPoint("RIGHT", optionButton, "RIGHT", -5, 0)
-                buttonText:SetText(dropdown.options[i])
+                buttonText:SetText(options[i])
                 buttonText:SetJustifyH("CENTER")
 
-                -- store references
-                optionButton.optionIndex = i
-                optionButton.optionText = dropdown.options[i]
-                dropdown.optionButtons[i] = optionButton
+                d:DebugPrint("Created option button " .. i .. ": " .. options[i])
 
-                d:DebugPrint("Created option button " .. i .. ": " .. dropdown.options[i])
-
-                -- hover
+                -- Hover effects
                 optionButton:SetScript("OnEnter", function()
-                    optionButton:SetBackdrop({
-                        bgFile = "Interface\\Buttons\\White8X8"
-                    })
+                    optionButton:SetBackdrop({bgFile = "Interface\\Buttons\\White8X8"})
                     optionButton:SetBackdropColor(0.2, 0.2, 0.8, 1)
                 end)
-
                 optionButton:SetScript("OnLeave", function()
                     optionButton:SetBackdrop(nil)
                 end)
 
-                -- click handler
+                optionButton.optionValue = options[i]
+                optionButton.optionIndex = i
+
+                -- handler
                 optionButton:SetScript("OnClick", function()
                     d:DebugPrint("=== OPTION CLICKED ===")
-                    d:DebugPrint("Selected: " .. optionButton.optionText .. " (index: " .. optionButton.optionIndex .. ")")
+                    d:DebugPrint("Selected: " .. optionButton.optionValue .. " (index: " .. optionButton.optionIndex .. ")")
 
-                    -- update dropdown state
-                    dropdown.selectedIndex = optionButton.optionIndex
-                    dropdown.selectedValue = optionButton.optionText
-                    currentText:SetText(optionButton.optionText)
+                    currentText:SetText(optionButton.optionValue)
+                    dropdown.optionsList:Hide()
+                    dropdown.isOpen = false
 
                     d:DebugPrint("Dropdown state updated - selectedIndex: " .. optionButton.optionIndex)
 
-                    -- close
-                    CloseDropdownList()
-
-                    -- call callback
-                    if dropdown.onSelectCallback then
-                        d:DebugPrint("Calling onSelectCallback")
-                        dropdown.onSelectCallback(optionButton.optionText, optionButton.optionIndex, dropdown)
-                    end
-
+                    -- save config
+                    DFRL:SetConfig(moduleName, key, optionButton.optionValue)
+                    d:DebugPrint("Dropdown config saved: " .. moduleName .. "." .. key .. " = " .. optionButton.optionValue)
                     d:DebugPrint("=== END OPTION CLICK ===")
                 end)
             end
         end
 
-        -- show list
         dropdown.optionsList:Show()
         dropdown.isOpen = true
-        d:DebugPrint("Dropdown list shown with " .. table.getn(dropdown.options) .. " options")
+        d:DebugPrint("Dropdown list shown with " .. table.getn(options) .. " options")
     end
 
-    -- click handler
+    -- handlers
     dropdown:SetScript("OnMouseDown", function()
         d:DebugPrint("Main dropdown clicked")
-        ShowDropdownList()
+        ToggleDropdown()
     end)
 
-    -- arrow button click handler
     arrowButton:SetScript("OnClick", function()
         d:DebugPrint("Arrow button clicked")
-        ShowDropdownList()
+        ToggleDropdown()
     end)
 
-    -- click outside to close
-    local function OnUpdate()
+    dropdown:SetScript("OnUpdate", function()
         if dropdown.isOpen then
             if not MouseIsOver(dropdown) and not MouseIsOver(dropdown.optionsList) then
-                CloseDropdownList()
+                dropdown.optionsList:Hide()
+                dropdown.isOpen = false
             end
         end
-    end
+    end)
 
-    dropdown:SetScript("OnUpdate", OnUpdate)
-
-    -- show
     dropdown:Show()
-
     d:DebugPrint("Custom dropdown creation complete: " .. name)
     return dropdown
 end

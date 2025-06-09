@@ -198,7 +198,7 @@ DFRL:RegisterModule("bags", 2, function()
                 bagToggleButton:SetHeight(17)
                 bagToggleButton:SetScale(0.8)
                 bagToggleButton:ClearAllPoints()
-                bagToggleButton:SetPoint("RIGHT", MainMenuBarBackpackButton, "LEFT", 11, 0)
+                bagToggleButton:SetPoint("RIGHT", MainMenuBarBackpackButton, "LEFT", 9, 0)
 
                 local expandTexture = texpath.. "expand"
                 bagToggleButton:SetNormalTexture(expandTexture)
@@ -217,6 +217,19 @@ DFRL:RegisterModule("bags", 2, function()
             end
         end
 
+        local function UpdateKeyRingButtonVisibility()
+            local toggleBagsValue = DFRL:GetConfig("bags", "toggleBags")
+            local hideBagsValue = DFRL:GetConfig("bags", "hideBags")
+
+            if KeyRingButton then
+                if not toggleBagsValue or hideBagsValue or not HasKey() then
+                    KeyRingButton:Hide()
+                else
+                    KeyRingButton:Show()
+                end
+            end
+        end
+
         -- update func
         function UpdateBagSlotIcons()
             for i = 0, 3 do
@@ -231,6 +244,7 @@ DFRL:RegisterModule("bags", 2, function()
                     iconTexture:Hide()
                 end
             end
+            UpdateKeyRingButtonVisibility()
         end
 
         local bagUpdateFrame = CreateFrame("Frame")
@@ -361,6 +375,10 @@ DFRL:RegisterModule("bags", 2, function()
 
         if KeyRingButton then
             KeyRingButton:SetAlpha(value)
+        end
+
+        if DFRL.bagToggleButton then
+            DFRL.bagToggleButton:SetAlpha(value)
         end
     end
 

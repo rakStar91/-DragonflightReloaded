@@ -229,8 +229,14 @@ DFRL:RegisterModule("gui", 2, function()
             for moduleName, _ in defaults do
                 -- skip hidden
                 local isHidden = true
-                if tempDB and tempDB[moduleName] and tempDB[moduleName]["hidden"] then
-                    isHidden = tempDB[moduleName]["hidden"][1]
+                if tempDB and tempDB[moduleName] then
+                    if tempDB[moduleName].hidden ~= nil then
+                        -- Direct value
+                        isHidden = tempDB[moduleName].hidden
+                    elseif tempDB[moduleName].hidden and tempDB[moduleName].hidden[1] ~= nil then
+                        -- Array format
+                        isHidden = tempDB[moduleName].hidden[1]
+                    end
                 end
 
                 if not isHidden then
@@ -987,16 +993,16 @@ DFRL:RegisterModule("gui", 2, function()
             -- checkboxes for each module
             local sortedModules = {}
             for moduleName, _ in pairs(defaults or {}) do
-                -- skip hidden modules
-                local isHidden = true
-                if tempDB and tempDB[moduleName] and tempDB[moduleName]["hidden"] then
-                    isHidden = tempDB[moduleName]["hidden"][1]
+                local isHidden = false
+                if tempDB and tempDB[moduleName] and tempDB[moduleName]["hidden"] == true then
+                    isHidden = true
                 end
 
                 if not isHidden and moduleName ~= "gui" then
                     table.insert(sortedModules, moduleName)
                 end
             end
+
             table.sort(sortedModules)
 
             -- layout settings
@@ -1031,7 +1037,7 @@ DFRL:RegisterModule("gui", 2, function()
                 -- set initial state
                 local isEnabled = true
                 if tempDB and tempDB[checkbox.moduleName] and tempDB[checkbox.moduleName]["enabled"] then
-                    isEnabled = tempDB[checkbox.moduleName]["enabled"][1]
+                    isEnabled = tempDB[checkbox.moduleName]["enabled"]
                 end
                 checkbox:SetChecked(isEnabled)
 

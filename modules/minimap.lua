@@ -437,6 +437,9 @@ DFRL:RegisterModule("minimap", 2, function()
                 UIFrameFadeIn(collector, 0.3, 0, 1)
             end
         end)
+
+        -- expose
+        DFRL.toggleButton = toggleButton
     end
 
     -- callbacks
@@ -479,7 +482,11 @@ DFRL:RegisterModule("minimap", 2, function()
         local color = value and darkColor or lightColor
 
         minimapBorder:SetVertexColor(color[1], color[2], color[3])
-        -- MiniMapMailIcon:SetVertexColor(color[1], color[2], color[3]) -- looks shit need better texture
+        local normalTex = DFRL.toggleButton:GetNormalTexture()
+        local pushedTex = DFRL.toggleButton:GetPushedTexture()
+
+        if normalTex then normalTex:SetVertexColor(color[1], color[2], color[3]) end
+        if pushedTex then pushedTex:SetVertexColor(color[1], color[2], color[3]) end
 
         local zoomInNormal = MinimapZoomIn:GetNormalTexture()
         local zoomOutNormal = MinimapZoomOut:GetNormalTexture()

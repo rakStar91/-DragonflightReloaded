@@ -26,8 +26,6 @@
 -- PLAYER_LOGOUT: Saves tempDB to DFRL_DB.
 -- Debug: DebugPrint() saves logs to DFRL_LOGS.
 --===============================================
-
--- debug-suite compatibility
 local d
 if DBS_TOOLS then
     d = DBS_TOOLS
@@ -49,9 +47,9 @@ DFRL = CreateFrame("Frame", nil, UIParent)
 d:DebugPrint("BOOTING")
 
 -- blizz locals
-local assert = assert
 local type = type
 local pairs = pairs
+local assert = assert
 
 -- tables
 DFRL_DB = {}
@@ -73,7 +71,7 @@ function DFRL:GetEnvironment()
     assert(self.env, "Environment table must exist")
     self.env._G = getfenv(0)
 
-    -- add stub
+    -- stub
     if DBS_TOOLS then
         self.env.d = DBS_TOOLS
     else
@@ -92,6 +90,7 @@ function DFRL:RegisterModule(moduleName, priority, moduleFunc)
     assert(priority == 1 or priority == 2, "Priority must be 1 (normal) or 2 (delayed)")
     assert(type(moduleFunc) == "function", "Module must be a function")
 
+    -- insert module
     self.modules[moduleName] = {
         func = moduleFunc,
         priority = priority
@@ -107,12 +106,11 @@ function DFRL:LoadModules()
     -- priority 1 (immediate)
     local normalCount = 0
     for moduleName, moduleData in pairs(self.modules) do
-        if moduleData.priority == 1 then  -- Only load priority 1 modules here
+        if moduleData.priority == 1 then
             -- check enabled
             local isEnabled = true
             if self.tempDB[moduleName] and
-               self.tempDB[moduleName]["enabled"] and
-               self.tempDB[moduleName]["enabled"][1] == false then
+            self.tempDB[moduleName]["enabled"] == false then
                 isEnabled = false
                 d:DebugPrint("Skipping disabled module: " .. moduleName)
             end
@@ -160,8 +158,7 @@ function DFRL:LoadDelayedModules()
             -- check enabled
             local isEnabled = true
             if self.tempDB[moduleName] and
-               self.tempDB[moduleName]["enabled"] and
-               self.tempDB[moduleName]["enabled"][1] == false then
+            self.tempDB[moduleName]["enabled"] == false then
                 isEnabled = false
                 d:DebugPrint("Skipping disabled module: " .. moduleName)
             end
@@ -201,10 +198,12 @@ function DFRL:SetDefaults(moduleName, defaultsTable)
     assert(type(moduleName) == "string", "Module name must be a string")
     assert(type(defaultsTable) == "table", "Defaults must be a table")
 
+    -- create table
     if not self.defaults[moduleName] then
         self.defaults[moduleName] = {}
     end
 
+    -- insert defaults to table
     local count = 0
     for key, value in pairs(defaultsTable) do
         self.defaults[moduleName][key] = value
@@ -223,15 +222,17 @@ function DFRL:RegisterCallback(moduleName, callbacksTable)
     for key, func in pairs(callbacksTable) do
         local callbackName = moduleName .. "_" .. key .. "_changed"
 
+        -- create table
         if not self.callbacks[callbackName] then
             self.callbacks[callbackName] = {}
         end
 
+        -- insert into table
         tinsert(self.callbacks[callbackName], func)
 
         -- check if key exists in tempdb, some dont
-        if self.tempDB[moduleName] and self.tempDB[moduleName][key] then
-            local value = self.tempDB[moduleName][key][1]
+        if self.tempDB[moduleName] and self.tempDB[moduleName][key] ~= nil then
+            local value = self.tempDB[moduleName][key]
             self:TriggerCallback(callbackName, value)
         end
 
@@ -263,17 +264,17 @@ end
 -- config system
 function DFRL:GetConfig(moduleName, key)
     assert(self.tempDB[moduleName], "Module not found in config: " .. tostring(moduleName))
-    assert(self.tempDB[moduleName][key], "Key not found in config: " .. tostring(key))
-    d:DebugPrint("Config requested for " .. moduleName .. "." .. key .. ": " .. tostring(self.tempDB[moduleName][key][1]))
-    return self.tempDB[moduleName][key][1]
+    assert(self.tempDB[moduleName][key] ~= nil, "Key not found in config: " .. tostring(key))
+    d:DebugPrint("Config requested for " .. moduleName .. "." .. key .. ": " .. tostring(self.tempDB[moduleName][key]))
+    return self.tempDB[moduleName][key]
 end
 
 function DFRL:SetConfig(moduleName, key, value)
     assert(self.tempDB[moduleName], "Module not found in config: " .. tostring(moduleName))
     assert(self.tempDB[moduleName][key] ~= nil, "Key not found in config: " .. tostring(key))
 
-    local oldValue = self.tempDB[moduleName][key][1]
-    self.tempDB[moduleName][key][1] = value
+    local oldValue = self.tempDB[moduleName][key]
+    self.tempDB[moduleName][key] = value
 
     d:DebugPrint("Config changed for " .. moduleName .. "." .. key .. ": " .. tostring(oldValue) .. " -> " .. tostring(value))
 
@@ -294,24 +295,28 @@ function DFRL:InitializeConfig()
         if type(moduleTable) == "table" then
             self.tempDB[moduleName] = self.tempDB[moduleName] or {}
             for key, value in pairs(moduleTable) do
-                self.tempDB[moduleName][key] = value
+                -- If value is a table with nested tables, extract the inner value
+                if type(value) == "table" and type(value[1]) == "table" then
+                    self.tempDB[moduleName][key] = value[1]
+                else
+                    self.tempDB[moduleName][key] = value
+                end
                 settingsLoaded = settingsLoaded + 1
             end
         end
     end
 
-    -- add missing defaults - only copy first value as value table
+    -- add missing defaults - store the first value directly
     for moduleName, defaultsTable in pairs(self.defaults) do
         assert(type(defaultsTable) == "table", "Defaults for " .. moduleName .. " must be a table")
         self.tempDB[moduleName] = self.tempDB[moduleName] or {}
         for key, defaultValue in pairs(defaultsTable) do
             if self.tempDB[moduleName][key] == nil then
-                -- only extract the first value and wrap it in a table
-                if type(defaultValue) == "table" and defaultValue[1] ~= nil then
-                    self.tempDB[moduleName][key] = {defaultValue[1]}
+                -- Store the actual value, not wrapped in another table
+                if type(defaultValue) == "table" then
+                    self.tempDB[moduleName][key] = defaultValue[1]
                 else
-                    -- fallback for non-table defaults or empty tables
-                    self.tempDB[moduleName][key] = {defaultValue}
+                    self.tempDB[moduleName][key] = defaultValue
                 end
                 defaultsApplied = defaultsApplied + 1
             end

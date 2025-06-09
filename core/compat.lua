@@ -82,9 +82,7 @@ f:RegisterEvent("ADDON_LOADED")
 f:RegisterEvent("PLAYER_ENTERING_WORLD")
 f:SetScript("OnEvent", function()
     if event=="ADDON_LOADED" then -- because the addon "AUX" breaks the arg1 check for ShaguTweaks
-
         ShaguFix()
-
         d:DebugPrint("ShaguTweaks temp hotfix applied ADDON_LOADED")
     end
 end)

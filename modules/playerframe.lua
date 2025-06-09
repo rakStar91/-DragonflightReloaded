@@ -9,7 +9,7 @@ DFRL:SetDefaults("playerframe", {
     noPercent = {true, 3, "checkbox", "text", "Show only current values without percentages"},
     textColoring = {false, 4, "checkbox", "text", "Color text based on health/mana percentage from white to red"},
 
-    classColor = {false, 1, "checkbox", "bar color", "Activate 2D class portrait icons"},
+    classColor = {false, 1, "checkbox", "bar color", "Color health bar based on class"},
 
     classPortrait = {false, 5, "checkbox", "tweaks", "Activate 2D class portrait icons"},
     frameHide = {false, 7, "checkbox", "tweaks", "Hide frame at full HP when not in combat"},
@@ -70,7 +70,6 @@ DFRL:RegisterModule("playerframe", 2, function()
     manaValueText:SetFont("Fonts\\FRIZQT__.TTF", 9, "OUTLINE")
     manaValueText:SetPoint("RIGHT", -5, 0)
     manaValueText:SetTextColor(1, 1, 1)
-
 
     -- combat indicator
     do
@@ -138,12 +137,13 @@ DFRL:RegisterModule("playerframe", 2, function()
     end
 
     -- resting animation
+    local restingAnimation
     do
         PlayerRestIcon:SetTexture("")
         PlayerRestIcon:ClearAllPoints()
         PlayerRestIcon:SetPoint("TOPLEFT", PlayerFrame, -3000, 0)
 
-        local restingAnimation = CreateFrame("Frame", "restingAnimation", UIParent)
+        restingAnimation = CreateFrame("Frame", "restingAnimation", UIParent)
         restingAnimation:SetPoint("CENTER", PlayerFrame, "CENTER", -20, 30)
         restingAnimation:SetWidth(24)
         restingAnimation:SetHeight(24)
@@ -162,46 +162,46 @@ DFRL:RegisterModule("playerframe", 2, function()
         }
 
         local currentFrame = 1
-        local totalFrames = table.getn(texCoords)
-        local timeSinceLastUpdate = 0
-        local updateInterval = 0.05
+            local totalFrames = table.getn(texCoords)
+            local timeSinceLastUpdate = 0
+            local updateInterval = 0.05
 
-        restingAnimation:Hide()
+            restingAnimation:Hide()
 
-        restingAnimation:SetScript("OnUpdate", function()
-            timeSinceLastUpdate = timeSinceLastUpdate + arg1
+            restingAnimation:SetScript("OnUpdate", function()
+                timeSinceLastUpdate = timeSinceLastUpdate + arg1
 
-            if timeSinceLastUpdate >= updateInterval then
-                currentFrame = currentFrame + 1
-                if currentFrame > totalFrames then
-                    currentFrame = 1
+                if timeSinceLastUpdate >= updateInterval then
+                    currentFrame = currentFrame + 1
+                    if currentFrame > totalFrames then
+                        currentFrame = 1
+                    end
+
+                    local coords = texCoords[currentFrame]
+                    texture:SetTexCoord(coords[1], coords[2], coords[3], coords[4])
+
+                    timeSinceLastUpdate = 0
                 end
+            end)
 
-                local coords = texCoords[currentFrame]
-                texture:SetTexCoord(coords[1], coords[2], coords[3], coords[4])
-
-                timeSinceLastUpdate = 0
+            local function UpdateRestingState()
+                if IsResting() and PlayerFrame:IsShown() then
+                    restingAnimation:Show()
+                else
+                    restingAnimation:Hide()
+                end
             end
-        end)
 
-        local function UpdateRestingState()
-            if IsResting() then
-                restingAnimation:Show()
-            else
-                restingAnimation:Hide()
-            end
-        end
+            local eventFrame = CreateFrame("Frame")
+            eventFrame:RegisterEvent("PLAYER_UPDATE_RESTING")
+            eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+            eventFrame:SetScript("OnEvent", function()
+                UpdateRestingState()
+            end)
 
-        local eventFrame = CreateFrame("Frame")
-        eventFrame:RegisterEvent("PLAYER_UPDATE_RESTING")
-        eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-        eventFrame:SetScript("OnEvent", function()
+            -- init
             UpdateRestingState()
-        end)
-
-        -- init
-        UpdateRestingState()
-    end
+        end
 
     -- cut out effect
     do
@@ -456,25 +456,51 @@ DFRL:RegisterModule("playerframe", 2, function()
         end
     end
 
+    local hideFrame
     callbacks.frameHide = function(value)
-        if not value then return end
+        if hideFrame then
+            hideFrame:UnregisterAllEvents()
+            hideFrame:SetScript("OnEvent", nil)
+            hideFrame = nil
+        end
 
-        local hideFrame = CreateFrame("Frame")
-        hideFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-        hideFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
-        hideFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
-        hideFrame:RegisterEvent("UNIT_HEALTH")
-        hideFrame:SetScript("OnEvent", function()
+        local function updatePlayerFrameAndResting()
             local health = UnitHealth("player")
             local maxHealth = UnitHealthMax("player")
             local inCombat = UnitAffectingCombat("player")
 
             if health == maxHealth and not inCombat then
                 PlayerFrame:Hide()
+                if restingAnimation then restingAnimation:Hide() end
             else
                 PlayerFrame:Show()
+                if restingAnimation and IsResting() then
+                    restingAnimation:Show()
+                elseif restingAnimation then
+                    restingAnimation:Hide()
+                end
             end
-        end)
+        end
+
+        if value then
+            hideFrame = CreateFrame("Frame")
+            hideFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+            hideFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
+            hideFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+            hideFrame:RegisterEvent("UNIT_HEALTH")
+            hideFrame:SetScript("OnEvent", function()
+                updatePlayerFrameAndResting()
+            end)
+
+            updatePlayerFrameAndResting()
+        else
+            PlayerFrame:Show()
+            if restingAnimation and IsResting() then
+                restingAnimation:Show()
+            elseif restingAnimation then
+                restingAnimation:Hide()
+            end
+        end
     end
 
     callbacks.darkMode = function(value)

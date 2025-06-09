@@ -39,6 +39,7 @@ DFRL:RegisterModule("castbar", 1, function()
     end
 
     local path = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\castbar\\"
+
     local castbar = {
         frame       = nil,
         barTexture  = nil,
@@ -57,8 +58,8 @@ DFRL:RegisterModule("castbar", 1, function()
             bgTexture        = path .. "CastingBarBackground.blp",
             barTexture       = path .. "CastingBarStandard3.blp",
             dropshadow       = path .. "CastingBarFrameDropShadow.blp",
-            spark            = "Interface\\CastingBar\\UI-CastingBar-Spark",
             flashTex         = path .. "CastingBarFrameFlash.tga",
+            spark            = "Interface\\CastingBar\\UI-CastingBar-Spark",
             barColor         = { r = 1, g = 0.82, b = 0 },
             alphaSpeed       = 3.0,
             flashSpeed       = 5.0,

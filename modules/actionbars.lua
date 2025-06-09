@@ -932,7 +932,7 @@ DFRL:RegisterModule("actionbars", 2, function()
 
     callbacks.hotkeyX = function(value)
         local xOffset = value
-        local yOffset = DFRL.tempDB["actionbars"]["hotkeyY"][1]
+        local yOffset = DFRL.tempDB["actionbars"]["hotkeyY"]
 
         local buttonTypes = {
             "ActionButton", "MultiBarBottomLeftButton", "MultiBarBottomRightButton",
@@ -952,7 +952,7 @@ DFRL:RegisterModule("actionbars", 2, function()
 
     callbacks.hotkeyY = function(value)
         local yOffset = value
-        local xOffset = DFRL.tempDB["actionbars"]["hotkeyX"][1]
+        local xOffset = DFRL.tempDB["actionbars"]["hotkeyX"]
 
         local buttonTypes = {
             "ActionButton", "MultiBarBottomLeftButton", "MultiBarBottomRightButton",
@@ -1065,7 +1065,7 @@ DFRL:RegisterModule("actionbars", 2, function()
 
     callbacks.macroX = function(value)
         local xOffset = value
-        local yOffset = DFRL.tempDB["actionbars"]["macroY"][1]
+        local yOffset = DFRL.tempDB["actionbars"]["macroY"]
 
         local buttonTypes = {
             "ActionButton", "MultiBarBottomLeftButton", "MultiBarBottomRightButton",
@@ -1088,7 +1088,7 @@ DFRL:RegisterModule("actionbars", 2, function()
 
     callbacks.macroY = function(value)
         local yOffset = value
-        local xOffset = DFRL.tempDB["actionbars"]["macroX"][1]
+        local xOffset = DFRL.tempDB["actionbars"]["macroX"]
 
         local buttonTypes = {
             "ActionButton", "MultiBarBottomLeftButton", "MultiBarBottomRightButton",
