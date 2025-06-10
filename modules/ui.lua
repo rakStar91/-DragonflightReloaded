@@ -9,7 +9,8 @@ DFRL:SetDefaults("ui", {
     hideErrorMessage = {false, 4, "checkbox", "tweaks", "Hide the top UI error message (e.g. 'Spell is not ready')"},
     lowHpWarn = {true, 5, "checkbox", "tweaks", "Show red border when health is low"},
     lowHpThreshold = {40, 6, "slider", {5, 95}, "tweaks", "Health threshold for low HP warning", 10, 90, 5},
-    cameraDistanceFactor = {2, 7, "slider", {1, 5}, "tweaks", "Max camera distance"},
+    cameraDistanceFactor = {2, 7, "slider", {1, 5}, "tweaks", "Extended maximum camera distance"},
+
 })
 
 DFRL:RegisterModule("ui", 2, function()

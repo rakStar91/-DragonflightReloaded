@@ -137,7 +137,7 @@ local function PatchWarning()
     local text = patchFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     text:SetPoint("TOP", title, "BOTTOM", 0, -16)
     text:SetWidth(380)
-    text:SetText("|cFFFF0000ATTENTION!|r\n\nPatch 1.1.11 requires you to delete your \nWTF Dragonflight files under:\n\nWTF/ACC/SERVER/CHARNAME/\n--> /SavedVariables\n\n\nOtherwise you probaly get errors.")
+    text:SetText("|cFFFF0000ATTENTION!|r\n\nPatch 1.1.12 requires you to delete your \nWTF Dragonflight files under:\n\nWTF/ACC/SERVER/CHARNAME/\n--> /SavedVariables\n\n\nOtherwise you probaly get errors.")
 
     local okBtn = CreateFrame("Button", nil, patchFrame, "UIPanelButtonTemplate")
     okBtn:SetWidth(120)
