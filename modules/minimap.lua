@@ -31,6 +31,7 @@ DFRL:SetDefaults("minimap", {
     timeY      = {-3,    22, "slider",   {-50, 50},           "top panel time",    "Adjusts vertical position of the time display"},
     timeX      = {-4,    23, "slider",   {-50, 50},           "top panel time",    "Adjusts horizontal position of the time display"},
 
+    textColor    = {false, 24, "checkbox",                        "ext. PizzaWorldBuffs",        "Colorize the PizzaWorldBuffs Alliance/Horde text"},
 })
 
 DFRL:RegisterModule("minimap", 2, function()
@@ -193,6 +194,21 @@ DFRL:RegisterModule("minimap", 2, function()
 
     end
 
+    -- questlog
+    do
+       local questframe = CreateFrame("Frame", "DFRL_questframe", UIParent)
+        questframe:SetPoint("LEFT", Minimap, -150, -130)
+        questframe:SetWidth(170)
+        questframe:SetHeight(5)
+
+        QuestWatchFrame:SetParent(questframe)
+        QuestWatchFrame:SetAllPoints(questframe)
+        QuestWatchFrame:SetFrameLevel(1)
+        QuestWatchFrame.SetPoint = function() end
+
+        DFRL.questframe = questframe
+    end
+
     -- EBC
     do
         ---@diagnostic disable-next-line: undefined-field
@@ -238,7 +254,7 @@ DFRL:RegisterModule("minimap", 2, function()
         collector.bg:SetTexture("Interface\\Buttons\\WHITE8X8")
         collector.bg:SetAllPoints()
         ---@diagnostic disable-next-line: undefined-field
-        collector.bg:SetGradientAlpha("HORIZONTAL", 0.1, 0.1, 0.1, 0, 0.1, 0.1, 0.1, 1)
+        collector.bg:SetGradientAlpha("HORIZONTAL", 0.1, 0.1, 0.1, 0, 0.1, 0.1, 0.1, 0.7)
 
         local function CollectMinimapButtons()
             d:DebugPrint("Starting minimap button collection...")
@@ -422,7 +438,6 @@ DFRL:RegisterModule("minimap", 2, function()
         toggleButton:SetHeight(16)
         toggleButton:SetPoint("RIGHT", Minimap, "LEFT", -12, 0)
         toggleButton:SetNormalTexture(texpath.. "dfrl_collector_toggle.tga")
-        toggleButton:SetPushedTexture(texpath.. "dfrl_collector_toggle.tga")
         toggleButton:SetHighlightTexture(texpath.. "dfrl_collector_toggle.tga")
 
         -- show/hide
@@ -440,6 +455,237 @@ DFRL:RegisterModule("minimap", 2, function()
 
         -- expose
         DFRL.toggleButton = toggleButton
+    end
+
+    -- PizzaWorldBuffs
+    local PWBInit
+    do
+        local currentColorMode = true
+
+        function PWBInit(color)
+            currentColorMode = color and true or false
+
+            -- single check should be good enough
+            local PWB_Panel = _G["DFRL_PWB_Panel"]
+            if not PWB_Panel and PizzaWorldBuffs then
+                PWB_Panel = CreateFrame("Frame", "DFRL_PWB_Panel", UIParent)
+                PWB_Panel:SetFrameStrata("BACKGROUND")
+                PWB_Panel:SetPoint("TOP", Minimap, "BOTTOM", -0, -50)
+                PWB_Panel:SetWidth(110)
+                PWB_Panel:SetHeight(160)
+
+                PWB_Panel.bg = PWB_Panel:CreateTexture(nil, "BACKGROUND")
+                PWB_Panel.bg:SetTexture("Interface\\Buttons\\WHITE8X8")
+                PWB_Panel.bg:SetAllPoints()
+                ---@diagnostic disable-next-line: undefined-field
+                PWB_Panel.bg:SetGradientAlpha("VERTICAL", 0.1, 0.1, 0.1, 0, 0.1, 0.1, 0.1, 0.7)
+                DFRL.PWB_Panel = PWB_Panel
+            end
+
+            -- hook
+            HookAddonOrVariable("PizzaWorldBuffs", function()
+                local CONTROL = {
+                    anchor_point = "TOP",
+                    anchor_parent = PWB_Panel,
+                    anchor_to = "TOP",
+                    x_offset = -0,
+                    y_offset = -10,
+
+                    font_path = "Fonts\\FRIZQT__.TTF",
+                    font_flags = "OUTLINE",
+                    font_custom = 13,
+                    font_size = 10,
+
+                    frame_width = 200,
+                    frame_height = 20,
+
+                    custom_text  = color and "|cffff9999Horde"    or "|cffddddddHorde",
+                    custom_text2 = color and "|cff99ccffAlliance" or "|cffddddddAlliance",
+                    custom_text3 = "",
+
+                    line_spacing = 0,
+
+                    color_prefix = "|cffffcc00",
+                    color_suffix = "|cffeeeeee",
+                    color_header = "|cffeeeeee"
+                }
+
+                local function getCustomText()
+                    if currentColorMode then
+                        return "|cffff9999Horde", "|cff99ccffAlliance"
+                    else
+                        return "|cffddddddHorde", "|cffddddddAlliance"
+                    end
+                end
+
+                local PWB_txt1 = _G["DFRLCustomBuffText"]
+                if not PWB_txt1 then
+                    PWB_txt1 = CreateFrame("Frame", "DFRLCustomBuffText", PizzaWorldBuffs.frame)
+                    PWB_txt1:SetWidth(CONTROL.frame_width)
+                    PWB_txt1:SetHeight(CONTROL.frame_height)
+                    PWB_txt1.text = PWB_txt1:CreateFontString(nil, "MEDIUM", "GameFontWhite")
+                    PWB_txt1.text:SetPoint("BOTTOM", 0, 0)
+                end
+                -- PWB_txt1.text:SetFont(CONTROL.font_path, CONTROL.font_custom, CONTROL.font_flags)
+                -- PWB_txt1.text:SetText(CONTROL.custom_text)
+
+                local PWB_txt2 = _G["DFRLCustomBuffText2"]
+                if not PWB_txt2 then
+                    PWB_txt2 = CreateFrame("Frame", "DFRLCustomBuffText2", PizzaWorldBuffs.frame)
+                    PWB_txt2:SetWidth(CONTROL.frame_width)
+                    PWB_txt2:SetHeight(CONTROL.frame_height)
+                    PWB_txt2.text = PWB_txt2:CreateFontString(nil, "MEDIUM", "GameFontWhite")
+                    PWB_txt2.text:SetPoint("BOTTOM", 0, 0)
+                end
+                -- PWB_txt2.text:SetFont(CONTROL.font_path, CONTROL.font_custom, CONTROL.font_flags)
+                -- PWB_txt2.text:SetText(CONTROL.custom_text2)
+
+                local PWB_txt3 = _G["DFRLCustomBuffText3"]
+                if not PWB_txt3 then
+                    PWB_txt3 = CreateFrame("Frame", "DFRLCustomBuffText3", PizzaWorldBuffs.frame)
+                    PWB_txt3:SetWidth(CONTROL.frame_width)
+                    PWB_txt3:SetHeight(CONTROL.frame_height)
+                    PWB_txt3.text = PWB_txt3:CreateFontString(nil, "MEDIUM", "GameFontWhite")
+                    PWB_txt3.text:SetPoint(CONTROL.anchor_point, 0, 0)
+                end
+                -- PWB_txt3.text:SetFont(CONTROL.font_path, CONTROL.font_custom, CONTROL.font_flags)
+                -- PWB_txt3.text:SetText(CONTROL.custom_text3)
+
+                -- update
+                local hordeText, allianceText = getCustomText()
+                PWB_txt1.text:SetFont(CONTROL.font_path, CONTROL.font_custom, CONTROL.font_flags)
+                PWB_txt1.text:SetText(hordeText)
+                PWB_txt2.text:SetFont(CONTROL.font_path, CONTROL.font_custom, CONTROL.font_flags)
+                PWB_txt2.text:SetText(allianceText)
+                PWB_txt3.text:SetFont(CONTROL.font_path, CONTROL.font_custom, CONTROL.font_flags)
+                PWB_txt3.text:SetText("") -- hack to give us a free space ^.^
+
+                if not PizzaWorldBuffs.frame._dfrl_update_hooked then
+                    local originalUpdateFrames = PizzaWorldBuffs.frame.updateFrames
+                    PizzaWorldBuffs.frame.updateFrames = function()
+                        originalUpdateFrames()
+
+                        local yOffset = 0
+                        local frameCount = 0
+                        local headerFound = false
+
+                        PizzaWorldBuffs.frame:SetParent(PWB_Panel)
+                        PizzaWorldBuffs.frame:ClearAllPoints()
+                        PizzaWorldBuffs.frame:SetPoint("TOP", PWB_Panel, "TOP", 0, 0)
+
+                        for i, frame in ipairs(PizzaWorldBuffs.frames) do
+                            if frame.frame and frame.frame.text and frame.frame:IsShown() then
+                                if frame.name == "PizzaWorldBuffsHeader" then
+                                    headerFound = true
+
+                                    frame.frame:ClearAllPoints()
+                                    frame.frame:SetPoint(CONTROL.anchor_point, CONTROL.anchor_parent, CONTROL.anchor_to, CONTROL.x_offset, CONTROL.y_offset + yOffset)
+                                    yOffset = yOffset - frame.frame.text:GetHeight() - CONTROL.line_spacing
+
+                                    PWB_txt1:ClearAllPoints()
+                                    PWB_txt1:SetPoint(CONTROL.anchor_point, CONTROL.anchor_parent, CONTROL.anchor_to, CONTROL.x_offset, CONTROL.y_offset + yOffset)
+                                    PWB_txt1:Show()
+                                    yOffset = yOffset - CONTROL.frame_height - CONTROL.line_spacing
+                                else
+                                    frameCount = frameCount + 1
+
+                                    if frameCount == 3 then
+                                        PWB_txt2:ClearAllPoints()
+                                        PWB_txt2:SetPoint(CONTROL.anchor_point, CONTROL.anchor_parent, CONTROL.anchor_to, CONTROL.x_offset, CONTROL.y_offset + yOffset)
+                                        PWB_txt2:Show()
+                                        yOffset = yOffset - CONTROL.frame_height - CONTROL.line_spacing
+                                    end
+
+                                    if frameCount == 5 then
+                                        PWB_txt3:ClearAllPoints()
+                                        PWB_txt3:SetPoint(CONTROL.anchor_point, CONTROL.anchor_parent, CONTROL.anchor_to, CONTROL.x_offset, CONTROL.y_offset + yOffset)
+                                        PWB_txt3:Show()
+                                        yOffset = yOffset - CONTROL.frame_height - CONTROL.line_spacing
+                                    end
+
+                                    frame.frame:ClearAllPoints()
+                                    frame.frame:SetPoint(CONTROL.anchor_point, CONTROL.anchor_parent, CONTROL.anchor_to, CONTROL.x_offset, CONTROL.y_offset + yOffset)
+                                    yOffset = yOffset - frame.frame.text:GetHeight() - CONTROL.line_spacing
+                                end
+
+                                local text = frame.frame.text:GetText()
+                                if text then
+                                    frame.frame.text:SetFont(CONTROL.font_path, CONTROL.font_size, CONTROL.font_flags)
+
+                                    text = string.gsub(text, "|c%x%x%x%x%x%x%x%x", "")
+                                    text = string.gsub(text, "|r", "")
+
+                                    if frame.name == "PizzaWorldBuffsHeader" then
+                                        text = CONTROL.color_header .. text
+                                        frame.frame.text:SetText(text)
+                                    else
+                                        local colonPos = string.find(text, ":")
+                                        if colonPos then
+                                            local before = string.sub(text, 1, colonPos-1)
+                                            local after = string.sub(text, colonPos)
+                                            text = CONTROL.color_prefix .. before .. CONTROL.color_suffix .. after
+                                            frame.frame.text:SetText(text)
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                        if not headerFound then
+                            PWB_txt1:Hide()
+                            PWB_txt2:Hide()
+                            PWB_txt3:Hide()
+                        end
+
+                        -- update custom frame
+                        local hordeText2, allianceText2 = getCustomText()
+                        PWB_txt1.text:SetText(hordeText2)
+                        PWB_txt2.text:SetText(allianceText2)
+                    end
+                    PizzaWorldBuffs.frame._dfrl_update_hooked = true
+                end
+
+                -- force update to apply new color
+                if PizzaWorldBuffs.frame.updateFrames and PizzaWorldBuffs.frames then
+                    PizzaWorldBuffs.frame:updateFrames()
+                end
+            end)
+
+            -- minimap toggle
+            local toggleButton
+            if PizzaWorldBuffs then
+                toggleButton = CreateFrame("Button", "MinimapButtonCollectorToggle", UIParent)
+                toggleButton:SetWidth(16)
+                toggleButton:SetHeight(16)
+                toggleButton:SetPoint("TOP", Minimap, "BOTTOM", -0, -20)
+                toggleButton:SetNormalTexture(texpath.. "dfrl_collector_toggle.tga")
+                toggleButton:GetNormalTexture():SetTexCoord(1, 0, 0, 0, 1, 1, 0, 1)
+                toggleButton:SetHighlightTexture(texpath.. "dfrl_collector_toggle.tga")
+                toggleButton:GetHighlightTexture():SetTexCoord(1, 0, 0, 0, 1, 1, 0, 1)
+
+                local panelVisible = DFRL:GetTempValue("pwb", "visible")
+                if panelVisible == false then
+                    PWB_Panel:Hide()
+                else
+                    PWB_Panel:Show()
+                end
+
+                toggleButton:SetScript("OnClick", function()
+                    if PWB_Panel:IsVisible() then
+                        UIFrameFadeOut(PWB_Panel, 0.3, 1, 0)
+                        PWB_Panel.fadeInfo.finishedFunc = PWB_Panel.Hide
+                        PWB_Panel.fadeInfo.finishedArg1 = PWB_Panel
+                        DFRL:SetTempValue("pwb", "visible", false)
+                    else
+                        PWB_Panel:SetAlpha(0)
+                        PWB_Panel:Show()
+                        UIFrameFadeIn(PWB_Panel, 0.3, 0, 1)
+                        DFRL:SetTempValue("pwb", "visible", true)
+                    end
+                end)
+            end
+        end
+
+        PWBInit(true)
     end
 
     -- callbacks
@@ -609,6 +855,10 @@ DFRL:RegisterModule("minimap", 2, function()
     callbacks.zoomY = function(value)
         MinimapZoomIn:ClearAllPoints()
         MinimapZoomIn:SetPoint("TOPLEFT", Minimap, "BOTTOMRIGHT", DFRL:GetConfig("minimap", "zoomX"), value)
+    end
+
+    callbacks.textColor = function(value)
+        PWBInit(value and true or false)
     end
 
     -- execute callbacks

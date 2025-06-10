@@ -63,6 +63,8 @@ local function ShowWelcomePage()
     welcomeFrame:SetWidth(400)
     welcomeFrame:SetHeight(250)
     welcomeFrame:SetPoint("CENTER", 0, 0)
+    welcomeFrame:SetFrameStrata("TOOLTIP")
+    welcomeFrame:SetToplevel(true)
     welcomeFrame:SetBackdrop{
         bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
     }

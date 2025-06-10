@@ -260,7 +260,6 @@ function CreateCheckbox(parent, name, moduleName, key)
     checkbox:SetWidth(20)
     checkbox:SetHeight(20)
 
-    -- label
     local label = checkbox:CreateFontString(nil, "BACKGROUND", "GameFontNormal")
     label:SetPoint("LEFT", checkbox, "RIGHT", 5, 0)
     local displayText = string.gsub(key, "(%l)(%u)", "%1 %2")
@@ -269,11 +268,9 @@ function CreateCheckbox(parent, name, moduleName, key)
     label:SetTextColor(.9,.9,.9)
     checkbox.label = label
 
-    -- initial state
     local currentValue = DFRL:GetConfig(moduleName, key)
     checkbox:SetChecked(currentValue)
 
-    -- set handler
     checkbox:SetScript("OnClick", function()
         local isChecked = this:GetChecked()
         local newValue = false

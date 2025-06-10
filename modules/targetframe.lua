@@ -8,7 +8,7 @@ DFRL:SetDefaults("targetframe", {
     textColoring = {false, 4, "checkbox", "text", "Color text based on health/mana percentage"},
     colorReaction = {true, 5, "checkbox", "bar color", "Color health bar based on target reaction"},
     colorClass = {false, 6, "checkbox", "bar color", "Color health bar based on target class"},
-
+    lowHpColor = {false, 7, "checkbox", "bar color", "Color health bar based on hp"},
 })
 
 DFRL:RegisterModule("targetframe", 1, function()
@@ -168,6 +168,74 @@ DFRL:RegisterModule("targetframe", 1, function()
         return UnitIsTapped("target") and not UnitIsTappedByPlayer("target")
     end
 
+    -- ill try out a new way to create our callbacks by using  State Object Patterns
+    local targetState = {
+        colorReaction = false,
+        colorClass = false,
+        lowHpColor = false,
+
+        updateColor = function(self)
+            if not UnitExists("target") then return end
+
+            if IsTargetTaggedByOther() then
+                TargetFrameHealthBar:SetStatusBarColor(0.5, 0.5, 0.5)
+                return
+            end
+
+            local health = UnitHealth("target")
+            local maxHealth = UnitHealthMax("target")
+            local percent = maxHealth > 0 and (health / maxHealth) or 1
+
+            if self.lowHpColor then
+                local r, g, b
+                if self.colorClass and UnitIsPlayer("target") then
+                    local _, class = UnitClass("target")
+                    if class and RAID_CLASS_COLORS[class] then
+                        local classColor = RAID_CLASS_COLORS[class]
+                        r = classColor.r + (1 - classColor.r) * (1 - percent)
+                        g = classColor.g * percent
+                        b = classColor.b * percent
+                    else
+                        r = 1 - percent
+                        g = percent
+                        b = 0
+                    end
+                else
+                    r = 1 - percent
+                    g = percent
+                    b = 0
+                end
+                TargetFrameHealthBar:SetStatusBarColor(r, g, b)
+                return
+            end
+
+            if self.colorClass and UnitIsPlayer("target") then
+                local _, class = UnitClass("target")
+                if class and RAID_CLASS_COLORS[class] then
+                    local color = RAID_CLASS_COLORS[class]
+                    TargetFrameHealthBar:SetStatusBarColor(color.r, color.g, color.b)
+                    return
+                end
+            end
+
+            if self.colorReaction then
+                local reaction = UnitReaction("player", "target")
+                if reaction then
+                    if reaction <= 2 then
+                        TargetFrameHealthBar:SetStatusBarColor(1, 0, 0)
+                    elseif reaction == 3 or reaction == 4 then
+                        TargetFrameHealthBar:SetStatusBarColor(1, 1, 0)
+                    else
+                        TargetFrameHealthBar:SetStatusBarColor(0, 1, 0)
+                    end
+                    return
+                end
+            end
+
+            TargetFrameHealthBar:SetStatusBarColor(0, 1, 0)
+        end
+    }
+
     -- callbacks
     local callbacks = {}
 
@@ -202,53 +270,6 @@ DFRL:RegisterModule("targetframe", 1, function()
         UpdateTexts()
     end
 
-    -- ill try out a new way to create our callbacks by using  State Object Patterns
-    local targetState = {
-        colorReaction = false,
-        colorClass = false,
-
-        updateColor = function(self)
-            -- early return if no target
-            if not UnitExists("target") then return end
-
-            if IsTargetTaggedByOther() then
-                TargetFrameHealthBar:SetStatusBarColor(0.5, 0.5, 0.5)
-                return
-            end
-
-            if self.colorClass then
-                if UnitIsPlayer("target") then
-                    local _, class = UnitClass("target")
-                    if class and RAID_CLASS_COLORS[class] then
-                        local color = RAID_CLASS_COLORS[class]
-                        TargetFrameHealthBar:SetStatusBarColor(color.r, color.g, color.b)
-                        return
-                    end
-                end
-            end
-
-            if self.colorReaction then
-                local reaction = UnitReaction("player", "target")
-                if reaction then
-                    if reaction <= 2 then
-                        -- hostile
-                        TargetFrameHealthBar:SetStatusBarColor(1, 0, 0)
-                    elseif reaction == 3 or reaction == 4 then
-                        -- neutral
-                        TargetFrameHealthBar:SetStatusBarColor(1, 1, 0)
-                    else
-                        -- friendly
-                        TargetFrameHealthBar:SetStatusBarColor(0, 1, 0)
-                    end
-                    return
-                end
-            end
-
-            -- default color
-            TargetFrameHealthBar:SetStatusBarColor(0, 1, 0)
-        end
-    }
-
     callbacks.colorReaction = function(value)
         targetState.colorReaction = value
         targetState:updateColor()
@@ -256,6 +277,11 @@ DFRL:RegisterModule("targetframe", 1, function()
 
     callbacks.colorClass = function(value)
         targetState.colorClass = value
+        targetState:updateColor()
+    end
+
+    callbacks.lowHpColor = function(value)
+        targetState.lowHpColor = value
         targetState:updateColor()
     end
 

@@ -337,56 +337,6 @@ DFRL:RegisterModule("smallframes", 2, function()
         end
     end
 
-    -- callbacks.colorReaction = function(value)
-    --     TargetofTargetHealthBar.colorReaction = value
-
-    --     if UnitExists("targettarget") then
-    --         if IsTargetOfTargetTaggedByOther() then
-    --             TargetofTargetHealthBar:SetStatusBarColor(0.5, 0.5, 0.5)
-    --             return
-    --         end
-
-    --         local reaction = UnitReaction("player", "targettarget")
-
-    --         if value and reaction then
-    --             if reaction <= 2 then
-    --                 -- hostile
-    --                 TargetofTargetHealthBar:SetStatusBarColor(1, 0, 0)
-    --             elseif reaction == 3 or reaction == 4 then
-    --                 -- neutral
-    --                 TargetofTargetHealthBar:SetStatusBarColor(1, 1, 0)
-    --             else
-    --                 -- friendly
-    --                 TargetofTargetHealthBar:SetStatusBarColor(0, 1, 0)
-    --             end
-    --         else
-    --             -- reset
-    --             TargetofTargetHealthBar:SetStatusBarColor(0, 1, 0)
-    --         end
-    --     end
-    -- end
-
-    -- -- tot hook
-    -- HookScript(_G["TargetofTargetHealthBar"], "OnValueChanged", function()
-    --     if IsTargetOfTargetTaggedByOther() then
-    --         _G["TargetofTargetHealthBar"]:SetStatusBarColor(0.5, 0.5, 0.5)
-    --         return
-    --     end
-
-    --     if _G["TargetofTargetHealthBar"].colorReaction then
-    --         local reaction = UnitReaction("player", "targettarget")
-    --         if reaction then
-    --             if reaction <= 2 then
-    --                 _G["TargetofTargetHealthBar"]:SetStatusBarColor(1, 0, 0)
-    --             elseif reaction <= 4 then
-    --                 _G["TargetofTargetHealthBar"]:SetStatusBarColor(1, 1, 0)
-    --             else
-    --                 _G["TargetofTargetHealthBar"]:SetStatusBarColor(0, 1, 0)
-    --             end
-    --         end
-    --     end
-    -- end)
-
     -- ill try out a new way to create our callbacks by using  State Object Patterns
     local framesState = {
         colorReaction = false,

@@ -172,14 +172,14 @@ DFRL:RegisterModule("castbar", 1, function()
         self.timeText = tt
 
         -- events
-        f:RegisterEvent("SPELLCAST_START")
         f:RegisterEvent("SPELLCAST_STOP")
+        f:RegisterEvent("SPELLCAST_START")
         f:RegisterEvent("SPELLCAST_FAILED")
-        f:RegisterEvent("SPELLCAST_INTERRUPTED")
         f:RegisterEvent("SPELLCAST_DELAYED")
+        f:RegisterEvent("SPELLCAST_INTERRUPTED")
+        f:RegisterEvent("SPELLCAST_CHANNEL_STOP")
         f:RegisterEvent("SPELLCAST_CHANNEL_START")
         f:RegisterEvent("SPELLCAST_CHANNEL_UPDATE")
-        f:RegisterEvent("SPELLCAST_CHANNEL_STOP")
 
         f:SetScript("OnEvent", function()
             castbar:HandleEvent(event, arg1, arg2)

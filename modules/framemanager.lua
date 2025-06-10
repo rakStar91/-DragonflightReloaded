@@ -40,11 +40,16 @@ DFRL:RegisterModule("framemanager", 2, function()
         -- minimap module
         Minimap,
         DFRL.topPanel,
+        -- questlog
+        DFRL.questframe,
         -- independent
         BuffButton0,
         BuffButton8,
         TempEnchant1,
-        BuffButton16
+        BuffButton16,
+
+        -- PWB
+        DFRL.PWB_Panel,
     }
 
     function SaveFramePosition(frame)

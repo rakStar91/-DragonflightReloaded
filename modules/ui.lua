@@ -9,6 +9,8 @@ DFRL:SetDefaults("ui", {
     hideErrorMessage = {false, 4, "checkbox", "tweaks", "Hide the top UI error message (e.g. 'Spell is not ready')"},
     lowHpWarn = {true, 5, "checkbox", "tweaks", "Show red border when health is low"},
     lowHpThreshold = {40, 6, "slider", {5, 95}, "tweaks", "Health threshold for low HP warning", 10, 90, 5},
+    cameraDistanceFactor = {2, 7, "slider", {1, 5}, "tweaks", "Extended maximum camera distance"},
+
 })
 
 DFRL:RegisterModule("ui", 2, function()
@@ -277,9 +279,6 @@ DFRL:RegisterModule("ui", 2, function()
 
         DFRL.gui.gamemenuBtn = gamemenuBtn
     end
-
-    -- zoom
-    ConsoleExec("CameraDistanceMaxFactor 5")
 
     -- callbacks
     local callbacks = {}
@@ -588,6 +587,10 @@ DFRL:RegisterModule("ui", 2, function()
         if DFRL.lowHpWarnFrame and DFRL.lowHpWarnFrame:IsShown() then
             DFRL.healthCheckFrame.tick = 0
         end
+    end
+
+    callbacks.cameraDistanceFactor = function(value)
+        SetCVar("CameraDistanceMaxFactor", value)
     end
 
     -- execute  callbacks

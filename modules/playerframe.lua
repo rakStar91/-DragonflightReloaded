@@ -10,6 +10,7 @@ DFRL:SetDefaults("playerframe", {
     textColoring = {false, 4, "checkbox", "text", "Color text based on health/mana percentage from white to red"},
 
     classColor = {false, 1, "checkbox", "bar color", "Color health bar based on class"},
+    lowHpColor = {false, 2, "checkbox", "bar color", "Color health bar based on hp"},
 
     classPortrait = {false, 5, "checkbox", "tweaks", "Activate 2D class portrait icons"},
     frameHide = {false, 7, "checkbox", "tweaks", "Hide frame at full HP when not in combat"},
@@ -162,46 +163,98 @@ DFRL:RegisterModule("playerframe", 2, function()
         }
 
         local currentFrame = 1
-            local totalFrames = table.getn(texCoords)
-            local timeSinceLastUpdate = 0
-            local updateInterval = 0.05
+        local totalFrames = table.getn(texCoords)
+        local timeSinceLastUpdate = 0
+        local updateInterval = 0.05
 
-            restingAnimation:Hide()
+        restingAnimation:Hide()
 
-            restingAnimation:SetScript("OnUpdate", function()
-                timeSinceLastUpdate = timeSinceLastUpdate + arg1
+        restingAnimation:SetScript("OnUpdate", function()
+            timeSinceLastUpdate = timeSinceLastUpdate + arg1
 
-                if timeSinceLastUpdate >= updateInterval then
-                    currentFrame = currentFrame + 1
-                    if currentFrame > totalFrames then
-                        currentFrame = 1
-                    end
-
-                    local coords = texCoords[currentFrame]
-                    texture:SetTexCoord(coords[1], coords[2], coords[3], coords[4])
-
-                    timeSinceLastUpdate = 0
+            if timeSinceLastUpdate >= updateInterval then
+                currentFrame = currentFrame + 1
+                if currentFrame > totalFrames then
+                    currentFrame = 1
                 end
-            end)
 
-            local function UpdateRestingState()
-                if IsResting() and PlayerFrame:IsShown() then
-                    restingAnimation:Show()
+                local coords = texCoords[currentFrame]
+                texture:SetTexCoord(coords[1], coords[2], coords[3], coords[4])
+
+                timeSinceLastUpdate = 0
+            end
+        end)
+
+        local function UpdateRestingState()
+            if IsResting() and PlayerFrame:IsShown() then
+                restingAnimation:Show()
+            else
+                restingAnimation:Hide()
+            end
+        end
+
+        local eventFrame = CreateFrame("Frame")
+        eventFrame:RegisterEvent("PLAYER_UPDATE_RESTING")
+        eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+        eventFrame:SetScript("OnEvent", function()
+            UpdateRestingState()
+        end)
+
+        -- init
+        UpdateRestingState()
+    end
+
+    local callbacks = {}
+
+    -- ill try out a new way to create our callbacks by using  State Object Patterns
+    local playerState = {
+        colorClass = false,
+        lowHpColor = false,
+
+        updateColor = function(self)
+            local health = UnitHealth("player")
+            local maxHealth = UnitHealthMax("player")
+            local percent = maxHealth > 0 and (health / maxHealth) or 1
+
+            if self.lowHpColor then
+                local r, g, b
+                if self.colorClass then
+                    local _, class = UnitClass("player")
+                    if class and RAID_CLASS_COLORS[class] then
+                        local classColor = RAID_CLASS_COLORS[class]
+                        -- Blend class color to red
+                        r = classColor.r + (1 - classColor.r) * (1 - percent)
+                        g = classColor.g * percent
+                        b = classColor.b * percent
+                    else
+                        -- fallback to green to red
+                        r = 1 - percent
+                        g = percent
+                        b = 0
+                    end
                 else
-                    restingAnimation:Hide()
+                    -- Blend green to red
+                    r = 1 - percent
+                    g = percent
+                    b = 0
+                end
+                PlayerFrameHealthBar:SetStatusBarColor(r, g, b)
+                return
+            end
+
+            -- Not lowHpColor: use class color or default green
+            if self.colorClass then
+                local _, class = UnitClass("player")
+                if class and RAID_CLASS_COLORS[class] then
+                    local color = RAID_CLASS_COLORS[class]
+                    PlayerFrameHealthBar:SetStatusBarColor(color.r, color.g, color.b)
+                    return
                 end
             end
 
-            local eventFrame = CreateFrame("Frame")
-            eventFrame:RegisterEvent("PLAYER_UPDATE_RESTING")
-            eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-            eventFrame:SetScript("OnEvent", function()
-                UpdateRestingState()
-            end)
-
-            -- init
-            UpdateRestingState()
+            PlayerFrameHealthBar:SetStatusBarColor(0, 1, 0)
         end
+    }
 
     -- cut out effect
     do
@@ -316,7 +369,7 @@ DFRL:RegisterModule("playerframe", 2, function()
                         frame.texture:Hide()
                         frame.fading = false
                     else
-                        local alpha = 0.7 * (1 - (elapsed / duration))
+                        local alpha = 1 * (1 - (elapsed / duration))
                         frame.texture:SetAlpha(alpha)
                     end
                 end
@@ -334,6 +387,8 @@ DFRL:RegisterModule("playerframe", 2, function()
                 local playerHealthCutout = CreateCutoutEffect(playerHealth, "health")
                 playerHealth:SetScript("OnValueChanged", function()
                     UpdateCutoutEffect(playerHealthCutout, "player")
+                            playerState:updateColor() -- <-- Add this line!
+
                 end)
             end
 
@@ -417,28 +472,13 @@ DFRL:RegisterModule("playerframe", 2, function()
         manaValueText:SetText(mana)
     end
 
-    local callbacks = {}
-
-    -- ill try out a new way to create our callbacks by using  State Object Patterns
-    local playerState = {
-        colorClass = false,
-
-        updateColor = function(self)
-            if self.colorClass then
-                local _, class = UnitClass("player")
-                if class and RAID_CLASS_COLORS[class] then
-                    local color = RAID_CLASS_COLORS[class]
-                    PlayerFrameHealthBar:SetStatusBarColor(color.r, color.g, color.b)
-                    return
-                end
-            end
-
-            PlayerFrameHealthBar:SetStatusBarColor(0, 1, 0)
-        end
-    }
-
     callbacks.classColor = function(value)
         playerState.colorClass = value
+        playerState:updateColor()
+    end
+
+    callbacks.lowHpColor = function(value)
+        playerState.lowHpColor = value
         playerState:updateColor()
     end
 

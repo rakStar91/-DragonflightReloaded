@@ -112,7 +112,7 @@ function ThrottledMessage(message)
     end
 end
 
--- shagu api
+-- super cool shagu stuff
 function hooksecurefunc(name, func, append)
     if not _G[name] then return end
 
@@ -143,27 +143,23 @@ HookScript = function(f, script, func)
     end)
 end
 
--- [ HookAddonOrVariable ]
--- Sets a function to be called automatically once an addon gets loaded
--- 'addon'      [string]            addon or variable name
--- 'func'       [function]          function that should run
--- function pfUI.api.HookAddonOrVariable(addon, func)
---   local lurker = CreateFrame("Frame", nil)
---   lurker.func = func
---   lurker:RegisterEvent("ADDON_LOADED")
---   lurker:RegisterEvent("VARIABLES_LOADED")
---   lurker:RegisterEvent("PLAYER_ENTERING_WORLD")
---   lurker:SetScript("OnEvent",function()
---     -- only run when config is available
---     if event == "ADDON_LOADED" and not this.foundConfig then
---       return
---     elseif event == "VARIABLES_LOADED" then
---       this.foundConfig = true
---     end
+function HookAddonOrVariable(addon, func)
+    local lurker = CreateFrame("Frame", nil)
+    lurker.func = func
+    lurker:RegisterEvent("ADDON_LOADED")
+    lurker:RegisterEvent("VARIABLES_LOADED")
+    lurker:RegisterEvent("PLAYER_ENTERING_WORLD")
+    lurker:SetScript("OnEvent",function()
+        -- only run when config is available
+        if event == "ADDON_LOADED" and not this.foundConfig then
+            return
+        elseif event == "VARIABLES_LOADED" then
+            this.foundConfig = true
+        end
 
---     if IsAddOnLoaded(addon) or _G[addon] then
---       this:func()
---       this:UnregisterAllEvents()
---     end
---   end)
--- end
+        if IsAddOnLoaded(addon) or _G[addon] then
+            this:func()
+            this:UnregisterAllEvents()
+        end
+    end)
+end
