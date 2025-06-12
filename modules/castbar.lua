@@ -2,17 +2,17 @@ DFRL:SetDefaults("castbar", {
     enabled = {true},
     hidden = {false},
 
-    darkMode = {false, 1, "checkbox", "appearance", "Enable dark mode for the castbar"},
+    darkMode = {0, 1, "slider", {0, 1}, "appearance", "Adjust dark mode intensity"},
 
     setFillDirection = {"left", 2, "dropdown", { "left", "right", "center" }, "castbar basic", "Set fill direction"},
     showShadow = {true, 3, "checkbox", "castbar basic", "Show drop shadow below the castbar"},
     barWidth = {200, 4, "slider", {120, 350}, "castbar basic", "Change castbar width"},
     barHeight = {16, 5, "slider", {10, 30}, "castbar basic", "Change castbar height"},
 
-    showTime = {true, 6, "checkbox", "text", "Show casting time"},
-    showSpell = {true, 7, "checkbox", "text", "Show spell name text"},
-    fontSize = {12, 8, "slider", {5, 25}, "text", "Change castbar font size"},
-    fontY = {-16, 9, "slider", {-20, 20}, "text", "Change castbar font Y offset"},
+    showTime = {true, 6, "checkbox", "text settings", "Show casting time"},
+    showSpell = {true, 7, "checkbox", "text settings", "Show spell name text"},
+    fontSize = {12, 8, "slider", {5, 25}, "text settings", "Change castbar font size"},
+    fontY = {-16, 9, "slider", {-20, 20}, "text settings", "Change castbar font Y offset"},
 
     carColor = {{1, 0.82, 0}, 10, "colourslider", "castbar color", "Change castbar color"},
 
@@ -21,6 +21,7 @@ DFRL:SetDefaults("castbar", {
 DFRL:RegisterModule("castbar", 1, function()
     d:DebugPrint("BOOTING")
 
+    -- locals
     local type = type
     local assert = assert
     local string = string
@@ -31,20 +32,12 @@ DFRL:RegisterModule("castbar", 1, function()
     local CreateFrame = CreateFrame
     local INTERRUPTED = INTERRUPTED
 
-    -- hide stuff
-    do
-        CastingBarFrame:Hide()
-        CastingBarFrame:SetScript("OnEvent", nil)
-        CastingBarFrame:SetScript("OnUpdate", nil)
-    end
-
-    local path = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\castbar\\"
-
-    local castbar = {
+    -- setup
+    local Setup = {
         frame       = nil,
         barTexture  = nil,
         spark       = nil,
-        spark2      = nil,  -- for centerr mode
+        spark2      = nil,  -- for the center mode
         flashTex    = nil,
         backdrop    = nil,
         borderframe = nil,
@@ -55,10 +48,11 @@ DFRL:RegisterModule("castbar", 1, function()
         config = {
             width            = 200,
             height           = 16,
-            bgTexture        = path .. "CastingBarBackground.blp",
-            barTexture       = path .. "CastingBarStandard3.blp",
-            dropshadow       = path .. "CastingBarFrameDropShadow.blp",
-            flashTex         = path .. "CastingBarFrameFlash.tga",
+            bgTexture        = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\castbar\\CastingBarBackground.blp",
+            barTexture       = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\castbar\\CastingBarStandard3.blp",
+            dropshadow       = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\castbar\\CastingBarFrameDropShadow.blp",
+            flashTex         = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\castbar\\CastingBarFrameFlash.tga",
+            borderframe      = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\castbar\\CastingBarFrame.blp",
             spark            = "Interface\\CastingBar\\UI-CastingBar-Spark",
             barColor         = { r = 1, g = 0.82, b = 0 },
             alphaSpeed       = 3.0,
@@ -92,7 +86,11 @@ DFRL:RegisterModule("castbar", 1, function()
         },
     }
 
-    function castbar:Create(parent)
+    function Setup:Castbar(parent)
+        CastingBarFrame:Hide()
+        CastingBarFrame:SetScript("OnEvent", nil)
+        CastingBarFrame:SetScript("OnUpdate", nil)
+
         local f = CreateFrame("Frame", "DFRLCastbar", parent or UIParent)
         f:SetPoint("CENTER", UIParent, "CENTER", 0, -200)
         f:SetHeight(self.config.height)
@@ -118,7 +116,7 @@ DFRL:RegisterModule("castbar", 1, function()
 
         local borderFrame = f:CreateTexture(nil, "ARTWORK")
         borderFrame:SetAllPoints(f)
-        borderFrame:SetTexture(path .. "CastingBarFrame.blp")
+        borderFrame:SetTexture(self.config.borderframe)
         self.borderframe = borderFrame
 
         local dropshadow = f:CreateTexture(nil, "BACKGROUND", 1)
@@ -153,7 +151,6 @@ DFRL:RegisterModule("castbar", 1, function()
             flash:SetPoint("TOPLEFT", f, "TOPLEFT", 0, 5)
             flash:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", 0, -5)
             flash:SetTexture(self.config.flashTex)
-            -- flash:SetVertexColor(1, 1, 1)
             self.flashTex = flash
         end
 
@@ -182,17 +179,17 @@ DFRL:RegisterModule("castbar", 1, function()
         f:RegisterEvent("SPELLCAST_CHANNEL_UPDATE")
 
         f:SetScript("OnEvent", function()
-            castbar:HandleEvent(event, arg1, arg2)
+            Setup:HandleEvent(event, arg1, arg2)
         end)
 
         f:SetScript("OnUpdate", function()
-            castbar:OnUpdate(arg1)
+            Setup:OnUpdate(arg1)
         end)
 
         self.frame = f
     end
 
-    function castbar:UpdateBarVisual(progress)
+    function Setup:UpdateBarVisual(progress)
         assert(type(progress) == "number", "Progress must be a number")
         assert(self.frame, "Frame must exist before updating visuals")
         assert(self.barTexture, "Bar texture must exist before updating")
@@ -263,7 +260,7 @@ DFRL:RegisterModule("castbar", 1, function()
         end
     end
 
-    function castbar:OnUpdate(elapsed)
+    function Setup:OnUpdate(elapsed)
         local s = self.state
         local c = self.config
         local now = GetTime()
@@ -379,7 +376,7 @@ DFRL:RegisterModule("castbar", 1, function()
         end
     end
 
-    function castbar:HandleEvent(event, arg1, arg2)
+    function Setup:HandleEvent(event, arg1, arg2)
         assert(event, "Event name cannot be nil")
         assert(self.frame, "Frame must exist before handling events")
         assert(self.state, "State table must exist")
@@ -491,114 +488,85 @@ DFRL:RegisterModule("castbar", 1, function()
         end
     end
 
-    castbar:Create()
+    -- init setup
+    Setup:Castbar()
 
     -- callbacks
     local callbacks = {}
 
     callbacks.darkMode = function(value)
-        local darkColor = {0.2, 0.2, 0.2}
-        local specialDark = {0.5, 0.5, 0.5}
+        local intensity = DFRL:GetConfig("castbar", "darkMode")
+        local darkColor = {1 - intensity, 1 - intensity, 1 - intensity}
         local lightColor = {1, 1, 1}
-
         local color = value and darkColor or lightColor
-        if castbar.backdrop then
-            castbar.backdrop:SetVertexColor(color[1], color[2], color[3])
-        end
 
-        local _ = value and specialDark or lightColor
-        if castbar.backdrop then
-            local finalColor = value and {0.35, 0.35, 0.35} or lightColor
-            castbar.backdrop:SetVertexColor(finalColor[1], finalColor[2], finalColor[3])
-        end
-
-        if castbar.borderframe then
-            local borderColor = value and specialDark or lightColor
-            castbar.borderframe:SetVertexColor(borderColor[1], borderColor[2], borderColor[3])
-        end
+        Setup.backdrop:SetVertexColor(color[1], color[2], color[3])
     end
 
-    callbacks.setFillDirection = function(direction)
-        if direction == "left" or direction == "right" or direction == "center" then
-            castbar.config.fillDirection = direction
-            if castbar.frame and castbar.frame:IsShown() then
-                castbar:UpdateBarVisual(castbar.state.currentProgress)
+    callbacks.setFillDirection = function(value)
+        if value == "left" or value == "right" or value == "center" then
+            Setup.config.fillDirection = value
+            if Setup.frame and Setup.frame:IsShown() then
+                Setup:UpdateBarVisual(Setup.state.currentProgress)
             end
         end
     end
 
     callbacks.showTime = function(value)
         if value then
-            castbar.timeText:Show()
+            Setup.timeText:Show()
         else
-            castbar.timeText:Hide()
+            Setup.timeText:Hide()
         end
     end
 
     callbacks.showSpell = function(value)
         if value then
-            castbar.text:Show()
+            Setup.text:Show()
         else
-            castbar.text:Hide()
+            Setup.text:Hide()
         end
     end
 
     callbacks.showShadow = function(value)
         if value then
-            castbar.dropshadow:Show()
+            Setup.dropshadow:Show()
         else
-            castbar.dropshadow:Hide()
+            Setup.dropshadow:Hide()
         end
     end
 
     callbacks.barWidth = function(value)
-        castbar.config.width = value
-
-        if castbar.frame then
-            castbar.frame:SetWidth(value)
-        end
-
-        if castbar.dropshadow then
-            castbar.dropshadow:SetWidth(value + 1)
-        end
-
-        if castbar.frame and castbar.frame:IsShown() then
-            castbar:UpdateBarVisual(castbar.state.currentProgress)
-        end
+        Setup.config.width = value
+        Setup.frame:SetWidth(value)
+        Setup.dropshadow:SetWidth(value + 1)
+        Setup:UpdateBarVisual(Setup.state.currentProgress)
     end
 
     callbacks.barHeight = function(value)
-        castbar.config.height = value
-        if castbar.frame then
-            castbar.frame:SetHeight(value)
-            castbar.barTexture:SetHeight(value)
-            if castbar.spark then castbar.spark:SetHeight(value + 15) end
-            if castbar.spark2 then castbar.spark2:SetHeight(value + 15) end
-            castbar.dropshadow:SetHeight(value + 9)
-        end
+        Setup.config.height = value
+        Setup.frame:SetHeight(value)
+        Setup.barTexture:SetHeight(value)
+        Setup.spark:SetHeight(value + 15)
+        Setup.spark2:SetHeight(value + 15)
+        Setup.dropshadow:SetHeight(value + 9)
     end
 
     callbacks.fontSize = function(value)
-        castbar.config.fontSizeName = value
-        castbar.config.fontSizeTime = value
-        if castbar.text then castbar.text:SetFont(castbar.config.font, value, "OUTLINE") end
-        if castbar.timeText then castbar.timeText:SetFont(castbar.config.font, value, "OUTLINE") end
+        Setup.config.fontSizeName = value
+        Setup.config.fontSizeTime = value
+        Setup.text:SetFont(Setup.config.font, value, "OUTLINE")
+        Setup.timeText:SetFont(Setup.config.font, value, "OUTLINE")
     end
 
     callbacks.carColor = function(value)
-        castbar.config.barColor = {r = value[1], g = value[2], b = value[3]}
-        if castbar.barTexture then
-            castbar.barTexture:SetVertexColor(value[1], value[2], value[3])
-        end
+        Setup.config.barColor = {r = value[1], g = value[2], b = value[3]}
+        Setup.barTexture:SetVertexColor(value[1], value[2], value[3])
     end
 
     callbacks.fontY = function(value)
-        if castbar.text then
-            castbar.text:SetPoint("LEFT", castbar.frame, "LEFT", 5, value)
-        end
-        if castbar.timeText then
-            castbar.timeText:SetPoint("RIGHT", castbar.frame, "RIGHT", -5, value)
-        end
+        Setup.text:SetPoint("LEFT", Setup.frame, "LEFT", 5, value)
+        Setup.timeText:SetPoint("RIGHT", Setup.frame, "RIGHT", -5, value)
     end
 
     -- execute callbacks

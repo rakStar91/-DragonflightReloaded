@@ -1,156 +1,228 @@
----@diagnostic disable: deprecated
+---@diagnostic disable: deprecated, undefined-field
 DFRL:SetDefaults("playerframe", {
     enabled = {true},
     hidden = {false},
 
-    darkMode = {false, 1, "checkbox", "appearance", "Enable dark mode for the player frame"},
+    darkMode = {0, 1, "slider", {0, 1}, "appearance", "Adjust dark mode intensity"},
 
-    textShow = {true, 2, "checkbox", "text", "Show health and mana text"},
-    noPercent = {true, 3, "checkbox", "text", "Show only current values without percentages"},
-    textColoring = {false, 4, "checkbox", "text", "Color text based on health/mana percentage from white to red"},
+    textShow = {true, 1, "checkbox", "text settings", "Show health and mana text"},
+    noPercent = {true, 3, "checkbox", "text settings", "Show only current values without percentages"},
+    textColoring = {false, 4, "checkbox", "text settings", "Color text based on health/mana percentage from white to red"},
+    healthSize = {15, 5, "slider", {8, 20}, "text settings", "Health text font size"},
+    manaSize = {9, 6, "slider", {8, 20}, "text settings", "Mana text font size"},
+    frameFont = {"Myriad-Pro", 2, "dropdown", {
+        "FRIZQT__.TTF",
+        "Expressway",
+        "Homespun",
+        "Hooge",
+        "Myriad-Pro",
+        "Prototype",
+        "PT-Sans-Narrow-Bold",
+        "PT-Sans-Narrow-Regular",
+        "RobotoMono",
+        "BigNoodleTitling",
+        "Continuum",
+        "DieDieDie"
+    }, "text settings", "Change the font used for the playerframe"},
 
     classColor = {false, 1, "checkbox", "bar color", "Color health bar based on class"},
-    lowHpColor = {false, 2, "checkbox", "bar color", "Color health bar based on hp"},
 
     classPortrait = {false, 5, "checkbox", "tweaks", "Activate 2D class portrait icons"},
     frameHide = {false, 7, "checkbox", "tweaks", "Hide frame at full HP when not in combat"},
+    frameScale = {1, 8, "slider", {0.7, 1.3}, "tweaks", "Adjust frame size"},
+
+    combatGlow = {true, 2, "checkbox", "effects", "Enable combat pulse animation"},
+    glowSpeed = {1, 3, "slider", {0.4, 5}, "effects", "Adjust the speed of the combat pulsing"},
+    glowAlpha = {1, 4, "slider", {0.1, 1}, "effects", "Adjust the maximum alpha of the combat pulsing"},
+
+    restingGlow = {true, 5, "checkbox", "effects", "Enable resting glow animation"},
+    restingSpeed = {1, 6, "slider", {0.4, 5}, "effects", "Adjust the speed of the resting pulsing"},
+    restingAlpha = {1, 7, "slider", {0.1, 1}, "effects", "Adjust the maximum alpha of the resting pulsing"},
+    restingColor = {{0, 1, 1}, 8, "colourslider", "effects", "Changes the colour of the resting glow animation"},
 })
 
 DFRL:RegisterModule("playerframe", 2, function()
     d:DebugPrint("BOOTING")
 
-    local texpath = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\"
+    -- setup
+    local Setup = {
+        texpath = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\",
+        texpath2 = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\ui\\",
+        fontpath = "Interface\\AddOns\\DragonflightReloaded\\media\\fnt\\",
 
-    PlayerFrameTexture:SetTexture(texpath.. "UI-TargetingFrameDF.blp")
-    PlayerStatusTexture:SetTexture(texpath.. "UI-Player-Status.blp")
-    PlayerFrameHealthBar:SetStatusBarTexture(texpath.. "healthDF2.tga")
-    PlayerFrameManaBar:SetStatusBarTexture(texpath.. "UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana-Status.tga")
-    PlayerFrameBackground:SetTexture(texpath.. "UI-TargetingFrameDF-Background.blp")
+        hideFrame = nil,
 
-    PlayerFrameHealthBar:SetWidth(130)
-    PlayerFrameHealthBar:SetHeight(30)
-    PlayerFrameHealthBar:SetPoint("TOPLEFT", 100, -29)
-    PlayerFrameManaBar:SetWidth(125)
-    PlayerFrameManaBar:SetPoint("TOPLEFT", 103, -53)
-    PlayerFrameBackground:SetWidth(256)
-    PlayerFrameBackground:SetHeight(128)
-    PlayerFrameBackground:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 0, 0)
+        restingAnimation = nil,
 
-    PlayerFrame.name:ClearAllPoints()
-    PlayerFrame.name:SetPoint("CENTER", PlayerFrame, "CENTER", 22, 25)
+        combatOverlay = nil,
+        combatOverlayTex = nil,
+        combatGlow = {
+            fadeSpeed = 1.0,
+            alphaMin = 0,
+            alphaMax = 1.0,
+        },
 
-    PlayerFrame.portrait:SetHeight(62)
-    PlayerFrame.portrait:SetWidth(62)
+        restingOverlay = nil,
+        restingOverlayTex = nil,
+        restingGlow = {
+            fadeSpeed = 1.0,
+            alphaMin = 0,
+            alphaMax = 1.0,
+            color = {0, 1, 1},
+        },
 
-    PlayerLevelText:ClearAllPoints()
-    PlayerLevelText:SetPoint("CENTER", PlayerFrame, "CENTER", 102, 25)
+        texts = {
+            healthPercent = nil,
+            healthValue = nil,
+            healthPercentShow = true,
+            manaPercent = nil,
+            manaValue = nil,
+            manaPercentShow = true,
+            config = {
+                font = "Fonts\\FRIZQT__.TTF",
+                healthFontSize = 12,
+                manaFontSize = 9,
+                nameFontSize = 9,
+                levelFontSize = 9,
+                outline = "NONE",
+                nameColor = {1, .82, 0},
+                levelColor = {1, .82, 0},
+                healthColor = {1, 1, 1},
+                manaColor = {1, 1, 1},
+            }
+        }
+    }
 
-    PlayerFrameHealthBarText:SetText("")
-    PlayerFrameHealthBarText:ClearAllPoints()
-
-    PlayerFrameManaBarText:SetText("")
-    PlayerFrameManaBarText:ClearAllPoints()
-
-    -- text elements
-    local healthPercentText = PlayerFrameHealthBar:CreateFontString(nil, "OVERLAY")
-    healthPercentText:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE")
-    healthPercentText:SetPoint("LEFT", 5, 0)
-    healthPercentText:SetTextColor(1, 1, 1)
-
-    local healthValueText = PlayerFrameHealthBar:CreateFontString(nil, "OVERLAY")
-    healthValueText:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE")
-    healthValueText:SetPoint("RIGHT", -5, 0)
-    healthValueText:SetTextColor(1, 1, 1)
-
-    local manaPercentText = PlayerFrameManaBar:CreateFontString(nil, "OVERLAY")
-    manaPercentText:SetFont("Fonts\\FRIZQT__.TTF", 9, "OUTLINE")
-    manaPercentText:SetPoint("LEFT", 5, 0)
-    manaPercentText:SetTextColor(1, 1, 1)
-
-    local manaValueText = PlayerFrameManaBar:CreateFontString(nil, "OVERLAY")
-    manaValueText:SetFont("Fonts\\FRIZQT__.TTF", 9, "OUTLINE")
-    manaValueText:SetPoint("RIGHT", -5, 0)
-    manaValueText:SetTextColor(1, 1, 1)
-
-    -- combat indicator
-    do
-        local combatOverlay = CreateFrame("Frame", nil, PlayerFrame)
-        combatOverlay:SetAllPoints(PlayerFrame)
-        combatOverlay:SetFrameStrata("HIGH")
-
-        local texture = combatOverlay:CreateTexture(nil, "OVERLAY")
-        texture:SetTexture(texpath.. "UI-Player-Status.blp")
-        texture:SetPoint("CENTER", PlayerFrame, "CENTER", 45, -21)
-        texture:SetVertexColor(1, 0, 0)
-        texture:SetBlendMode("ADD")
-        texture:SetAlpha(0)
-
-        local timeSinceLastUpdate = 0
-        local updateInterval = 1.0
-        local fadeDirection = 1
-        local currentAlpha = 0
-        local fadeSpeed = 2.0
-
-        combatOverlay:SetScript("OnUpdate", function()
-            timeSinceLastUpdate = timeSinceLastUpdate + arg1
-
-            if UnitAffectingCombat("player") then
-                if timeSinceLastUpdate >= updateInterval then
-                    fadeDirection = -fadeDirection
-                    timeSinceLastUpdate = 0
-                end
-
-                local deltaAlpha = fadeSpeed * arg1 * fadeDirection
-                currentAlpha = currentAlpha + deltaAlpha
-
-                if currentAlpha >= 1.0 then
-                    currentAlpha = 1.0
-                    fadeDirection = -1
-                elseif currentAlpha <= 0.2 then
-                    currentAlpha = 0.2
-                    fadeDirection = 1
-                end
-
-                texture:SetAlpha(currentAlpha)
-            else
-                if currentAlpha > 0 then
-                    currentAlpha = currentAlpha - (fadeSpeed * arg1 * 2)
-                    if currentAlpha < 0 then
-                        currentAlpha = 0
-                    end
-                    texture:SetAlpha(currentAlpha)
-                end
-            end
-        end)
-
-        local eventFrame = CreateFrame("Frame")
-        eventFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
-        eventFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
-        eventFrame:SetScript("OnEvent", function()
-            if event == "PLAYER_REGEN_DISABLED" then
-                currentAlpha = 0.2
-                fadeDirection = 1
-                timeSinceLastUpdate = 0
-            elseif event == "PLAYER_REGEN_ENABLED" then
-                fadeDirection = -1
-            end
-        end)
+    function Setup:HealthBar()
+        PlayerFrameHealthBar:SetStatusBarTexture(self.texpath .. "healthDF2.tga")
+        PlayerFrameHealthBar:SetWidth(130)
+        PlayerFrameHealthBar:SetHeight(30)
+        PlayerFrameHealthBar:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 100, -29)
     end
 
-    -- resting animation
-    local restingAnimation
-    do
-        PlayerRestIcon:SetTexture("")
-        PlayerRestIcon:ClearAllPoints()
-        PlayerRestIcon:SetPoint("TOPLEFT", PlayerFrame, -3000, 0)
+    function Setup:HealthBarText()
+        PlayerFrameHealthBarText:ClearAllPoints()
+        PlayerFrameHealthBarText:SetText("")
 
+        local cfg = self.texts.config
+
+        self.texts.healthTextFrame = CreateFrame("Frame", nil, PlayerFrame)
+        self.texts.healthTextFrame:SetAllPoints(PlayerFrameHealthBar)
+        self.texts.healthTextFrame:SetFrameStrata(PlayerFrame:GetFrameStrata())
+        self.texts.healthTextFrame:SetFrameLevel(PlayerFrame:GetFrameLevel() + 2)
+
+        self.texts.healthPercent = self.texts.healthTextFrame:CreateFontString(nil)
+        self.texts.healthPercent:SetFont(cfg.font, cfg.healthFontSize, "OUTLINE")
+        self.texts.healthPercent:SetPoint("LEFT", PlayerFrameHealthBar, "LEFT", 5, 0)
+
+        self.texts.healthValue = self.texts.healthTextFrame:CreateFontString(nil)
+        self.texts.healthValue:SetFont(cfg.font, cfg.healthFontSize, "OUTLINE")
+    end
+
+    function Setup:ManaBar()
+        PlayerFrameManaBar:SetStatusBarTexture(self.texpath .. "UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana-Status.tga")
+        PlayerFrameManaBar:SetWidth(125)
+        PlayerFrameManaBar:SetHeight(12)
+        PlayerFrameManaBar:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 103, -53)
+    end
+
+    function Setup:ManaBarText()
+        PlayerFrameManaBarText:SetText("")
+        PlayerFrameManaBarText:ClearAllPoints()
+
+        local cfg = self.texts.config
+
+        self.texts.manaTextFrame = CreateFrame("Frame", nil, PlayerFrame)
+        self.texts.manaTextFrame:SetAllPoints(PlayerFrameManaBar)
+        self.texts.manaTextFrame:SetFrameStrata(PlayerFrame:GetFrameStrata())
+        self.texts.manaTextFrame:SetFrameLevel(PlayerFrame:GetFrameLevel() + 2)
+
+        self.texts.manaPercent = self.texts.manaTextFrame:CreateFontString(nil)
+        self.texts.manaPercent:SetFont(cfg.font, cfg.manaFontSize, cfg.outline)
+        self.texts.manaPercent:SetPoint("LEFT", PlayerFrameManaBar, "LEFT", 5, 0)
+
+        self.texts.manaValue = self.texts.manaTextFrame:CreateFontString(nil)
+        self.texts.manaValue:SetFont(cfg.font, cfg.manaFontSize, cfg.outline)
+        self.texts.manaValue:SetPoint("RIGHT", PlayerFrameManaBar, "RIGHT", -5, 0)
+    end
+
+    function Setup:FrameTextures()
+        PlayerFrameTexture:SetTexture(self.texpath .. "UI-TargetingFrameDF.blp")
+        PlayerFrameTexture:SetWidth(256)
+        PlayerFrameTexture:SetHeight(128)
+        PlayerFrameTexture:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 0, 0)
+        PlayerFrameTexture:SetDrawLayer("BACKGROUND")
+
+        PlayerFrameBackground:SetTexture(self.texpath .. "UI-TargetingFrameDF-Background.blp")
+        PlayerFrameBackground:SetWidth(256)
+        PlayerFrameBackground:SetHeight(128)
+        PlayerFrameBackground:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 0, 0)
+        PlayerFrameBackground:SetDrawLayer("BACKGROUND")
+
+        PlayerStatusTexture:SetTexture("")
+    end
+
+    function Setup:Portrait()
+        PlayerFrame.portrait:SetHeight(62)
+        PlayerFrame.portrait:SetWidth(62)
+    end
+
+    function Setup:NameText()
+        local cfg = self.texts.config
+        PlayerFrame.name:ClearAllPoints()
+        PlayerFrame.name:SetPoint("LEFT", PlayerFrame, "LEFT", 80, 25)
+        PlayerFrame.name:SetFont(cfg.font, cfg.nameFontSize, cfg.outline)
+        PlayerFrame.name:SetTextColor(unpack(cfg.nameColor))
+    end
+
+    function Setup:LevelText()
+        local cfg = self.texts.config
+        PlayerLevelText:ClearAllPoints()
+        PlayerLevelText:SetPoint("RIGHT", PlayerFrame, "RIGHT", -14, 25)
+        PlayerLevelText:SetFont(cfg.font, cfg.levelFontSize, cfg.outline)
+        PlayerLevelText:SetTextColor(unpack(cfg.levelColor))
+    end
+
+    function Setup:CombatGlow()
+        PlayerAttackGlow:SetTexture("")
+        PlayerAttackIcon:SetTexture("")
+
+        Setup.combatOverlay = CreateFrame("Frame", nil, PlayerFrame)
+        Setup.combatOverlay:SetAllPoints(PlayerFrame)
+        Setup.combatOverlay:SetFrameStrata("MEDIUM")
+
+        Setup.combatOverlayTex = Setup.combatOverlay:CreateTexture(nil, "OVERLAY")
+        Setup.combatOverlayTex:SetTexture(Setup.texpath.. "UI-Player-Status.blp")
+        Setup.combatOverlayTex:SetPoint("CENTER", PlayerFrame, "CENTER", 45, -21)
+        Setup.combatOverlayTex:SetVertexColor(1, 0, 0)
+        Setup.combatOverlayTex:SetBlendMode("ADD")
+        Setup.combatOverlayTex:SetAlpha(0)
+    end
+
+    function Setup:RestingGlow()
+        PlayerRestIcon:SetTexture("")
+        PlayerRestGlow:SetTexture("")
+
+        Setup.restingOverlay = CreateFrame("Frame", nil, PlayerFrame)
+        Setup.restingOverlay:SetAllPoints(PlayerFrame)
+        Setup.restingOverlay:SetFrameStrata("MEDIUM")
+
+        Setup.restingOverlayTex = Setup.restingOverlay:CreateTexture(nil, "OVERLAY")
+        Setup.restingOverlayTex:SetTexture(Setup.texpath.. "UI-Player-Status.blp")
+        Setup.restingOverlayTex:SetPoint("CENTER", PlayerFrame, "CENTER", 45, -21)
+        Setup.restingOverlayTex:SetVertexColor(Setup.restingGlow.color[1], Setup.restingGlow.color[2], Setup.restingGlow.color[3])
+        Setup.restingOverlayTex:SetBlendMode("ADD")
+        Setup.restingOverlayTex:SetAlpha(0)
+    end
+
+    function Setup:RestingZZZ()
         restingAnimation = CreateFrame("Frame", "restingAnimation", UIParent)
         restingAnimation:SetPoint("CENTER", PlayerFrame, "CENTER", -20, 30)
         restingAnimation:SetWidth(24)
         restingAnimation:SetHeight(24)
 
         local texture = restingAnimation:CreateTexture(nil, "OVERLAY")
-        texture:SetTexture(texpath.. "UIUnitFrameRestingFlipbook")
+        texture:SetTexture(Setup.texpath.. "UIUnitFrameRestingFlipbook")
         texture:SetAllPoints(restingAnimation)
 
         local texCoords = {
@@ -194,70 +266,16 @@ DFRL:RegisterModule("playerframe", 2, function()
         end
 
         local eventFrame = CreateFrame("Frame")
-        eventFrame:RegisterEvent("PLAYER_UPDATE_RESTING")
         eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+        eventFrame:RegisterEvent("PLAYER_UPDATE_RESTING")
         eventFrame:SetScript("OnEvent", function()
             UpdateRestingState()
         end)
 
-        -- init
         UpdateRestingState()
     end
 
-    local callbacks = {}
-
-    -- ill try out a new way to create our callbacks by using  State Object Patterns
-    local playerState = {
-        colorClass = false,
-        lowHpColor = false,
-
-        updateColor = function(self)
-            local health = UnitHealth("player")
-            local maxHealth = UnitHealthMax("player")
-            local percent = maxHealth > 0 and (health / maxHealth) or 1
-
-            if self.lowHpColor then
-                local r, g, b
-                if self.colorClass then
-                    local _, class = UnitClass("player")
-                    if class and RAID_CLASS_COLORS[class] then
-                        local classColor = RAID_CLASS_COLORS[class]
-                        -- Blend class color to red
-                        r = classColor.r + (1 - classColor.r) * (1 - percent)
-                        g = classColor.g * percent
-                        b = classColor.b * percent
-                    else
-                        -- fallback to green to red
-                        r = 1 - percent
-                        g = percent
-                        b = 0
-                    end
-                else
-                    -- Blend green to red
-                    r = 1 - percent
-                    g = percent
-                    b = 0
-                end
-                PlayerFrameHealthBar:SetStatusBarColor(r, g, b)
-                return
-            end
-
-            -- Not lowHpColor: use class color or default green
-            if self.colorClass then
-                local _, class = UnitClass("player")
-                if class and RAID_CLASS_COLORS[class] then
-                    local color = RAID_CLASS_COLORS[class]
-                    PlayerFrameHealthBar:SetStatusBarColor(color.r, color.g, color.b)
-                    return
-                end
-            end
-
-            PlayerFrameHealthBar:SetStatusBarColor(0, 1, 0)
-        end
-    }
-
-    -- cut out effect
-    do
+    function Setup:CutOut()
         local animationFrames = {}
 
         local function CreateCutoutEffect(statusBar, barType, unit)
@@ -269,9 +287,9 @@ DFRL:RegisterModule("playerframe", 2, function()
 
             local cutoutTexture = cutoutFrame:CreateTexture(nil, "OVERLAY")
             if barType == "health" then
-                cutoutTexture:SetTexture(texpath.. "healthDF2.tga")
+                cutoutTexture:SetTexture(Setup.texpath.. "healthDF2.tga")
             else
-                cutoutTexture:SetTexture(texpath.. "UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana-Status.tga")
+                cutoutTexture:SetTexture(Setup.texpath.. "UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana-Status.tga")
             end
             cutoutTexture:SetVertexColor(1, 1, 1, 0.7)
             cutoutTexture:SetAllPoints(cutoutFrame)
@@ -387,8 +405,6 @@ DFRL:RegisterModule("playerframe", 2, function()
                 local playerHealthCutout = CreateCutoutEffect(playerHealth, "health")
                 playerHealth:SetScript("OnValueChanged", function()
                     UpdateCutoutEffect(playerHealthCutout, "player")
-                            playerState:updateColor() -- <-- Add this line!
-
                 end)
             end
 
@@ -433,75 +449,200 @@ DFRL:RegisterModule("playerframe", 2, function()
                     UpdateCutoutEffect(totManaCutout, "targettarget")
                 end)
             end
-
-            -- for i = 1, 4 do
-            --     local partyHealthBar = getglobal("PartyMemberFrame"..i.."HealthBar")
-            --     if partyHealthBar then
-            --         local partyHealthCutout = CreateCutoutEffect(partyHealthBar, "health")
-            --         partyHealthBar:SetScript("OnValueChanged", function()
-            --             UpdateCutoutEffect(partyHealthCutout, "party"..i)
-            --         end)
-            --     end
-
-            --     local partyManaBar = getglobal("PartyMemberFrame"..i.."ManaBar")
-            --     if partyManaBar then
-            --         local partyManaCutout = CreateCutoutEffect(partyManaBar, "mana")
-            --         partyManaBar:SetScript("OnValueChanged", function()
-            --             UpdateCutoutEffect(partyManaCutout, "party"..i)
-            --         end)
-            --     end
-            -- end
         end
 
         HookUnitFrames()
     end
 
-    local function UpdateTexts()
-        local health = UnitHealth("player")
-        local maxHealth = UnitHealthMax("player")
-        local healthPercent = math.floor((health / maxHealth) * 100)
-
-        healthPercentText:SetText(healthPercent .. "%")
-        healthValueText:SetText(health)
-
-        local mana = UnitMana("player")
-        local maxMana = UnitManaMax("player")
-        local manaPercent = math.floor((mana / maxMana) * 100)
-
-        manaPercentText:SetText(manaPercent .. "%")
-        manaValueText:SetText(mana)
+    function Setup:Run()
+        self:FrameTextures()
+        self:HealthBar()
+        self:HealthBarText()
+        self:ManaBar()
+        self:ManaBarText()
+        self:Portrait()
+        self:LevelText()
+        self:NameText()
+        self:CombatGlow()
+        self:RestingGlow()
+        self:RestingZZZ()
+        self:CutOut()
     end
 
-    callbacks.classColor = function(value)
-        playerState.colorClass = value
-        playerState:updateColor()
-    end
+    -- callbacks
+    local callbacks = {}
 
-    callbacks.lowHpColor = function(value)
-        playerState.lowHpColor = value
-        playerState:updateColor()
+    callbacks.darkMode = function(value)
+        local intensity = DFRL:GetConfig("playerframe", "darkMode")
+        local darkColor = {1 - intensity, 1 - intensity, 1 - intensity}
+        local lightColor = {1, 1, 1}
+        local color = value and darkColor or lightColor
+
+        PlayerFrameTexture:SetVertexColor(color[1], color[2], color[3])
+        PlayerFrameBackground:SetVertexColor(color[1], color[2], color[3])
     end
 
     callbacks.textShow = function(value)
         if value then
-            healthPercentText:Show()
-            healthValueText:Show()
-            manaPercentText:Show()
-            manaValueText:Show()
+            local health = UnitHealth("player")
+            local maxHealth = UnitHealthMax("player")
+            local healthPercent = maxHealth > 0 and math.floor((health / maxHealth) * 100) or 0
+
+            local mana = UnitMana("player")
+            local maxMana = UnitManaMax("player")
+            local manaPercent = maxMana > 0 and math.floor((mana / maxMana) * 100) or 0
+
+            if Setup.texts.healthPercentShow then
+                Setup.texts.healthPercent:SetText(healthPercent .. "%")
+                Setup.texts.healthPercent:Show()
+            else
+                Setup.texts.healthPercent:SetText("")
+                Setup.texts.healthPercent:Hide()
+            end
+
+            if Setup.texts.manaPercentShow then
+                Setup.texts.manaPercent:SetText(manaPercent .. "%")
+                Setup.texts.manaPercent:Show()
+            else
+                Setup.texts.manaPercent:SetText("")
+                Setup.texts.manaPercent:Hide()
+            end
+
+            Setup.texts.healthValue:SetText(health)
+            Setup.texts.manaValue:SetText(mana)
+            Setup.texts.healthValue:Show()
+            Setup.texts.manaValue:Show()
+
+            if not Setup.texts.healthPercentShow then
+                Setup.texts.healthValue:ClearAllPoints()
+                Setup.texts.healthValue:SetPoint("CENTER", PlayerFrameHealthBar, "CENTER", 0, 1)
+            else
+                Setup.texts.healthValue:ClearAllPoints()
+                Setup.texts.healthValue:SetPoint("RIGHT", PlayerFrameHealthBar, "RIGHT", -5, 1)
+            end
+
+            if not Setup.texts.manaPercentShow then
+                Setup.texts.manaValue:ClearAllPoints()
+                Setup.texts.manaValue:SetPoint("CENTER", PlayerFrameManaBar, "CENTER", 0, 0)
+            else
+                Setup.texts.manaValue:ClearAllPoints()
+                Setup.texts.manaValue:SetPoint("RIGHT", PlayerFrameManaBar, "RIGHT", -5, 0)
+            end
         else
-            healthPercentText:Hide()
-            healthValueText:Hide()
-            manaPercentText:Hide()
-            manaValueText:Hide()
+            Setup.texts.healthPercent:Hide()
+            Setup.texts.healthValue:Hide()
+            Setup.texts.manaPercent:Hide()
+            Setup.texts.manaValue:Hide()
         end
     end
 
-    local hideFrame
+    callbacks.frameFont = function(value)
+        local fontPath
+        if value == "Expressway" then
+            fontPath = Setup.fontpath .. "Expressway.ttf"
+        elseif value == "Homespun" then
+            fontPath = Setup.fontpath .. "Homespun.ttf"
+        elseif value == "Hooge" then
+            fontPath = Setup.fontpath .. "Hooge.ttf"
+        elseif value == "Myriad-Pro" then
+            fontPath = Setup.fontpath .. "Myriad-Pro.ttf"
+        elseif value == "Prototype" then
+            fontPath = Setup.fontpath .. "Prototype.ttf"
+        elseif value == "PT-Sans-Narrow-Bold" then
+            fontPath = Setup.fontpath .. "PT-Sans-Narrow-Bold.ttf"
+        elseif value == "PT-Sans-Narrow-Regular" then
+            fontPath = Setup.fontpath .. "PT-Sans-Narrow-Regular.ttf"
+        elseif value == "RobotoMono" then
+            fontPath = Setup.fontpath .. "RobotoMono.ttf"
+        elseif value == "BigNoodleTitling" then
+            fontPath = Setup.fontpath .. "BigNoodleTitling.ttf"
+        elseif value == "Continuum" then
+            fontPath = Setup.fontpath .. "Continuum.ttf"
+        elseif value == "DieDieDie" then
+            fontPath = Setup.fontpath .. "DieDieDie.ttf"
+        else
+            fontPath = "Fonts\\FRIZQT__.TTF"
+        end
+
+        Setup.texts.config.font = fontPath
+        Setup.texts.healthPercent:SetFont(fontPath, Setup.texts.config.healthFontSize, "OUTLINE")
+        Setup.texts.healthValue:SetFont(fontPath, Setup.texts.config.healthFontSize, "OUTLINE")
+        Setup.texts.manaPercent:SetFont(fontPath, Setup.texts.config.manaFontSize, "OUTLINE")
+        Setup.texts.manaValue:SetFont(fontPath, Setup.texts.config.manaFontSize, "OUTLINE")
+        Setup:NameText()
+        Setup:LevelText()
+    end
+
+    callbacks.noPercent = function(value)
+        Setup.texts.healthPercentShow = not value
+        Setup.texts.manaPercentShow = not value
+
+        callbacks.textShow(DFRL:GetConfig("playerframe", "textShow"))
+    end
+
+    callbacks.textColoring = function(value)
+        local health = UnitHealth("player")
+        local maxHealth = UnitHealthMax("player")
+        local mana = UnitMana("player")
+        local maxMana = UnitManaMax("player")
+
+        local healthPercent = maxHealth > 0 and (health / maxHealth) or 1
+        local manaPercent = maxMana > 0 and (mana / maxMana) or 1
+
+        local function getColor(p)
+            return 1, p, p
+        end
+
+        if value then
+            local hr, hg, hb = getColor(healthPercent)
+            local mr, mg, mb = getColor(manaPercent)
+            Setup.texts.healthValue:SetTextColor(hr, hg, hb)
+            Setup.texts.healthPercent:SetTextColor(hr, hg, hb)
+            Setup.texts.manaValue:SetTextColor(mr, mg, mb)
+            Setup.texts.manaPercent:SetTextColor(mr, mg, mb)
+        else
+            local hc = Setup.texts.config.healthColor
+            local mc = Setup.texts.config.manaColor
+            Setup.texts.healthValue:SetTextColor(hc[1], hc[2], hc[3])
+            Setup.texts.healthPercent:SetTextColor(hc[1], hc[2], hc[3])
+            Setup.texts.manaValue:SetTextColor(mc[1], mc[2], mc[3])
+            Setup.texts.manaPercent:SetTextColor(mc[1], mc[2], mc[3])
+        end
+    end
+
+    callbacks.healthSize = function(value)
+        Setup.texts.config.healthFontSize = value
+        Setup.texts.healthPercent:SetFont(Setup.texts.config.font, value, "OUTLINE")
+        Setup.texts.healthValue:SetFont(Setup.texts.config.font, value, "OUTLINE")
+    end
+
+    callbacks.manaSize = function(value)
+        Setup.texts.config.manaFontSize = value
+        Setup.texts.manaPercent:SetFont(Setup.texts.config.font, value, "OUTLINE")
+        Setup.texts.manaValue:SetFont(Setup.texts.config.font, value, "OUTLINE")
+    end
+
+    callbacks.classColor = function(value)
+        -- if DFRL:GetConfig("playerframe", "lowHpColor") then return end
+
+        if value then
+            local _, class = UnitClass("player")
+            if class and RAID_CLASS_COLORS[class] then
+                local color = RAID_CLASS_COLORS[class]
+                PlayerFrameHealthBar:SetStatusBarColor(color.r, color.g, color.b)
+            else
+                PlayerFrameHealthBar:SetStatusBarColor(0, 1, 0)
+            end
+        else
+            PlayerFrameHealthBar:SetStatusBarColor(0, 1, 0)
+        end
+    end
+
     callbacks.frameHide = function(value)
-        if hideFrame then
-            hideFrame:UnregisterAllEvents()
-            hideFrame:SetScript("OnEvent", nil)
-            hideFrame = nil
+        if Setup.hideFrame then
+            Setup.hideFrame:UnregisterAllEvents()
+            Setup.hideFrame:SetScript("OnEvent", nil)
+            Setup.hideFrame = nil
         end
 
         local function updatePlayerFrameAndResting()
@@ -523,12 +664,12 @@ DFRL:RegisterModule("playerframe", 2, function()
         end
 
         if value then
-            hideFrame = CreateFrame("Frame")
-            hideFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-            hideFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
-            hideFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
-            hideFrame:RegisterEvent("UNIT_HEALTH")
-            hideFrame:SetScript("OnEvent", function()
+            Setup.hideFrame = CreateFrame("Frame")
+            Setup.hideFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+            Setup.hideFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
+            Setup.hideFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+            Setup.hideFrame:RegisterEvent("UNIT_HEALTH")
+            Setup.hideFrame:SetScript("OnEvent", function()
                 updatePlayerFrameAndResting()
             end)
 
@@ -543,106 +684,6 @@ DFRL:RegisterModule("playerframe", 2, function()
         end
     end
 
-    callbacks.darkMode = function(value)
-        local darkColor = {0.2, 0.2, 0.2}
-        local lightColor = {1, 1, 1}
-        local color = value and darkColor or lightColor
-
-        PlayerFrameTexture:SetVertexColor(color[1], color[2], color[3])
-
-        PlayerFrameBackground:SetVertexColor(color[1], color[2], color[3])
-    end
-
-    callbacks.noPercent = function(value)
-        local function UpdateTextsWithFormat()
-            local health = UnitHealth("player")
-            local maxHealth = UnitHealthMax("player")
-            local healthPercent = math.floor((health / maxHealth) * 100)
-
-            local mana = UnitMana("player")
-            local maxMana = UnitManaMax("player")
-            local manaPercent = math.floor((mana / maxMana) * 100)
-
-            if value then
-                healthPercentText:SetText("")
-                healthValueText:SetText(health)
-                healthValueText:ClearAllPoints()
-                healthValueText:SetPoint("CENTER", PlayerFrameHealthBar, "CENTER", 0, 0)
-
-                manaPercentText:SetText("")
-                manaValueText:SetText(mana)
-                manaValueText:ClearAllPoints()
-                manaValueText:SetPoint("CENTER", PlayerFrameManaBar, "CENTER", 0, 0)
-            else
-                healthPercentText:SetText(healthPercent .. "%")
-                healthValueText:SetText(health)
-                healthValueText:ClearAllPoints()
-                healthValueText:SetPoint("RIGHT", PlayerFrameHealthBar, "RIGHT", -5, 0)
-
-                manaPercentText:SetText(manaPercent .. "%")
-                manaValueText:SetText(mana)
-                manaValueText:ClearAllPoints()
-                manaValueText:SetPoint("RIGHT", PlayerFrameManaBar, "RIGHT", -5, 0)
-            end
-        end
-
-        UpdateTexts = UpdateTextsWithFormat
-
-        -- update
-        UpdateTextsWithFormat()
-    end
-
-    callbacks.textColoring = function(value)
-        local function UpdateTextsWithColoring()
-            local health = UnitHealth("player")
-            local maxHealth = UnitHealthMax("player")
-            local healthPercent = health / maxHealth
-            local healthPercentInt = math.floor(healthPercent * 100)
-
-            local mana = UnitMana("player")
-            local maxMana = UnitManaMax("player")
-            local manaPercent = mana / maxMana
-            local manaPercentInt = math.floor(manaPercent * 100)
-
-            if DFRL:GetConfig("playerframe", "noPercent") then
-                healthPercentText:SetText("")
-                healthValueText:SetText(health)
-                manaPercentText:SetText("")
-                manaValueText:SetText(mana)
-            else
-                healthPercentText:SetText(healthPercentInt .. "%")
-                healthValueText:SetText(health)
-                manaPercentText:SetText(manaPercentInt .. "%")
-                manaValueText:SetText(mana)
-            end
-
-            if value then
-                local r = 1
-                local g = healthPercent
-                local b = healthPercent
-                healthPercentText:SetTextColor(r, g, b)
-                healthValueText:SetTextColor(r, g, b)
-
-                r = 1
-                g = manaPercent
-                b = manaPercent
-                manaPercentText:SetTextColor(r, g, b)
-                manaValueText:SetTextColor(r, g, b)
-            else
-                healthPercentText:SetTextColor(1, 1, 1)
-                healthValueText:SetTextColor(1, 1, 1)
-                manaPercentText:SetTextColor(1, 1, 1)
-                manaValueText:SetTextColor(1, 1, 1)
-            end
-        end
-
-        UpdateTexts = UpdateTextsWithColoring
-
-        -- update
-        UpdateTextsWithColoring()
-    end
-
-    -- shagu code
     callbacks.classPortrait = function(value)
         if value then
             local CLASS_ICON_TCOORDS = {
@@ -666,7 +707,7 @@ DFRL:RegisterModule("playerframe", 2, function()
 
                 if class and frame.portrait then
                     local iconCoords = CLASS_ICON_TCOORDS[class]
-                    frame.portrait:SetTexture("Interface\\AddOns\\DragonflightReloaded\\media\\tex\\ui\\UI-Classes-Circles.tga")
+                    frame.portrait:SetTexture(Setup.texpath2 .."UI-Classes-Circles.tga")
                     frame.portrait:SetTexCoord(unpack(iconCoords))
                 elseif not class and frame.portrait then
                     frame.portrait:SetTexCoord(0, 1, 0, 1)
@@ -739,30 +780,153 @@ DFRL:RegisterModule("playerframe", 2, function()
         end
     end
 
-    local powerUpdateFrame = CreateFrame("Frame")
-    powerUpdateFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-    powerUpdateFrame:RegisterEvent("UNIT_MANA")
-    powerUpdateFrame:RegisterEvent("UNIT_RAGE")
-    powerUpdateFrame:RegisterEvent("UNIT_ENERGY")
-    powerUpdateFrame:RegisterEvent("UNIT_FOCUS")
-    powerUpdateFrame:RegisterEvent("UNIT_HEALTH")
-    powerUpdateFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
-    powerUpdateFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
-    powerUpdateFrame:SetScript("OnEvent", function()
-        if event == "PLAYER_ENTERING_WORLD" then
-            playerState:updateColor()
+    callbacks.frameScale = function(value)
+        PlayerFrame:SetScale(value)
+    end
+
+    callbacks.combatGlow = function (value)
+        if not Setup.combatOverlay or not Setup.combatOverlayTex then return end
+
+        local pulseTime = 0
+        local pulseDuration = 1 / Setup.combatGlow.fadeSpeed
+
+        if value then
+            Setup.combatOverlay:SetScript("OnUpdate", function()
+                if (this.tick or 0) > GetTime() then return end
+                this.tick = GetTime() + 0.01
+
+                local elapsed = arg1
+                if not UnitAffectingCombat("player") then
+                    local alpha = Setup.combatOverlayTex:GetAlpha()
+                    alpha = alpha - (Setup.combatGlow.fadeSpeed * elapsed * 2)
+                    if alpha < 0 then alpha = PlayerFrameHealthBar:GetAlpha() * 0 end
+                    Setup.combatOverlayTex:SetAlpha(alpha)
+                    return
+                end
+
+                pulseTime = pulseTime + elapsed
+                if pulseTime > pulseDuration then
+                    pulseTime = pulseTime - pulseDuration
+                end
+                local progress = pulseTime / pulseDuration
+
+                -- sine wave
+                local alpha = Setup.combatGlow.alphaMin + (Setup.combatGlow.alphaMax - Setup.combatGlow.alphaMin) * (0.5 + 0.5 * math.sin(progress * 2 * math.pi))
+                Setup.combatOverlayTex:SetAlpha(alpha)
+            end)
+        else
+            Setup.combatOverlay:SetScript("OnUpdate", nil)
+            Setup.combatOverlayTex:SetAlpha(0)
         end
 
-        if event == "PLAYER_ENTERING_WORLD" or
-        event == "PLAYER_REGEN_ENABLED" or
+        local f = CreateFrame("Frame")
+        f:RegisterEvent("PLAYER_REGEN_DISABLED")
+        f:RegisterEvent("PLAYER_REGEN_ENABLED")
+        f:SetScript("OnEvent", function()
+            if event == "PLAYER_REGEN_DISABLED" then
+                currentAlpha = Setup.combatGlow.alphaMin
+                fadeDirection = 1
+            elseif event == "PLAYER_REGEN_ENABLED" then
+                fadeDirection = -1
+            end
+        end)
+    end
+
+    callbacks.glowSpeed = function(value)
+        Setup.combatGlow.fadeSpeed = value
+        callbacks.combatGlow(DFRL:GetConfig("playerframe", "combatGlow"))
+    end
+
+    callbacks.glowAlpha = function(value)
+        Setup.combatGlow.alphaMax = value
+        callbacks.combatGlow(DFRL:GetConfig("playerframe", "combatGlow"))
+    end
+
+    callbacks.restingGlow = function(value)
+        if not Setup.restingOverlay or not Setup.restingOverlayTex then return end
+
+        local pulseTime = 0
+        local pulseDuration = 1 / Setup.restingGlow.fadeSpeed
+
+        if value then
+            Setup.restingOverlay:SetScript("OnUpdate", function()
+                if (this.tick or 0) > GetTime() then return end
+                this.tick = GetTime() + 0.01
+
+                local elapsed = arg1
+                if not IsResting() then
+                    local alpha = Setup.restingOverlayTex:GetAlpha()
+                    alpha = alpha - (Setup.restingGlow.fadeSpeed * elapsed * 2)
+                    if alpha < 0 then alpha = PlayerFrameHealthBar:GetAlpha() * 0 end
+                    Setup.restingOverlayTex:SetAlpha(alpha)
+                    return
+                end
+
+                pulseTime = pulseTime + elapsed
+                if pulseTime > pulseDuration then
+                    pulseTime = pulseTime - pulseDuration
+                end
+                local progress = pulseTime / pulseDuration
+
+                -- sine wave
+                local alpha = Setup.restingGlow.alphaMin + (Setup.restingGlow.alphaMax - Setup.restingGlow.alphaMin) * (0.5 + 0.5 * math.sin(progress * 2 * math.pi))
+                Setup.restingOverlayTex:SetAlpha(alpha)
+            end)
+        else
+            Setup.restingOverlay:SetScript("OnUpdate", nil)
+            Setup.restingOverlayTex:SetAlpha(0)
+        end
+
+        local f = CreateFrame("Frame")
+        f:RegisterEvent("PLAYER_UPDATE_RESTING")
+        f:SetScript("OnEvent", function()
+            currentAlpha = Setup.restingGlow.alphaMin
+            fadeDirection = 1
+        end)
+    end
+
+    callbacks.restingSpeed = function(value)
+        Setup.restingGlow.fadeSpeed = value
+        callbacks.restingGlow(DFRL:GetConfig("playerframe", "restingGlow"))
+    end
+
+    callbacks.restingAlpha = function(value)
+        Setup.restingGlow.alphaMax = value
+        callbacks.restingGlow(DFRL:GetConfig("playerframe", "restingGlow"))
+    end
+
+    callbacks.restingColor = function (value)
+        Setup.restingGlow.color = value
+        Setup.restingOverlayTex:SetVertexColor(value[1], value[2], value[3])
+    end
+
+    -- event handler
+    local f = CreateFrame("Frame")
+    f:RegisterEvent("PLAYER_ENTERING_WORLD")
+    f:RegisterEvent("UNIT_MANA")
+    f:RegisterEvent("UNIT_RAGE")
+    f:RegisterEvent("UNIT_ENERGY")
+    f:RegisterEvent("UNIT_FOCUS")
+    f:RegisterEvent("UNIT_HEALTH")
+    f:RegisterEvent("PLAYER_REGEN_ENABLED")
+    f:RegisterEvent("PLAYER_REGEN_DISABLED")
+    f:SetScript("OnEvent", function()
+        if event == "PLAYER_ENTERING_WORLD" then
+            -- init setup
+            Setup:Run()
+
+            -- execute callbacks
+            DFRL:RegisterCallback("playerframe", callbacks)
+
+            f:UnregisterEvent("PLAYER_ENTERING_WORLD")
+        end
+
+        if event == "PLAYER_REGEN_ENABLED" or
         event == "PLAYER_REGEN_DISABLED" or
         arg1 == "player" then
-            UpdateTexts()
+            callbacks.textShow(DFRL:GetConfig("playerframe", "textShow"))
+            callbacks.textColoring(DFRL:GetConfig("playerframe", "textColoring"))
+            callbacks.classColor(DFRL:GetConfig("playerframe", "classColor"))
         end
     end)
-
-    UpdateTexts()
-
-    -- execute callbacks
-    DFRL:RegisterCallback("playerframe", callbacks)
 end)

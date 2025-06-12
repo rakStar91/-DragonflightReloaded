@@ -1,9 +1,9 @@
 ## Interface: 11200
 ## Title: Dragonflight: |cFFFFFFFFReloaded
 ## Notes: A World of Warcraft UI replacement.
-## Version: 1.1.12
+## Version: 1.2.0
 ## Author: Guzruul (sitting in the crossroads tavern 24/7)
-## SavedVariablesPerCharacter: DFRL_DB, DFRL_FRAMEPOS
+## SavedVariablesPerCharacter: DFRL_DB, DFRL_DB_SETUP, DFRL_FRAMEPOS
 
 # Bindings.xml
 

@@ -32,7 +32,6 @@ DFRL:RegisterModule("gui", 2, function()
 
     -- mainframe
     do
-        -- main frame
         local mainFrame = CreateFrame("Frame", "DFRLMainFrame", UIParent)
         mainFrame:SetWidth(800)
         mainFrame:SetHeight(600)
@@ -149,10 +148,12 @@ DFRL:RegisterModule("gui", 2, function()
         tabTitle:SetTextColor(1,1,1)
         tabTitle:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
 
+
         -- expose
         gui.mainFrame = mainFrame
         gui.contentFrame = contentFrame
         gui.tabFrame = tabFrame
+        gui.closeButton = closeButton
 
         -- toggle open/hide
         gui.Toggle = function()

@@ -1,13 +1,13 @@
----@diagnostic disable: deprecated
+---@diagnostic disable: deprecated, undefined-field
 DFRL:SetDefaults("minimap", {
     enabled = {true},
     hidden = {false},
 
-    darkMode       = {false,  1, "checkbox",                      "appearance",        "Enable dark mode for the minimap"},
+    darkMode = {0, 1, "slider", {0, 1}, "appearance", "Adjust dark mode intensity"},
 
     mapSquare      = {false,  4, "checkbox",                      "map basic",    "Show the Minimap Square design"},
     mapSize        = {180,    5, "slider",   {140, 350},          "map basic",    "Adjusts the overall size of the minimap"},
-    mapAlpha   = {1,      6, "slider",   {0.1, 1},            "map basic",    "Adjusts transparency of the entire minimap"},
+    mapAlpha       = {1,      6, "slider",   {0.1, 1},            "map basic",    "Adjusts transparency of the entire minimap"},
 
     showShadow     = {true,   2, "checkbox",                      "map shadow",    "Show or hide the shadow inside the minimap"},
     alphaShadow    = {0.3,    7, "slider",   {0.1, 1},            "map shadow",    "Adjusts transparency of the minimap shadow"},
@@ -26,23 +26,42 @@ DFRL:SetDefaults("minimap", {
     zoneTextY      = {-3,    18, "slider",   {-50, 50},           "top panel zone",    "Adjusts vertical position of the zone text"},
     zoneTextX      = {4,     19, "slider",   {-50, 50},           "top panel zone",    "Adjusts horizontal position of the zone text"},
 
-    showTime   = {true,  20, "checkbox",                      "top panel time",    "Show or hide the time display on the minimap"},
-    timeSize   = {10,    21, "slider",   {6, 30},             "top panel time",    "Adjusts font size of the time display"},
-    timeY      = {-3,    22, "slider",   {-50, 50},           "top panel time",    "Adjusts vertical position of the time display"},
-    timeX      = {-4,    23, "slider",   {-50, 50},           "top panel time",    "Adjusts horizontal position of the time display"},
+    showTime       = {true,  20, "checkbox",                      "top panel time",    "Show or hide the time display on the minimap"},
+    timeSize       = {10,    21, "slider",   {6, 30},             "top panel time",    "Adjusts font size of the time display"},
+    timeY          = {-3,    22, "slider",   {-50, 50},           "top panel time",    "Adjusts vertical position of the time display"},
+    timeX          = {-4,    23, "slider",   {-50, 50},           "top panel time",    "Adjusts horizontal position of the time display"},
 
-    textColor    = {false, 24, "checkbox",                        "ext. PizzaWorldBuffs",        "Colorize the PizzaWorldBuffs Alliance/Horde text"},
+    -- pizzaToggleShow= {false, 24, "checkbox",                     "ext. PizzaWorldBuffs",        "Show or hide the PizzaWorldBuffs toggle"},
+    textColor      = {false, 25, "checkbox",                     "ext. PizzaWorldBuffs",        "Colorize the PizzaWorldBuffs Alliance/Horde text"},
 })
 
 DFRL:RegisterModule("minimap", 2, function()
     d:DebugPrint("BOOTING")
 
-    local texpath = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\minimap\\"
+    -- setup
+    local Setup = {
+        texpath = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\minimap\\",
 
-    -- hide stuff
-    do
+        minimapBorder = nil,
+        minimapShadow = nil,
+
+        topPanel = nil,
+        bgTexture = nil,
+        timeFrame = nil,
+        timeText = nil,
+        updateTimer = nil,
+
+        collector = nil,
+        toggleButton = nil,
+
+        mailIcon = nil,
+        questframe = nil,
+    }
+
+    function Setup:HideBlizzard()
         Minimap:ClearAllPoints()
         Minimap:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -35, -60)
+        Minimap:SetFrameStrata("MEDIUM")
 
         MinimapCluster:EnableMouse(false)
         MinimapBorder:Hide()
@@ -53,63 +72,61 @@ DFRL:RegisterModule("minimap", 2, function()
         KillFrame(MinimapShopFrame)
     end
 
-    -- minimap
-    local minimapBorder = Minimap:CreateTexture("MinimapBorder", "OVERLAY")
-    minimapBorder:SetTexture(texpath.. "uiminimapborder.tga")
+    function Setup:Minimap()
+        self.minimapBorder = Minimap:CreateTexture("MinimapBorder", "OVERLAY")
+        self.minimapBorder:SetTexture(self.texpath .. "uiminimapborder.tga")
 
-    local minimapShadow = Minimap:CreateTexture("MinimapShadow", "BORDER")
-    minimapShadow:SetTexture(texpath.. "uiminimapshadow.tga")
+        self.minimapShadow = Minimap:CreateTexture("MinimapShadow", "BORDER")
+        self.minimapShadow:SetTexture(self.texpath .. "uiminimapshadow.tga")
 
-    Minimap:EnableMouseWheel(true)
-    Minimap:SetScript("OnMouseWheel", function()
-        if arg1 > 0 then
-            MinimapZoomIn:Click()
-        elseif arg1 < 0 then
-            MinimapZoomOut:Click()
-        end
-    end)
+        Minimap:EnableMouseWheel(true)
+        Minimap:SetScript("OnMouseWheel", function()
+            if arg1 > 0 then
+                MinimapZoomIn:Click()
+            elseif arg1 < 0 then
+                MinimapZoomOut:Click()
+            end
+        end)
+    end
 
-    -- top panel
-    local topPanel
-    local timeText
-    do
-        topPanel = CreateFrame("Frame", "MinimapTopPanel", Minimap)
-        topPanel:SetWidth(200)
-        topPanel:SetHeight(13)
-        topPanel:SetPoint("BOTTOM", Minimap, "TOP", 0, 30)
+    function Setup:TopPanel()
+        self.topPanel = CreateFrame("Frame", "MinimapTopPanel", Minimap)
+        self.topPanel:SetWidth(200)
+        self.topPanel:SetHeight(13)
+        self.topPanel:SetPoint("BOTTOM", Minimap, "TOP", 0, 30)
 
-        local bgTexture = topPanel:CreateTexture(nil, "BACKGROUND")
-        bgTexture:SetTexture(texpath.. "uiminimap_toppanel.tga")
-        bgTexture:SetPoint("TOPLEFT", topPanel, "TOPLEFT", -0, 0)
-        bgTexture:SetPoint("BOTTOMRIGHT", topPanel, "BOTTOMRIGHT", 5, -20)
+        self.bgTexture = self.topPanel:CreateTexture(nil, "BACKGROUND")
+        self.bgTexture:SetTexture(self.texpath .. "uiminimap_toppanel.tga")
+        self.bgTexture:SetPoint("TOPLEFT", self.topPanel, "TOPLEFT", 0, 0)
+        self.bgTexture:SetPoint("BOTTOMRIGHT", self.topPanel, "BOTTOMRIGHT", 5, -20)
 
         MinimapZoneTextButton:ClearAllPoints()
-        MinimapZoneTextButton:SetParent(topPanel)
-        MinimapZoneTextButton:SetPoint("LEFT", topPanel, "LEFT", 4, -2)
+        MinimapZoneTextButton:SetParent(self.topPanel)
+        MinimapZoneTextButton:SetPoint("LEFT", self.topPanel, "LEFT", 4, -2)
         MinimapZoneText:SetJustifyH("LEFT")
         MinimapZoneText:SetFont("Fonts\\FRIZQT__.TTF", 11, "")
 
-        local timeFrame = CreateFrame("Frame", "MinimapTimeFrame", UIParent)
-        timeFrame:SetWidth(40)
-        timeFrame:SetHeight(20)
-        timeFrame:SetPoint("RIGHT", topPanel, "RIGHT", -4, -2)
-        timeFrame:EnableMouse(true)
+        self.timeFrame = CreateFrame("Frame", "MinimapTimeFrame", self.topPanel)
+        self.timeFrame:SetWidth(40)
+        self.timeFrame:SetHeight(20)
+        self.timeFrame:SetPoint("RIGHT", self.topPanel, "RIGHT", -4, -2)
+        self.timeFrame:EnableMouse(true)
 
-        timeText = timeFrame:CreateFontString("MinimapTimeText", "OVERLAY", "GameFontNormal")
-        timeText:SetPoint("CENTER", timeFrame, "CENTER", 0, 0)
-        timeText:SetFont("Fonts\\FRIZQT__.TTF", 11, "")
-        timeText:SetTextColor(1, 1, 1, 1)
+        self.timeText = self.timeFrame:CreateFontString("MinimapTimeText", "OVERLAY", "GameFontNormal")
+        self.timeText:SetPoint("CENTER", self.timeFrame, "CENTER", 0, 0)
+        self.timeText:SetFont("Fonts\\FRIZQT__.TTF", 11, "")
+        self.timeText:SetTextColor(1, 1, 1, 1)
 
-        local updateTimer = CreateFrame("Frame")
-        updateTimer:SetScript("OnUpdate", function()
+        self.updateTimer = CreateFrame("Frame")
+        self.updateTimer:SetScript("OnUpdate", function()
             if (this.tick or 0) > GetTime() then return end
             this.tick = GetTime() + 5
 
             local localTime = date("%H:%M")
-            timeText:SetText(localTime)
+            self.timeText:SetText(localTime)
         end)
 
-        timeFrame:SetScript("OnEnter", function()
+        self.timeFrame:SetScript("OnEnter", function()
             GameTooltip:SetOwner(this, "ANCHOR_BOTTOMLEFT")
             local hour, minute = GetGameTime()
             local serverTime = format("%d:%02d", hour, minute)
@@ -119,123 +136,102 @@ DFRL:RegisterModule("minimap", 2, function()
             GameTooltip:Show()
         end)
 
-        timeFrame:SetScript("OnLeave", function()
+        self.timeFrame:SetScript("OnLeave", function()
             GameTooltip:Hide()
         end)
 
-        -- expose
-        DFRL.topPanel = topPanel
+        DFRL.topPanel = self.topPanel
     end
 
-    -- zoom buttons
-    do
+    function Setup:ZoomButtons()
         MinimapZoomIn:ClearAllPoints()
         MinimapZoomIn:SetParent(Minimap)
         MinimapZoomIn:SetPoint("TOPLEFT", Minimap, "BOTTOMRIGHT", -5, 40)
         MinimapZoomIn:SetScale(0.9)
 
-        MinimapZoomIn:SetNormalTexture(texpath.. "ZoomIn32.tga")
-        MinimapZoomIn:SetDisabledTexture(texpath.. "ZoomIn32-disabled.tga")
-        MinimapZoomIn:SetHighlightTexture(texpath.. "ZoomIn32-over.tga")
-        MinimapZoomIn:SetPushedTexture(texpath.. "ZoomIn32-push.tga")
+        MinimapZoomIn:SetNormalTexture(self.texpath.. "ZoomIn32.tga")
+        MinimapZoomIn:SetDisabledTexture(self.texpath.. "ZoomIn32-disabled.tga")
+        MinimapZoomIn:SetHighlightTexture(self.texpath.. "ZoomIn32-over.tga")
+        MinimapZoomIn:SetPushedTexture(self.texpath.. "ZoomIn32-push.tga")
 
         MinimapZoomOut:ClearAllPoints()
         MinimapZoomOut:SetParent(Minimap)
         MinimapZoomOut:SetPoint("TOPRIGHT", MinimapZoomIn, "BOTTOMLEFT", 0, 0)
         MinimapZoomOut:SetScale(0.9)
 
-        MinimapZoomOut:SetNormalTexture(texpath.. "ZoomOut32.tga")
-        MinimapZoomOut:SetDisabledTexture(texpath.. "ZoomOut32-disabled.tga")
-        MinimapZoomOut:SetHighlightTexture(texpath.. "ZoomOut32-over.tga")
-        MinimapZoomOut:SetPushedTexture(texpath.. "ZoomOut32-push.tga")
+        MinimapZoomOut:SetNormalTexture(self.texpath.. "ZoomOut32.tga")
+        MinimapZoomOut:SetDisabledTexture(self.texpath.. "ZoomOut32-disabled.tga")
+        MinimapZoomOut:SetHighlightTexture(self.texpath.. "ZoomOut32-over.tga")
+        MinimapZoomOut:SetPushedTexture(self.texpath.. "ZoomOut32-push.tga")
     end
 
-    -- mail
-    do
+    function Setup:Mail()
         MiniMapMailFrame:ClearAllPoints()
-        MiniMapMailFrame:SetPoint("TOPLEFT", topPanel, "BOTTOMLEFT", -2, -1)
-        MiniMapMailIcon:SetTexture(texpath.. "mail.tga")
+        MiniMapMailFrame:SetPoint("TOPLEFT", self.topPanel, "BOTTOMLEFT", -2, -1)
+        MiniMapMailIcon:SetTexture(self.texpath .. "mail.tga")
         MiniMapMailIcon:SetWidth(32)
         MiniMapMailIcon:SetHeight(32)
         MiniMapMailBorder:Hide()
+
+        self.mailIcon = MiniMapMailIcon
     end
 
-    -- buffs
-    do
+    function Setup:Buffs()
         BuffButton0:ClearAllPoints()
-        BuffButton0:SetPoint("TOPRIGHT", topPanel, "TOPLEFT", -50, 0)
+        BuffButton0:SetPoint("TOPRIGHT", Setup.topPanel, "TOPLEFT", -50, 0)
 
         BuffButton8:ClearAllPoints()
-        BuffButton8:SetPoint("TOPRIGHT", topPanel, "TOPLEFT", -50, -15)
+        BuffButton8:SetPoint("TOPRIGHT", Setup.topPanel, "TOPLEFT", -50, -15)
 
         TempEnchant1:ClearAllPoints()
-        TempEnchant1:SetPoint("TOPRIGHT", topPanel, "TOPLEFT", -50, -75)
+        TempEnchant1:SetPoint("TOPRIGHT", Setup.topPanel, "TOPLEFT", -50, -75)
 
         BuffButton16:ClearAllPoints()
-        BuffButton16:SetPoint("TOPRIGHT", topPanel, "TOPLEFT", -50, -120)
+        BuffButton16:SetPoint("TOPRIGHT", Setup.topPanel, "TOPLEFT", -50, -120)
     end
 
-    -- tracker
-    do
+    function Setup:Tracker()
         MiniMapTrackingFrame:ClearAllPoints()
-        MiniMapTrackingFrame:SetPoint("TOPRIGHT", topPanel, "TOPLEFT", -15, 0)
+        MiniMapTrackingFrame:SetPoint("TOPRIGHT", self.topPanel, "TOPLEFT", -15, 0)
         MiniMapTrackingFrame:SetScale(0.6)
         MiniMapTrackingBorder:Hide()
     end
 
-    -- durability
-    do
+    function Setup:Durability()
         DurabilityFrame:ClearAllPoints()
         ---@diagnostic disable-next-line: redundant-parameter
         DurabilityFrame:SetPoint("TOPRIGHT", Minimap, "BOTTOMLEFT", 15, 15)
         DurabilityFrame.SetPoint = function() return end
         DurabilityFrame:SetScale(0.7)
-
-
     end
 
-    -- questlog
-    do
-       local questframe = CreateFrame("Frame", "DFRL_questframe", UIParent)
-        questframe:SetPoint("LEFT", Minimap, -150, -130)
-        questframe:SetWidth(170)
-        questframe:SetHeight(5)
+    function Setup:Questlog()
+        self.questframe = CreateFrame("Frame", "DFRL_questframe", UIParent)
+        self.questframe:SetPoint("LEFT", Minimap, -150, -130)
+        self.questframe:SetWidth(170)
+        self.questframe:SetHeight(5)
 
-        QuestWatchFrame:SetParent(questframe)
-        QuestWatchFrame:SetAllPoints(questframe)
+        QuestWatchFrame:SetParent(self.questframe)
+        QuestWatchFrame:SetAllPoints(self.questframe)
         QuestWatchFrame:SetFrameLevel(1)
         QuestWatchFrame.SetPoint = function() end
 
-        DFRL.questframe = questframe
+        DFRL.questframe = self.questframe
     end
 
-    -- EBC
-    do
-        ---@diagnostic disable-next-line: undefined-field
-        _G.EBC_Minimap:Hide()
-        ---@diagnostic disable-next-line: undefined-field
-        _G.EBC_Minimap.Show = function() end
+    function Setup:EBC()
+        if _G.EBC_Minimap then
+            _G.EBC_Minimap:Hide()
+            _G.EBC_Minimap.Show = function() end
 
-        -- EBC_Minimap:SetParent(UIParent)
-        -- EBC_Minimap:ClearAllPoints()
-        -- EBC_Minimap:Hide()
-        -- EBC_Minimap:SetPoint("TOPRIGHT", topPanel, "BOTTOMRIGHT", 0, -15)
-        -- EBC_Minimap:SetScale(0.8)
-
-        -- local regions = {EBC_Minimap:GetRegions()}
-        -- for _, region in ipairs(regions) do
-        --     if region and region:GetObjectType() == "Texture" then
-        --         local width, height = region:GetWidth(), region:GetHeight()
-        --         if width > 20 or height > 20 then
-        --             region:Hide()
-        --         end
-        --     end
-        -- end
+            self.ebcMinimap = _G.EBC_Minimap
+        end
     end
 
-    -- collector
+    -- need full rework
     DFRL.MinimapButtonsPerRow = 3
-    do
+    function Setup:Collector()
+        -- collector
         ---@diagnostic disable-next-line: undefined-field
         KillFrame(_G.MBB_MinimapButtonFrame)
         ---@diagnostic disable-next-line: undefined-field
@@ -243,18 +239,17 @@ DFRL:RegisterModule("minimap", 2, function()
         ---@diagnostic disable-next-line: undefined-field
         KillFrame(_G.MBFMiniButtonFrame)
 
-        local collector = CreateFrame("Frame", "MinimapButtonCollector", UIParent)
-        collector:SetFrameStrata("MEDIUM")
-        collector:SetPoint("RIGHT", Minimap, "LEFT", -35, 0)
-        collector:SetWidth(40)
-        collector:SetHeight(150)
+        self.collector = CreateFrame("Frame", "MinimapButtonCollector", UIParent)
+        self.collector:SetFrameStrata("MEDIUM")
+        self.collector:SetPoint("RIGHT", Minimap, "LEFT", -35, 0)
+        self.collector:SetWidth(40)
+        self.collector:SetHeight(150)
 
-        -- create background with gradient
-        collector.bg = collector:CreateTexture(nil, "BACKGROUND")
-        collector.bg:SetTexture("Interface\\Buttons\\WHITE8X8")
-        collector.bg:SetAllPoints()
+        self.collector.bg = self.collector:CreateTexture(nil, "BACKGROUND")
+        self.collector.bg:SetTexture("Interface\\Buttons\\WHITE8X8")
+        self.collector.bg:SetAllPoints()
         ---@diagnostic disable-next-line: undefined-field
-        collector.bg:SetGradientAlpha("HORIZONTAL", 0.1, 0.1, 0.1, 0, 0.1, 0.1, 0.1, 0.7)
+        self.collector.bg:SetGradientAlpha("HORIZONTAL", 0.1, 0.1, 0.1, 0, 0.1, 0.1, 0.1, 0.7)
 
         local function CollectMinimapButtons()
             d:DebugPrint("Starting minimap button collection...")
@@ -357,13 +352,13 @@ DFRL:RegisterModule("minimap", 2, function()
 
             for i = 1, table.getn(buttons) do
                 local button = buttons[i]
-                button:SetParent(collector)
+                button:SetParent(self.collector)
                 button:ClearAllPoints()
 
                 local row = math.floor(count / buttonsPerRow)
                 local col = count - (row * buttonsPerRow)
 
-                button:SetPoint("TOPRIGHT", collector, "TOPRIGHT",
+                button:SetPoint("TOPRIGHT", self.collector, "TOPRIGHT",
                     -3 - (row * (buttonSize + padding)),
                     -6 - (col * (buttonSize + padding)))
 
@@ -379,12 +374,12 @@ DFRL:RegisterModule("minimap", 2, function()
                 count = count + 1
             end
 
-            -- resize collector
+            -- resize self.collector
             local rows = math.ceil(count / buttonsPerRow)
             local newWidth = 42 + (rows * (buttonSize + padding))
             local newHeight = math.max(30, 12 + (math.min(count, buttonsPerRow) * (buttonSize + padding)))
-            collector:SetWidth(newWidth)
-            collector:SetHeight(newHeight)
+            self.collector:SetWidth(newWidth)
+            self.collector:SetHeight(newHeight)
 
             d:DebugPrint("Collector resized to height: " .. newHeight .. " for " .. count .. " buttons")
         end
@@ -392,13 +387,13 @@ DFRL:RegisterModule("minimap", 2, function()
         local function DelayedCollect()
             d:DebugPrint("Starting delayed collection timer...")
             local timer = 0
-            collector:SetScript("OnUpdate", function()
+            self.collector:SetScript("OnUpdate", function()
                 timer = timer + arg1
                 if timer > 0.1 then
                     d:DebugPrint("Timer expired, collecting buttons now...")
                     CollectMinimapButtons()
-                    collector:SetScript("OnUpdate", nil)
-                    collector:Hide()
+                    self.collector:SetScript("OnUpdate", nil)
+                    self.collector:Hide()
                 end
             end)
         end
@@ -413,11 +408,11 @@ DFRL:RegisterModule("minimap", 2, function()
             local names = {"topBorder", "bottomBorder", "rightBorder"}
 
             for i = 1, 3 do
-                local border = collector:CreateTexture(nil, "OVERLAY")
-                collector[names[i]] = border
+                local border = self.collector:CreateTexture(nil, "OVERLAY")
+                self.collector[names[i]] = border
                 border:SetTexture("Interface\\Buttons\\WHITE8X8")
-                border:SetPoint(positions[i].point1, collector, positions[i].point2, 0, 0)
-                border:SetPoint(positions[i].point3, collector, positions[i].point4, 0, 0)
+                border:SetPoint(positions[i].point1, self.collector, positions[i].point2, 0, 0)
+                border:SetPoint(positions[i].point3, self.collector, positions[i].point4, 0, 0)
                 if positions[i].width then border:SetWidth(positions[i].width) end
                 if positions[i].height then border:SetHeight(positions[i].height) end
                 border:SetVertexColor(1, 0.82, 0, 1)
@@ -437,19 +432,19 @@ DFRL:RegisterModule("minimap", 2, function()
         toggleButton:SetWidth(16)
         toggleButton:SetHeight(16)
         toggleButton:SetPoint("RIGHT", Minimap, "LEFT", -12, 0)
-        toggleButton:SetNormalTexture(texpath.. "dfrl_collector_toggle.tga")
-        toggleButton:SetHighlightTexture(texpath.. "dfrl_collector_toggle.tga")
+        toggleButton:SetNormalTexture(self.texpath.. "dfrl_collector_toggle.tga")
+        toggleButton:SetHighlightTexture(self.texpath.. "dfrl_collector_toggle.tga")
 
         -- show/hide
         toggleButton:SetScript("OnClick", function()
-            if collector:IsVisible() then
-                UIFrameFadeOut(collector, 0.3, 1, 0)
-                collector.fadeInfo.finishedFunc = collector.Hide
-                collector.fadeInfo.finishedArg1 = collector
+            if self.collector:IsVisible() then
+                UIFrameFadeOut(self.collector, 0.3, 1, 0)
+                self.collector.fadeInfo.finishedFunc = self.collector.Hide
+                self.collector.fadeInfo.finishedArg1 = self.collector
             else
-                collector:SetAlpha(0)
-                collector:Show()
-                UIFrameFadeIn(collector, 0.3, 0, 1)
+                self.collector:SetAlpha(0)
+                self.collector:Show()
+                UIFrameFadeIn(self.collector, 0.3, 0, 1)
             end
         end)
 
@@ -457,9 +452,8 @@ DFRL:RegisterModule("minimap", 2, function()
         DFRL.toggleButton = toggleButton
     end
 
-    -- PizzaWorldBuffs
     local PWBInit
-    do
+    function Setup:PizzaWorldBuffs()
         local currentColorMode = true
 
         function PWBInit(color)
@@ -469,8 +463,8 @@ DFRL:RegisterModule("minimap", 2, function()
             local PWB_Panel = _G["DFRL_PWB_Panel"]
             if not PWB_Panel and PizzaWorldBuffs then
                 PWB_Panel = CreateFrame("Frame", "DFRL_PWB_Panel", UIParent)
-                PWB_Panel:SetFrameStrata("BACKGROUND")
-                PWB_Panel:SetPoint("TOP", Minimap, "BOTTOM", -0, -50)
+                PWB_Panel:SetFrameStrata("MEDIUM")
+                PWB_Panel:SetPoint("TOP", Minimap, "BOTTOM", -0, -45)
                 PWB_Panel:SetWidth(110)
                 PWB_Panel:SetHeight(160)
 
@@ -558,7 +552,7 @@ DFRL:RegisterModule("minimap", 2, function()
                 PWB_txt2.text:SetFont(CONTROL.font_path, CONTROL.font_custom, CONTROL.font_flags)
                 PWB_txt2.text:SetText(allianceText)
                 PWB_txt3.text:SetFont(CONTROL.font_path, CONTROL.font_custom, CONTROL.font_flags)
-                PWB_txt3.text:SetText("") -- hack to give us a free space ^.^
+                PWB_txt3.text:SetText("") -- hack to give us a free space
 
                 if not PizzaWorldBuffs.frame._dfrl_update_hooked then
                     local originalUpdateFrames = PizzaWorldBuffs.frame.updateFrames
@@ -656,10 +650,10 @@ DFRL:RegisterModule("minimap", 2, function()
                 toggleButton = CreateFrame("Button", "MinimapButtonCollectorToggle", UIParent)
                 toggleButton:SetWidth(16)
                 toggleButton:SetHeight(16)
-                toggleButton:SetPoint("TOP", Minimap, "BOTTOM", -0, -20)
-                toggleButton:SetNormalTexture(texpath.. "dfrl_collector_toggle.tga")
+                toggleButton:SetPoint("TOP", Minimap, "BOTTOM", -1, -15)
+                toggleButton:SetNormalTexture(self.texpath.. "dfrl_collector_toggle.tga")
                 toggleButton:GetNormalTexture():SetTexCoord(1, 0, 0, 0, 1, 1, 0, 1)
-                toggleButton:SetHighlightTexture(texpath.. "dfrl_collector_toggle.tga")
+                toggleButton:SetHighlightTexture(self.texpath.. "dfrl_collector_toggle.tga")
                 toggleButton:GetHighlightTexture():SetTexCoord(1, 0, 0, 0, 1, 1, 0, 1)
 
                 local panelVisible = DFRL:GetTempValue("pwb", "visible")
@@ -682,11 +676,32 @@ DFRL:RegisterModule("minimap", 2, function()
                         DFRL:SetTempValue("pwb", "visible", true)
                     end
                 end)
+
+                DFRL.PWBtoggleButton = toggleButton
             end
         end
 
         PWBInit(true)
     end
+
+    -- init setup
+    function Setup:Run()
+        Setup:HideBlizzard()
+        Setup:Minimap()
+        Setup:TopPanel()
+        Setup:ZoomButtons()
+        Setup:Mail()
+        Setup:Buffs()
+        Setup:Tracker()
+        Setup:Durability()
+        Setup:Questlog()
+        Setup:EBC()
+
+        Setup:Collector()
+        Setup:PizzaWorldBuffs()
+    end
+
+    Setup:Run()
 
     -- callbacks
     local callbacks = {}
@@ -699,35 +714,13 @@ DFRL:RegisterModule("minimap", 2, function()
         return offset
     end
 
-    callbacks.mapSize = function(value)
-        Minimap:SetHeight(value)
-        Minimap:SetWidth(value)
-
-        ThrottledMessage("Move your character a bit after setting 'Map Size'.")
-
-        local offset = CalculateTexOffset(value)
-
-        minimapBorder:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -offset, offset)
-        minimapBorder:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", offset, -offset)
-
-        minimapShadow:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -offset, offset)
-        minimapShadow:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", offset, -offset)
-    end
-
-    callbacks.showShadow = function(value)
-        if value then
-            minimapShadow:Show()
-        else
-            minimapShadow:Hide()
-        end
-    end
-
     callbacks.darkMode = function(value)
-        local darkColor = {0.2, 0.2, 0.2}
+        local intensity = DFRL:GetConfig("minimap", "darkMode")
+        local darkColor = {1 - intensity, 1 - intensity, 1 - intensity}
         local lightColor = {1, 1, 1}
         local color = value and darkColor or lightColor
 
-        minimapBorder:SetVertexColor(color[1], color[2], color[3])
+        Setup.minimapBorder:SetVertexColor(color[1], color[2], color[3])
         local normalTex = DFRL.toggleButton:GetNormalTexture()
         local pushedTex = DFRL.toggleButton:GetPushedTexture()
 
@@ -745,8 +738,31 @@ DFRL:RegisterModule("minimap", 2, function()
         zoomOutDisabled:SetVertexColor(color[1], color[2], color[3])
     end
 
+    callbacks.mapSize = function(value)
+        Minimap:SetHeight(value)
+        Minimap:SetWidth(value)
+
+        ThrottledMessage("Move your character a bit after setting 'Map Size'.")
+
+        local offset = CalculateTexOffset(value)
+
+        Setup.minimapBorder:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -offset, offset)
+        Setup.minimapBorder:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", offset, -offset)
+
+        Setup.minimapShadow:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -offset, offset)
+        Setup.minimapShadow:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", offset, -offset)
+    end
+
+    callbacks.showShadow = function(value)
+        if value then
+            Setup.minimapShadow:Show()
+        else
+            Setup.minimapShadow:Hide()
+        end
+    end
+
     callbacks.alphaShadow = function(value)
-        minimapShadow:SetAlpha(value)
+        Setup.minimapShadow:SetAlpha(value)
     end
 
     callbacks.showZoom = function(value)
@@ -775,18 +791,18 @@ DFRL:RegisterModule("minimap", 2, function()
 
     callbacks.showTopPanel = function(value)
         if value then
-            topPanel:Show()
+            Setup.topPanel:Show()
         else
-            topPanel:Hide()
+            Setup.topPanel:Hide()
         end
     end
 
     callbacks.topPanelWidth = function(value)
-        topPanel:SetWidth(value)
+        Setup.topPanel:SetWidth(value)
     end
 
     callbacks.topPanelHeight = function(value)
-        topPanel:SetHeight(value)
+        Setup.topPanel:SetHeight(value)
     end
 
     callbacks.zoneTextSize = function(value)
@@ -795,54 +811,44 @@ DFRL:RegisterModule("minimap", 2, function()
 
     callbacks.zoneTextY = function(value)
         MinimapZoneTextButton:ClearAllPoints()
-        MinimapZoneTextButton:SetPoint("LEFT", topPanel, "LEFT", DFRL:GetConfig("minimap", "zoneTextX"), value)
+        MinimapZoneTextButton:SetPoint("LEFT", Setup.topPanel, "LEFT", DFRL:GetConfig("minimap", "zoneTextX"), value)
     end
 
     callbacks.zoneTextX = function(value)
         MinimapZoneTextButton:ClearAllPoints()
-        MinimapZoneTextButton:SetPoint("LEFT", topPanel, "LEFT", value, DFRL:GetConfig("minimap", "zoneTextY"))
+        MinimapZoneTextButton:SetPoint("LEFT", Setup.topPanel, "LEFT", value, DFRL:GetConfig("minimap", "zoneTextY"))
     end
 
     callbacks.timeSize = function(value)
-        timeText:SetFont("Fonts\\FRIZQT__.TTF", value, "")
+        Setup.timeText:SetFont("Fonts\\FRIZQT__.TTF", value, "")
     end
 
     callbacks.timeY = function(value)
-        timeText:ClearAllPoints()
-        timeText:SetPoint("RIGHT", topPanel, "RIGHT", DFRL:GetConfig("minimap", "timeX"), value)
+        Setup.timeText:ClearAllPoints()
+        Setup.timeText:SetPoint("RIGHT", Setup.topPanel, "RIGHT", DFRL:GetConfig("minimap", "timeX"), value)
     end
 
     callbacks.timeX = function(value)
-        timeText:ClearAllPoints()
-        timeText:SetPoint("RIGHT", topPanel, "RIGHT", value, DFRL:GetConfig("minimap", "timeY"))
+        Setup.timeText:ClearAllPoints()
+        Setup.timeText:SetPoint("RIGHT", Setup.topPanel, "RIGHT", value, DFRL:GetConfig("minimap", "timeY"))
     end
 
     callbacks.showTime = function(value)
         if value then
-            timeText:Show()
+            Setup.timeText:Show()
         else
-            timeText:Hide()
-        end
-    end
-
-    callbacks.showPfQuest = function (value)
-        if pfBrowserIcon then
-            if value then
-                pfBrowserIcon:Show()
-            else
-                pfBrowserIcon:Hide()
-            end
+            Setup.timeText:Hide()
         end
     end
 
     callbacks.mapSquare = function(value)
         if value then
-            minimapBorder:SetTexture(texpath.. "map_dragonflight_square2.tga")
-            minimapShadow:SetTexture(texpath.. "map_dragonflight_square_shadow.tga")
+            Setup.minimapBorder:SetTexture(Setup.texpath.. "map_dragonflight_square2.tga")
+            Setup.minimapShadow:SetTexture(Setup.texpath.. "map_dragonflight_square_shadow.tga")
             Minimap:SetMaskTexture("Interface\\BUTTONS\\WHITE8X8")
         else
-            minimapBorder:SetTexture(texpath.. "uiminimapborder.tga")
-            minimapShadow:SetTexture(texpath.. "uiminimapshadow.tga")
+            Setup.minimapBorder:SetTexture(Setup.texpath.. "uiminimapborder.tga")
+            Setup.minimapShadow:SetTexture(Setup.texpath.. "uiminimapshadow.tga")
             Minimap:SetMaskTexture("Textures\\MinimapMask")
         end
     end
@@ -860,6 +866,18 @@ DFRL:RegisterModule("minimap", 2, function()
     callbacks.textColor = function(value)
         PWBInit(value and true or false)
     end
+
+    -- callbacks.pizzaToggleShow = function (value)
+    --     if value then
+    --         if DFRL.PWBtoggleButton then
+    --             DFRL.PWBtoggleButton:Show()
+    --         end
+    --     else
+    --         if DFRL.PWBtoggleButton then
+    --             DFRL.PWBtoggleButton:Hide()
+    --         end
+    --     end
+    -- end
 
     -- execute callbacks
     DFRL:RegisterCallback("minimap", callbacks)

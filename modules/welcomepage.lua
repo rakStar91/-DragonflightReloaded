@@ -119,8 +119,8 @@ end
 local function PatchWarning()
     local patchFrame = CreateFrame("Frame", "DFRL_WelcomeFrame", UIParent)
     patchFrame:SetWidth(400)
-    patchFrame:SetHeight(250)
-    patchFrame:SetPoint("CENTER", 0, 260)
+    patchFrame:SetHeight(200)
+    patchFrame:SetPoint("CENTER", 0, 240)
     patchFrame:SetBackdrop{
         bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
         tile = true, tileSize = 32, edgeSize = 32,
@@ -137,7 +137,7 @@ local function PatchWarning()
     local text = patchFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     text:SetPoint("TOP", title, "BOTTOM", 0, -16)
     text:SetWidth(380)
-    text:SetText("|cFFFF0000ATTENTION!|r\n\nPatch 1.1.12 requires you to delete your \nWTF Dragonflight files under:\n\nWTF/ACC/SERVER/CHARNAME/\n--> /SavedVariables\n\n\nOtherwise you probaly get errors.")
+    text:SetText("Patch 1.2.0 implemented config changes.\nAbout 15 options have been added.\n\nYour config DB has been reset.")
 
     local okBtn = CreateFrame("Button", nil, patchFrame, "UIPanelButtonTemplate")
     okBtn:SetWidth(120)

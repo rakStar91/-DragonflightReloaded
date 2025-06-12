@@ -2,43 +2,22 @@
 --===============================================
 -- DRAGONFLIGHT RELOADED WORKFLOW (outdated)
 --===============================================
--- >> Core Initialization:
--- Creates main frame (DFRL) and initializes
--- environment, modules, config, and callbacks tables.
--- >> Environment Setup:
--- Creates sandboxed environment via GetEnvironment(),
--- using metatables for global access.
--- >> Module System:
--- RegisterModule(): Registers modules with priority.
--- LoadModules(): Loads modules by priority.
--- >> Config System:
--- InitializeConfig(): Loads settings from DFRL_DB,
--- applies defaults.
--- SetDefaults(): Registers module default values/metadata.
--- GetConfig(): Retrieves config values.
--- SetConfig(): Updates config and triggers callbacks.
--- >> Callback System:
--- RegisterCallback(): Modules register for config change
--- notifications.
--- TriggerCallback(): Fires callbacks on config updates.
--- >> Event Handling:
--- PLAYER_ENTERING_WORLD: Init config and loads modules.
--- PLAYER_LOGOUT: Saves tempDB to DFRL_DB.
--- Debug: DebugPrint() saves logs to DFRL_LOGS.
---===============================================
+-- debug-suite compatibility
 local d
-if DBS_TOOLS then
-    d = DBS_TOOLS
-else
-    d = {}
-    function d:DebugPrint() end
-end
-
-if not ErrorHandler then
-    ErrorHandler = function(err)
-        DEFAULT_CHAT_FRAME:AddMessage("ERROR: " .. err, 1, 0, 0)
+do
+    if DBS_TOOLS then
+        d = DBS_TOOLS
+    else
+        d = {}
+        function d:DebugPrint() end
     end
-    seterrorhandler(ErrorHandler)
+
+    if not ErrorHandler then
+        ErrorHandler = function(err)
+            DEFAULT_CHAT_FRAME:AddMessage("ERROR: " .. err, 1, 0, 0)
+        end
+        seterrorhandler(ErrorHandler)
+    end
 end
 
 -- mainframe
@@ -53,6 +32,7 @@ local assert = assert
 
 -- tables
 DFRL_DB = {}
+DFRL_DB_SETUP = {}
 DFRL_FRAMEPOS = {}
 
 DFRL.env = {}
@@ -63,6 +43,9 @@ DFRL.modules = {}
 DFRL.defaults = {}
 DFRL.callbacks = {}
 DFRL.performance = {}
+
+-- db version
+DFRL.DBversion = "1.0"
 
 -- setup environment
 setmetatable(DFRL.env, {__index = getfenv(0)})
@@ -99,6 +82,7 @@ function DFRL:RegisterModule(moduleName, priority, moduleFunc)
     d:DebugPrint("Registered module: " .. moduleName .. " with priority " .. tostring(priority))
 end
 
+-- module loading need rework
 function DFRL:LoadModules()
     local env = self:GetEnvironment()
     assert(env, "Failed to get environment for modules")
@@ -284,11 +268,15 @@ function DFRL:SetConfig(moduleName, key, value)
 end
 
 function DFRL:InitializeConfig()
+    -- check DB version
+    self:MigrateDB()
+
     local settingsLoaded = 0
     local defaultsApplied = 0
 
     assert(DFRL_DB, "DFRL_DB is not initialized")
     assert(type(DFRL_DB) == "table", "DFRL_DB must be a table")
+
 
     -- copy existing module settings from DFRL_DB
     for moduleName, moduleTable in pairs(DFRL_DB) do
@@ -306,13 +294,13 @@ function DFRL:InitializeConfig()
         end
     end
 
-    -- add missing defaults - store the first value directly
+    -- add missing defaults - store first value directly
     for moduleName, defaultsTable in pairs(self.defaults) do
         assert(type(defaultsTable) == "table", "Defaults for " .. moduleName .. " must be a table")
         self.tempDB[moduleName] = self.tempDB[moduleName] or {}
         for key, defaultValue in pairs(defaultsTable) do
             if self.tempDB[moduleName][key] == nil then
-                -- Store the actual value, not wrapped in another table
+                -- store actual value, not wrapped in another table
                 if type(defaultValue) == "table" then
                     self.tempDB[moduleName][key] = defaultValue[1]
                 else
@@ -327,19 +315,32 @@ function DFRL:InitializeConfig()
 end
 
 function DFRL:SaveDB()
-    assert(self.tempDB, "tempDB must exist before saving")
-    assert(type(self.tempDB) == "table", "tempDB must be a table") -- im insecure sry lol
-
     local count = 0
-    for moduleName, moduleData in pairs(self.tempDB) do
-        assert(type(moduleData) == "table", "Module data for " .. moduleName .. " must be a table")
+    for _, _ in pairs(self.tempDB) do
         count = count + 1
     end
 
-    assert(count > 0, "No modules found in tempDB to save")
-
     DFRL_DB = self.tempDB
+    DFRL_DB_SETUP.version = self.DBversion
     d:DebugPrint("DFRL:SaveDB() saved " .. count .. " modules to database")
+end
+
+function DFRL:ResetDB()
+    self.tempDB = {}
+    DFRL_DB = {}
+    ReloadUI()
+end
+
+function DFRL:MigrateDB()
+    if not DFRL_DB_SETUP.version or DFRL_DB_SETUP.version ~= self.DBversion then
+        d:DebugPrint("Version mismatch - wiping all DB's")
+        DFRL_DB = {}
+        DFRL_DB_SETUP = {}
+        DFRL_FRAMEPOS = {}
+        DFRL_DB_SETUP.version = self.DBversion
+        print("Version mismatch - wiping all DFRL DB's")
+    end
+    d:DebugPrint("DB version check complete: " .. DFRL_DB_SETUP.version)
 end
 
 -- event handler

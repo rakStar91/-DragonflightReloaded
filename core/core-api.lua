@@ -112,7 +112,7 @@ function ThrottledMessage(message)
     end
 end
 
--- super cool shagu stuff
+-- shagu api
 function hooksecurefunc(name, func, append)
     if not _G[name] then return end
 

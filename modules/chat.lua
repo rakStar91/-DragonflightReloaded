@@ -2,7 +2,8 @@ DFRL:SetDefaults("chat", {
     enabled = {true},
     hidden = {false},
 
-    darkMode = {false, 1, "checkbox", "appearance", "Enable dark mode for the chat"},
+    darkMode = {0, 1, "slider", {0, 1}, "appearance", "Adjust dark mode intensity"},
+
     showButtons = {true, 2, "checkbox", "chat basic", "Show or hide chat buttons"},
     blizzardButtons = {false, 3, "checkbox", "chat basic", "Use original Blizzard chat buttons"},
     fadeChat = {false, 4, "checkbox", "tweaks", "Fade out chat text after 10 seconds"}
@@ -12,13 +13,22 @@ DFRL:SetDefaults("chat", {
 DFRL:RegisterModule("chat", 1, function()
     d:DebugPrint("BOOTING")
 
-    ChatFrame1Tab:SetClampedToScreen(true)
+    -- setup
+    local Setup = {}
+
+    function Setup:ChatFrame()
+        ChatFrame1Tab:SetClampedToScreen(true)
+    end
+
+    -- init setup
+    Setup:ChatFrame()
 
     -- callbacks
     local callbacks = {}
 
     callbacks.darkMode = function(value)
-        local darkColor = {0.2, 0.2, 0.2}
+        local intensity = DFRL:GetConfig("chat", "darkMode")
+        local darkColor = {1 - intensity, 1 - intensity, 1 - intensity}
         local lightColor = {1, 1, 1}
         local color = value and darkColor or lightColor
 
@@ -208,7 +218,6 @@ DFRL:RegisterModule("chat", 1, function()
             end
         end
 
-        -- dark mode if enabled
         callbacks.darkMode(DFRL:GetConfig("chat", "darkMode"))
     end
 

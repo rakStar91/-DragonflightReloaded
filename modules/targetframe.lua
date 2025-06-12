@@ -1,86 +1,160 @@
+---@diagnostic disable: undefined-field
 DFRL:SetDefaults("targetframe", {
     enabled = {true},
     hidden = {false},
 
-    darkMode = {false, 1, "checkbox", "appearance", "Enable dark mode for the target frame"},
-    textShow = {true, 2, "checkbox", "text", "Show health and mana text"},
-    noPercent = {true, 3, "checkbox", "text", "Show only current values without percentages"},
-    textColoring = {false, 4, "checkbox", "text", "Color text based on health/mana percentage"},
+    darkMode = {0, 1, "slider", {0, 1}, "appearance", "Adjust dark mode intensity"},
+
+    textShow = {true, 1, "checkbox", "text settings", "Show health and mana text"},
+    noPercent = {true, 3, "checkbox", "text settings", "Show only current values without percentages"},
+    textColoring = {false, 4, "checkbox", "text settings", "Color text based on health/mana percentage"},
+    healthSize = {15, 5, "slider", {8, 20}, "text settings", "Health text font size"},
+    manaSize = {9, 6, "slider", {8, 20}, "text settings", "Mana text font size"},
+    frameFont = {"Myriad-Pro", 2, "dropdown", {
+        "FRIZQT__.TTF",
+        "Expressway",
+        "Homespun",
+        "Hooge",
+        "Myriad-Pro",
+        "Prototype",
+        "PT-Sans-Narrow-Bold",
+        "PT-Sans-Narrow-Regular",
+        "RobotoMono",
+        "BigNoodleTitling",
+        "Continuum",
+        "DieDieDie"
+    }, "text settings", "Change the font used for the targetframe"},
+
     colorReaction = {true, 5, "checkbox", "bar color", "Color health bar based on target reaction"},
     colorClass = {false, 6, "checkbox", "bar color", "Color health bar based on target class"},
-    lowHpColor = {false, 7, "checkbox", "bar color", "Color health bar based on hp"},
+
+    frameScale = {1, 8, "slider", {0.7, 1.3}, "tweaks", "Adjust frame size"},
+
 })
 
 DFRL:RegisterModule("targetframe", 1, function()
     d:DebugPrint("BOOTING")
 
-    local texpath = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\"
+    local Setup = {
+        texpath = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\unitframes\\",
+        texpath2 = "Interface\\AddOns\\DragonflightReloaded\\media\\tex\\ui\\",
+        fontpath = "Interface\\AddOns\\DragonflightReloaded\\media\\fnt\\",
 
-    -- blizz
-    do
+        hideFrame = nil,
+        healthPercentText = nil,
+
+        combatOverlay = nil,
+        combatOverlayTex = nil,
+
+        texts = {
+            healthPercent = nil,
+            healthValue = nil,
+            healthPercentShow = true,
+            manaPercent = nil,
+            manaValue = nil,
+            manaPercentShow = true,
+            config = {
+                font = "Fonts\\FRIZQT__.TTF",
+                healthFontSize = 12,
+                manaFontSize = 9,
+                nameFontSize = 9,
+                levelFontSize = 9,
+                outline = "OUTLINE",
+                nameColor = {1, .82, 0},
+                levelColor = {1, .82, 0},
+                healthColor = {1, 1, 1},
+                manaColor = {1, 1, 1},
+            }
+        },
+
+        barColorState = {
+            colorReaction = false,
+            colorClass = false,
+            -- lowHpColor = false
+        }
+    }
+
+    function Setup:KillBlizz()
         TargetFrameHealthBar:SetScript("OnEnter", nil)
         TargetFrameHealthBar:SetScript("OnLeave", nil)
+        TargetFrameNameBackground:SetTexture(nil)
     end
 
-    TargetFrameHealthBar:SetPoint("TOPRIGHT", -100, -29)
-    TargetFrameHealthBar:SetWidth(130)
-    TargetFrameHealthBar:SetHeight(31)
-
-    TargetFrameManaBar:SetPoint("TOPRIGHT", -95, -53)
-    TargetFrameManaBar:SetWidth(132)
-
-    TargetFrameBackground:SetWidth(256)
-    TargetFrameBackground:SetHeight(128)
-    TargetFrameBackground:SetPoint("TOPRIGHT", TargetFrame, "TOPRIGHT", 0, 0)
-
-    TargetLevelText:ClearAllPoints()
-    TargetLevelText:SetPoint("CENTER", TargetFrame, "CENTER", -102, 25)
-
-    TargetFrame.name:ClearAllPoints()
-    TargetFrame.name:SetPoint("CENTER", TargetFrame, "CENTER", -40, 25)
-    TargetFrame.name:SetJustifyH("RIGHT")
-
-    TargetFrame.portrait:SetHeight(61)
-    TargetFrame.portrait:SetWidth(61)
-
-    -- text elements
-    local healthPercentText = TargetFrameHealthBar:CreateFontString(nil, "OVERLAY")
-    healthPercentText:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE")
-    healthPercentText:SetPoint("LEFT", 5, 0)
-    healthPercentText:SetTextColor(1, 1, 1)
-
-    local healthValueText = TargetFrameHealthBar:CreateFontString(nil, "OVERLAY")
-    healthValueText:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE")
-    healthValueText:SetPoint("RIGHT", -5, 0)
-    healthValueText:SetTextColor(1, 1, 1)
-
-    local manaPercentText = TargetFrameManaBar:CreateFontString(nil, "OVERLAY")
-    manaPercentText:SetFont("Fonts\\FRIZQT__.TTF", 9, "OUTLINE")
-    manaPercentText:SetPoint("LEFT", 5, 0)
-    manaPercentText:SetTextColor(1, 1, 1)
-
-    local manaValueText = TargetFrameManaBar:CreateFontString(nil, "OVERLAY")
-    manaValueText:SetFont("Fonts\\FRIZQT__.TTF", 9, "OUTLINE")
-    manaValueText:SetPoint("RIGHT", -12, 0)
-    manaValueText:SetTextColor(1, 1, 1)
-
-    -- elite
-    function _G.TargetFrame_CheckClassification()
-        local classification = UnitClassification("target")
-        if ( classification == "worldboss" ) then
-            TargetFrameTexture:SetTexture(texpath.. "UI-TargetingFrame-Boss.blp")
-        elseif ( classification == "rareelite"  ) then
-            TargetFrameTexture:SetTexture(texpath.. "UI-TargetingFrame-RareElite.blp")
-        elseif ( classification == "elite"  ) then
-            TargetFrameTexture:SetTexture(texpath.. "UI-TargetingFrame-Elite.blp")
-        elseif ( classification == "rare"  ) then
-            TargetFrameTexture:SetTexture(texpath.. "UI-TargetingFrame-Rare.blp")
-        else
-            TargetFrameTexture:SetTexture(texpath.. "UI-TargetingFrameDF1.blp")
-        end
+    function Setup:HealthBar()
+        TargetFrameHealthBar:SetPoint("TOPRIGHT", -100, -29)
+        TargetFrameHealthBar:SetWidth(129)
+        TargetFrameHealthBar:SetHeight(30)
     end
 
-    local function UpdateTexts()
+    function Setup:HealthBarText()
+        local cfg = self.texts.config
+
+        self.texts.healthTextFrame = CreateFrame("Frame", nil, TargetFrame)
+        self.texts.healthTextFrame:SetAllPoints(TargetFrameHealthBar)
+        self.texts.healthTextFrame:SetFrameStrata(TargetFrame:GetFrameStrata())
+        self.texts.healthTextFrame:SetFrameLevel(TargetFrame:GetFrameLevel() + 2)
+
+        self.texts.healthPercent = self.texts.healthTextFrame:CreateFontString(nil)
+        self.texts.healthPercent:SetFont(cfg.font, cfg.healthFontSize, cfg.outline)
+        self.texts.healthPercent:SetPoint("LEFT", TargetFrameHealthBar, "LEFT", 5, 0)
+
+        self.texts.healthValue = self.texts.healthTextFrame:CreateFontString(nil)
+        self.texts.healthValue:SetFont(cfg.font, cfg.healthFontSize, cfg.outline)
+        self.texts.healthValue:SetPoint("RIGHT", TargetFrameHealthBar, "RIGHT", -5, 0)
+    end
+
+    function Setup:ManaBar()
+        TargetFrameManaBar:SetPoint("TOPRIGHT", -100, -53)
+        TargetFrameManaBar:SetWidth(129)
+    end
+
+    function Setup:ManaBarText()
+        local cfg = self.texts.config
+
+        self.texts.manaTextFrame = CreateFrame("Frame", nil, TargetFrame)
+        self.texts.manaTextFrame:SetAllPoints(TargetFrameManaBar)
+        self.texts.manaTextFrame:SetFrameStrata(TargetFrame:GetFrameStrata())
+        self.texts.manaTextFrame:SetFrameLevel(TargetFrame:GetFrameLevel() + 2)
+
+        self.texts.manaPercent = self.texts.manaTextFrame:CreateFontString(nil)
+        self.texts.manaPercent:SetFont(cfg.font, cfg.manaFontSize, cfg.outline)
+        self.texts.manaPercent:SetPoint("LEFT", TargetFrameManaBar, "LEFT", 5, 0)
+
+        self.texts.manaValue = self.texts.manaTextFrame:CreateFontString(nil)
+        self.texts.manaValue:SetFont(cfg.font, cfg.manaFontSize, cfg.outline)
+        self.texts.manaValue:SetPoint("RIGHT", TargetFrameManaBar, "RIGHT", -12, 0)
+    end
+
+    function Setup:FrameTextures()
+        TargetFrameBackground:SetWidth(256)
+        TargetFrameBackground:SetHeight(128)
+        TargetFrameBackground:SetPoint("TOPRIGHT", TargetFrame, "TOPRIGHT", 0, 0)
+        TargetFrameBackground:SetTexture(self.texpath .. "UI-TargetingFrameDF1-Background.blp")
+    end
+
+    function Setup:Portrait()
+        TargetFrame.portrait:SetHeight(61)
+        TargetFrame.portrait:SetWidth(61)
+    end
+
+    function Setup:NameText()
+        local cfg = self.texts.config
+        TargetFrame.name:ClearAllPoints()
+        TargetFrame.name:SetPoint("CENTER", TargetFrame, "CENTER", -40, 25)
+        TargetFrame.name:SetJustifyH("RIGHT")
+        TargetFrame.name:SetFont(cfg.font, cfg.nameFontSize, "")
+        TargetFrame.name:SetTextColor(unpack(cfg.nameColor))
+    end
+
+    function Setup:LevelText()
+        local cfg = self.texts.config
+        TargetLevelText:ClearAllPoints()
+        TargetLevelText:SetPoint("CENTER", TargetFrame, "CENTER", -102, 25)
+        TargetLevelText:SetFont(cfg.font, cfg.levelFontSize, "")
+        TargetLevelText:SetTextColor(unpack(cfg.levelColor))
+    end
+
+    function Setup:UpdateTexts()
         if not UnitExists("target") then return end
 
         local health = UnitHealth("target")
@@ -99,42 +173,42 @@ DFRL:RegisterModule("targetframe", 1, function()
         local isDead = UnitIsDead("target")
 
         if noPercentEnabled then
-            healthPercentText:SetText("")
+            self.texts.healthPercent:SetText("")
             if isDead then
-                healthValueText:SetText("")
+                self.texts.healthValue:SetText("")
             else
-                healthValueText:SetText(health)
+                self.texts.healthValue:SetText(health)
             end
-            healthValueText:ClearAllPoints()
-            healthValueText:SetPoint("CENTER", TargetFrameHealthBar, "CENTER", 3, 0)
+            self.texts.healthValue:ClearAllPoints()
+            self.texts.healthValue:SetPoint("CENTER", TargetFrameHealthBar, "CENTER", 0, 0)
 
-            manaPercentText:SetText("")
+            self.texts.manaPercent:SetText("")
             if maxMana > 0 then
-                manaValueText:SetText(mana)
-                manaValueText:ClearAllPoints()
-                manaValueText:SetPoint("CENTER", TargetFrameManaBar, "CENTER", -3, 0)
+                self.texts.manaValue:SetText(mana)
+                self.texts.manaValue:ClearAllPoints()
+                self.texts.manaValue:SetPoint("CENTER", TargetFrameManaBar, "CENTER", -0, 0)
             else
-                manaValueText:SetText("")
+                self.texts.manaValue:SetText("")
             end
         else
             if isDead then
-                healthPercentText:SetText("")
-                healthValueText:SetText("")
+                self.texts.healthPercent:SetText("")
+                self.texts.healthValue:SetText("")
             else
-                healthPercentText:SetText(healthPercentInt .. "%")
-                healthValueText:SetText(health)
+                self.texts.healthPercent:SetText(healthPercentInt .. "%")
+                self.texts.healthValue:SetText(health)
             end
-            healthValueText:ClearAllPoints()
-            healthValueText:SetPoint("RIGHT", TargetFrameHealthBar, "RIGHT", -5, 0)
+            self.texts.healthValue:ClearAllPoints()
+            self.texts.healthValue:SetPoint("RIGHT", TargetFrameHealthBar, "RIGHT", -0, 0)
 
             if maxMana > 0 then
-                manaPercentText:SetText(manaPercentInt .. "%")
-                manaValueText:SetText(mana)
-                manaValueText:ClearAllPoints()
-                manaValueText:SetPoint("RIGHT", TargetFrameManaBar, "RIGHT", -12, 0)
+                self.texts.manaPercent:SetText(manaPercentInt .. "%")
+                self.texts.manaValue:SetText(mana)
+                self.texts.manaValue:ClearAllPoints()
+                self.texts.manaValue:SetPoint("RIGHT", TargetFrameManaBar, "RIGHT", -0, 0)
             else
-                manaPercentText:SetText("")
-                manaValueText:SetText("")
+                self.texts.manaPercent:SetText("")
+                self.texts.manaValue:SetText("")
             end
         end
 
@@ -142,119 +216,118 @@ DFRL:RegisterModule("targetframe", 1, function()
             local r = 1
             local g = healthPercent
             local b = healthPercent
-            healthPercentText:SetTextColor(r, g, b)
-            healthValueText:SetTextColor(r, g, b)
+            self.texts.healthPercent:SetTextColor(r, g, b)
+            self.texts.healthValue:SetTextColor(r, g, b)
 
             if maxMana > 0 then
                 r = 1
                 g = manaPercent
                 b = manaPercent
-                manaPercentText:SetTextColor(r, g, b)
-                manaValueText:SetTextColor(r, g, b)
+                self.texts.manaPercent:SetTextColor(r, g, b)
+                self.texts.manaValue:SetTextColor(r, g, b)
             end
         else
-            healthPercentText:SetTextColor(1, 1, 1)
-            healthValueText:SetTextColor(1, 1, 1)
-            manaPercentText:SetTextColor(1, 1, 1)
-            manaValueText:SetTextColor(1, 1, 1)
+            self.texts.healthPercent:SetTextColor(1, 1, 1)
+            self.texts.healthValue:SetTextColor(1, 1, 1)
+            self.texts.manaPercent:SetTextColor(1, 1, 1)
+            self.texts.manaValue:SetTextColor(1, 1, 1)
         end
     end
 
-    local function IsTargetTaggedByOther()
-        if not UnitExists("target") or UnitIsPlayer("target") then
-            return false
-        end
+    function Setup:HookClassification()
+        function _G.TargetFrame_CheckClassification()
+            -- bars - i put this here because i dont want to create a new func just for this
+            TargetFrameHealthBar:SetStatusBarTexture(Setup.texpath.. "healthDF2.tga")
+            TargetFrameManaBar:SetStatusBarTexture(Setup.texpath.. "UI-HUD-UnitFrame-Target-PortraitOn-Bar-Mana-Status.blp")
 
-        return UnitIsTapped("target") and not UnitIsTappedByPlayer("target")
+            -- frames
+            local classification = UnitClassification("target")
+            if (classification == "worldboss") then
+                TargetFrameTexture:SetTexture(self.texpath .. "UI-TargetingFrame-Boss.blp")
+            elseif (classification == "rareelite") then
+                TargetFrameTexture:SetTexture(self.texpath .. "UI-TargetingFrame-RareElite.blp")
+            elseif (classification == "elite") then
+                TargetFrameTexture:SetTexture(self.texpath .. "UI-TargetingFrame-Elite.blp")
+            elseif (classification == "rare") then
+                TargetFrameTexture:SetTexture(self.texpath .. "UI-TargetingFrame-Rare.blp")
+            else
+                TargetFrameTexture:SetTexture(self.texpath .. "UI-TargetingFrameDF1.blp")
+            end
+        end
     end
 
-    -- ill try out a new way to create our callbacks by using  State Object Patterns
-    local targetState = {
-        colorReaction = false,
-        colorClass = false,
-        lowHpColor = false,
+    function Setup:CheckTargetTapped()
+        if not UnitExists("target") then return end
 
-        updateColor = function(self)
-            if not UnitExists("target") then return end
+        if UnitIsPlayer("target") then
+            TargetFrameHealthBar:SetStatusBarColor(0, 1, 0)
+            return
+        end
 
-            if IsTargetTaggedByOther() then
-                TargetFrameHealthBar:SetStatusBarColor(0.5, 0.5, 0.5)
-                return
-            end
-
-            local health = UnitHealth("target")
-            local maxHealth = UnitHealthMax("target")
-            local percent = maxHealth > 0 and (health / maxHealth) or 1
-
-            if self.lowHpColor then
-                local r, g, b
-                if self.colorClass and UnitIsPlayer("target") then
-                    local _, class = UnitClass("target")
-                    if class and RAID_CLASS_COLORS[class] then
-                        local classColor = RAID_CLASS_COLORS[class]
-                        r = classColor.r + (1 - classColor.r) * (1 - percent)
-                        g = classColor.g * percent
-                        b = classColor.b * percent
-                    else
-                        r = 1 - percent
-                        g = percent
-                        b = 0
-                    end
-                else
-                    r = 1 - percent
-                    g = percent
-                    b = 0
-                end
-                TargetFrameHealthBar:SetStatusBarColor(r, g, b)
-                return
-            end
-
-            if self.colorClass and UnitIsPlayer("target") then
-                local _, class = UnitClass("target")
-                if class and RAID_CLASS_COLORS[class] then
-                    local color = RAID_CLASS_COLORS[class]
-                    TargetFrameHealthBar:SetStatusBarColor(color.r, color.g, color.b)
-                    return
-                end
-            end
-
-            if self.colorReaction then
-                local reaction = UnitReaction("player", "target")
-                if reaction then
-                    if reaction <= 2 then
-                        TargetFrameHealthBar:SetStatusBarColor(1, 0, 0)
-                    elseif reaction == 3 or reaction == 4 then
-                        TargetFrameHealthBar:SetStatusBarColor(1, 1, 0)
-                    else
-                        TargetFrameHealthBar:SetStatusBarColor(0, 1, 0)
-                    end
-                    return
-                end
-            end
-
+        if UnitIsTapped("target") and not UnitIsTappedByPlayer("target") then
+            TargetFrameHealthBar:SetStatusBarColor(0.5, 0.5, 0.5)
+        else
             TargetFrameHealthBar:SetStatusBarColor(0, 1, 0)
         end
-    }
+    end
+
+    function Setup:UpdateBarColor()
+        if not UnitExists("target") then return end
+
+        if not UnitIsPlayer("target") and UnitIsTapped("target") and not UnitIsTappedByPlayer("target") then
+            TargetFrameHealthBar:SetStatusBarColor(0.5, 0.5, 0.5)
+            return
+        end
+
+        if self.barColorState.colorClass and UnitIsPlayer("target") then
+            local _, class = UnitClass("target")
+            if class and RAID_CLASS_COLORS[class] then
+                local color = RAID_CLASS_COLORS[class]
+                TargetFrameHealthBar:SetStatusBarColor(color.r, color.g, color.b)
+                return
+            end
+        end
+
+        if self.barColorState.colorReaction then
+            local reaction = UnitReaction("player", "target")
+            if reaction then
+                if reaction <= 2 then
+                    TargetFrameHealthBar:SetStatusBarColor(1, 0, 0)  -- hostile - Red
+                elseif reaction == 3 or reaction == 4 then
+                    TargetFrameHealthBar:SetStatusBarColor(1, 1, 0)  -- neutral - Yellow
+                else
+                    TargetFrameHealthBar:SetStatusBarColor(0, 1, 0)  -- friendly - Green
+                end
+                return
+            end
+        end
+
+        TargetFrameHealthBar:SetStatusBarColor(0, 1, 0)
+    end
+
+    function Setup:Run()
+        self:KillBlizz()
+        self:FrameTextures()
+        self:HealthBar()
+        self:HealthBarText()
+        self:ManaBar()
+        self:ManaBarText()
+        self:Portrait()
+        self:NameText()
+        self:LevelText()
+        self:UpdateTexts()
+        self:HookClassification()
+    end
+
+    -- init setup
+    Setup:Run()
 
     -- callbacks
     local callbacks = {}
 
-    callbacks.textShow = function(value)
-        if value then
-            healthPercentText:Show()
-            healthValueText:Show()
-            manaPercentText:Show()
-            manaValueText:Show()
-        else
-            healthPercentText:Hide()
-            healthValueText:Hide()
-            manaPercentText:Hide()
-            manaValueText:Hide()
-        end
-    end
-
     callbacks.darkMode = function(value)
-        local darkColor = {0.2, 0.2, 0.2}
+        local intensity = DFRL:GetConfig("targetframe", "darkMode")
+        local darkColor = {1 - intensity, 1 - intensity, 1 - intensity}
         local lightColor = {1, 1, 1}
         local color = value and darkColor or lightColor
 
@@ -262,33 +335,96 @@ DFRL:RegisterModule("targetframe", 1, function()
         TargetFrameBackground:SetVertexColor(color[1], color[2], color[3])
     end
 
+    callbacks.textShow = function(value)
+        if value then
+            Setup.texts.healthPercent:Show()
+            Setup.texts.healthValue:Show()
+            Setup.texts.manaPercent:Show()
+            Setup.texts.manaValue:Show()
+        else
+            Setup.texts.healthPercent:Hide()
+            Setup.texts.healthValue:Hide()
+            Setup.texts.manaPercent:Hide()
+            Setup.texts.manaValue:Hide()
+        end
+    end
+
     callbacks.noPercent = function()
-        UpdateTexts()
+        Setup:UpdateTexts()
     end
 
     callbacks.textColoring = function()
-        UpdateTexts()
+        Setup:UpdateTexts()
+    end
+
+    callbacks.healthSize = function(value)
+        Setup.texts.config.healthFontSize = value
+        Setup.texts.healthPercent:SetFont(Setup.texts.config.font, value, Setup.texts.config.outline)
+        Setup.texts.healthValue:SetFont(Setup.texts.config.font, value, Setup.texts.config.outline)
+    end
+
+    callbacks.manaSize = function(value)
+        Setup.texts.config.manaFontSize = value
+        Setup.texts.manaPercent:SetFont(Setup.texts.config.font, value, Setup.texts.config.outline)
+        Setup.texts.manaValue:SetFont(Setup.texts.config.font, value, Setup.texts.config.outline)
+    end
+
+    callbacks.frameFont = function(value)
+        local fontPath
+        if value == "Expressway" then
+            fontPath = Setup.fontpath .. "Expressway.ttf"
+        elseif value == "Homespun" then
+            fontPath = Setup.fontpath .. "Homespun.ttf"
+        elseif value == "Hooge" then
+            fontPath = Setup.fontpath .. "Hooge.ttf"
+        elseif value == "Myriad-Pro" then
+            fontPath = Setup.fontpath .. "Myriad-Pro.ttf"
+        elseif value == "Prototype" then
+            fontPath = Setup.fontpath .. "Prototype.ttf"
+        elseif value == "PT-Sans-Narrow-Bold" then
+            fontPath = Setup.fontpath .. "PT-Sans-Narrow-Bold.ttf"
+        elseif value == "PT-Sans-Narrow-Regular" then
+            fontPath = Setup.fontpath .. "PT-Sans-Narrow-Regular.ttf"
+        elseif value == "RobotoMono" then
+            fontPath = Setup.fontpath .. "RobotoMono.ttf"
+        elseif value == "BigNoodleTitling" then
+            fontPath = Setup.fontpath .. "BigNoodleTitling.ttf"
+        elseif value == "Continuum" then
+            fontPath = Setup.fontpath .. "Continuum.ttf"
+        elseif value == "DieDieDie" then
+            fontPath = Setup.fontpath .. "DieDieDie.ttf"
+        else
+            fontPath = "Fonts\\FRIZQT__.TTF"
+        end
+
+        Setup.texts.config.font = fontPath
+        Setup.texts.healthPercent:SetFont(fontPath, Setup.texts.config.healthFontSize, "OUTLINE")
+        Setup.texts.healthValue:SetFont(fontPath, Setup.texts.config.healthFontSize, "OUTLINE")
+        Setup.texts.manaPercent:SetFont(fontPath, Setup.texts.config.manaFontSize, "OUTLINE")
+        Setup.texts.manaValue:SetFont(fontPath, Setup.texts.config.manaFontSize, "OUTLINE")
+        Setup:NameText()
+        Setup:LevelText()
     end
 
     callbacks.colorReaction = function(value)
-        targetState.colorReaction = value
-        targetState:updateColor()
+        Setup.barColorState.colorReaction = value
+        Setup:UpdateBarColor()
     end
 
     callbacks.colorClass = function(value)
-        targetState.colorClass = value
-        targetState:updateColor()
+        Setup.barColorState.colorClass = value
+        Setup:UpdateBarColor()
     end
 
-    callbacks.lowHpColor = function(value)
-        targetState.lowHpColor = value
-        targetState:updateColor()
+    callbacks.frameScale = function(value)
+        TargetFrame:SetScale(value)
     end
 
-    -- hook health bar value change
-    HookScript(_G["TargetFrameHealthBar"], "OnValueChanged", function()
-        targetState:updateColor()
-    end)
+    -- hook health bar value change (no need anymore
+    -- but ill still keep it here for future use)
+    -- HookScript(_G["TargetFrameHealthBar"], "OnValueChanged", function()
+    --     -- targetState:updateColor()
+    -- end)
 
     -- event handler
     local f = CreateFrame("Frame")
@@ -301,22 +437,17 @@ DFRL:RegisterModule("targetframe", 1, function()
     f:RegisterEvent("UNIT_FOCUS")
     f:SetScript("OnEvent", function()
         if event == "PLAYER_TARGET_CHANGED" or event == "PLAYER_ENTERING_WORLD" then
-            TargetFrameTexture:SetTexture(texpath.. "UI-TargetingFrameDF1.blp")
-            TargetFrameHealthBar:SetStatusBarTexture(texpath.. "healthDF2.tga")
-            TargetFrameManaBar:SetStatusBarTexture(texpath.. "UI-HUD-UnitFrame-Target-PortraitOn-Bar-Mana-Status.blp")
-            TargetFrameBackground:SetTexture(texpath.. "UI-TargetingFrameDF1-Background.blp")
-            TargetFrameNameBackground:SetTexture(nil)
-
-            _G.TargetFrame_CheckClassification()
-            UpdateTexts()
-            targetState:updateColor()
+            Setup:CheckTargetTapped()
+            Setup:UpdateTexts()
+            Setup:UpdateBarColor()
         elseif (event == "UNIT_HEALTH" and arg1 == "target") or
             (event == "UNIT_MANA" and arg1 == "target") or
             (event == "UNIT_ENERGY" and arg1 == "target") or
             (event == "UNIT_RAGE" and arg1 == "target") or
             (event == "UNIT_FOCUS" and arg1 == "target") then
-            UpdateTexts()
-            targetState:updateColor()
+            Setup:CheckTargetTapped()
+            Setup:UpdateTexts()
+            Setup:UpdateBarColor()
         end
     end)
 
