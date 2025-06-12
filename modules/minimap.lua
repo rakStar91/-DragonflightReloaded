@@ -736,6 +736,13 @@ DFRL:RegisterModule("minimap", 2, function()
         local zoomOutDisabled = MinimapZoomOut:GetDisabledTexture()
         zoomInDisabled:SetVertexColor(color[1], color[2], color[3])
         zoomOutDisabled:SetVertexColor(color[1], color[2], color[3])
+
+        if DFRL.PWBtoggleButton then
+            local pwbNormalTex = DFRL.PWBtoggleButton:GetNormalTexture()
+            local pwbHighlightTex = DFRL.PWBtoggleButton:GetHighlightTexture()
+            if pwbNormalTex then pwbNormalTex:SetVertexColor(color[1], color[2], color[3]) end
+            if pwbHighlightTex then pwbHighlightTex:SetVertexColor(color[1], color[2], color[3]) end
+        end
     end
 
     callbacks.mapSize = function(value)
