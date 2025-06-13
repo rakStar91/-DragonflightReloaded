@@ -6,8 +6,9 @@ DFRL:SetDefaults("minimap", {
     darkMode = {0, 1, "slider", {0, 1}, "appearance", "Adjust dark mode intensity"},
 
     mapSquare      = {false,  4, "checkbox",                      "map basic",    "Show the Minimap Square design"},
-    mapSize        = {180,    5, "slider",   {140, 350},          "map basic",    "Adjusts the overall size of the minimap"},
-    mapAlpha       = {1,      6, "slider",   {0.1, 1},            "map basic",    "Adjusts transparency of the entire minimap"},
+    showSunMoon    = {false,  5, "checkbox",                      "map basic",    "Show Blzzards sun/moon indicator"},
+    mapSize        = {180,    6, "slider",   {140, 350},          "map basic",    "Adjusts the overall size of the minimap"},
+    mapAlpha       = {1,      7, "slider",   {0.1, 1},            "map basic",    "Adjusts transparency of the entire minimap"},
 
     showShadow     = {true,   2, "checkbox",                      "map shadow",    "Show or hide the shadow inside the minimap"},
     alphaShadow    = {0.3,    7, "slider",   {0.1, 1},            "map shadow",    "Adjusts transparency of the minimap shadow"},
@@ -67,8 +68,10 @@ DFRL:RegisterModule("minimap", 2, function()
         MinimapBorder:Hide()
         MinimapBorderTop:Hide()
         MinimapToggleButton:Hide()
-        GameTimeFrame:Hide()
 
+        GameTimeFrame:SetScale(0.8)
+        GameTimeFrame:ClearAllPoints()
+        GameTimeFrame:SetPoint("BOTTOMLEFT", Minimap, "TOPRIGHT", -10, -30)
         KillFrame(MinimapShopFrame)
     end
 
@@ -885,6 +888,14 @@ DFRL:RegisterModule("minimap", 2, function()
     --         end
     --     end
     -- end
+
+    callbacks.showSunMoon = function(value)
+        if value then
+            GameTimeFrame:Show()
+        else
+            GameTimeFrame:Hide()
+        end
+    end
 
     -- execute callbacks
     DFRL:RegisterCallback("minimap", callbacks)

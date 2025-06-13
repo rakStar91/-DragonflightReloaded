@@ -232,10 +232,8 @@ DFRL:RegisterModule("gui", 2, function()
                 local isHidden = true
                 if tempDB and tempDB[moduleName] then
                     if tempDB[moduleName].hidden ~= nil then
-                        -- Direct value
                         isHidden = tempDB[moduleName].hidden
                     elseif tempDB[moduleName].hidden and tempDB[moduleName].hidden[1] ~= nil then
-                        -- Array format
                         isHidden = tempDB[moduleName].hidden[1]
                     end
                 end
@@ -350,7 +348,6 @@ DFRL:RegisterModule("gui", 2, function()
 
                 local diff = targetScrollValue - currentScrollValue
                 if diff > -0.5 and diff < 0.5 then
-                    -- close enough, snap to target and stop
                     currentScrollValue = targetScrollValue
                     scrollFrame:SetVerticalScroll(currentScrollValue)
                     lastKnownScrollValue = currentScrollValue
@@ -519,6 +516,7 @@ DFRL:RegisterModule("gui", 2, function()
                     configData = defaults[moduleName]
                 end
 
+                -- the workhorse
                 if configData then
                     d:DebugPrint("Generating config UI for: " .. moduleName)
 
@@ -603,20 +601,20 @@ DFRL:RegisterModule("gui", 2, function()
                             startY = -10,
 
                             -- element spacing
-                            elementSpacing = 50,        -- Space between individual elements
-                            categorySpacing = 50,       -- Space after category headers
-                            categoryEndSpacing = 10,    -- Extra space after each category section
+                            elementSpacing = 50,
+                            categorySpacing = 50,
+                            categoryEndSpacing = 10,
 
                             -- indentation
-                            leftMargin = 15,            -- Base left margin
-                            elementIndent = 5,         -- Additional indent for elements under categories
+                            leftMargin = 15,
+                            elementIndent = 5,
 
                             -- label and element positioning
-                            labelWidth = 450,           -- Width reserved for labels
-                            elementOffset = 520,        -- X offset for elements (labelWidth + gap)
+                            labelWidth = 450,
+                            elementOffset = 520,
 
                             -- scroll child padding
-                            bottomPadding = 50          -- Extra space at bottom of scroll area
+                            bottomPadding = 50
                         }
 
                         -- initialize

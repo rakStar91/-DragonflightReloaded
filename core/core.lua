@@ -18,12 +18,11 @@ do
         end
         seterrorhandler(ErrorHandler)
     end
+    d:DebugPrint("BOOTING")
 end
 
 -- mainframe
 DFRL = CreateFrame("Frame", nil, UIParent)
-
-d:DebugPrint("BOOTING")
 
 -- blizz locals
 local type = type
@@ -366,7 +365,6 @@ DFRL:SetScript("OnEvent", function()
         print("Open menu via |cffddddddESC|r or |cffddddddSLASH DFRL|r.")
     end
 
-    -- In your event handler
     if event == "PLAYER_ENTERING_WORLD" then
         DFRL:LoadDelayedModules()
         d:DebugPrint("EVENT: PLAYER_ENTERING_WORLD")
