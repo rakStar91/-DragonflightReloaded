@@ -367,8 +367,10 @@ DFRL:RegisterModule("actionbars", 2, function()
             for i = 1, 12 do
                 if bonusBarActive then
                     _G["ActionButton"..i]:SetAlpha(0)
+                    _G["ActionButton"..i]:EnableMouse(false)
                 else
                     _G["ActionButton"..i]:SetAlpha(1)
+                    _G["ActionButton"..i]:EnableMouse(true)
                 end
             end
         end)
