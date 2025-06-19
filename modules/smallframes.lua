@@ -443,11 +443,7 @@ DFRL:RegisterModule("smallframes", 2, function()
         end)
 
         hooksecurefunc("TargetofTarget_Update", function()
-            local updateTimer = CreateFrame("Frame")
-            updateTimer:SetScript("OnUpdate", function()
-                Setup.framesState:updateToTColor()
-                updateTimer:SetScript("OnUpdate", nil)
-            end)
+            Setup.framesState:updateToTColor()
         end)
     end
 
