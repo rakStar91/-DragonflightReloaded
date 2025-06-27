@@ -304,6 +304,8 @@ DFRL:NewMod("Gui-base", 2, function()
 
                 self.tabButtons[i] = tab
             end
+            self.tabButtons[13]:Disable()
+            self.tabButtons[13]:GetFontString():SetTextColor(.4, .4, .4, 1)
             self.tabsCreated = true
         end
     end
