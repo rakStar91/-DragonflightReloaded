@@ -1,4 +1,4 @@
-# Dragonflight: Reloaded
+# Dragonflight: Reloaded 2
 ![Logo](https://i.ibb.co/V0FDH29h/logo.png)
 
 A modern UI replacement for World of Warcraft Classic (1.12) inspired by the Dragonflight UI.
