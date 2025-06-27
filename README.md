@@ -34,7 +34,7 @@ A modern UI replacement for World of Warcraft Classic (1.12) inspired by the Dra
 2. Extract the ZIP file
 3. Remove the "-main" from the "-DragonflightReloaded-main" folder
 4. Place the "-DragonflightReloaded" folder into your WoW directory: `Interface\AddOns\`
-5. Place the content from "-DragonflightReloaded\1.EXTRAS" into `Interface\AddOns\`
+5. Place the content from "-DragonflightReloaded\1.EXTRAS" directly into `Interface\`
 6. Restart World of Warcraft
 
 ## Usage
