@@ -1,4 +1,3 @@
-
 DFRL:NewDefaults("Cast", {
     enabled = {true},
 
@@ -628,7 +627,7 @@ DFRL:NewMod("Cast", 1, function()
         elseif value == "DieDieDie" then
             fontPath = "Interface\\AddOns\\-DragonflightReloaded\\media\\fnt\\DieDieDie.ttf"
         else
-            fontPath = Setup.config.font
+            fontPath = "Fonts\\FRIZQT__.TTF"
         end
         Setup.config.font = fontPath
         Setup.text:SetFont(fontPath, DFRL:GetTempDB("Cast", "fontSize"), "OUTLINE")
