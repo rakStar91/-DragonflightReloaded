@@ -11,7 +11,7 @@ DFRL:NewDefaults("Ui", {
 
 })
 
-DFRL:NewMod("Ui", 1, function()
+DFRL:NewMod("Ui", 5, function()
     debugprint("BOOTING")
 
     -- locals
