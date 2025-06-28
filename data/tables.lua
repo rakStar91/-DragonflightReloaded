@@ -113,13 +113,13 @@ local darkMode = {
     },
     ["Ui"] = {
         ["enabled"] = true,
-        ["questLog"] = false,
+        ["questLog"] = true,
         ["lowHpThreshold"] = 70,
-        ["gameMenu"] = false,
+        ["gameMenu"] = true,
         ["hideErrorMessage"] = false,
         ["cameraDistanceFactor"] = 3,
         ["lowHpWarn"] = true,
-        ["characterPanel"] = false,
+        ["characterPanel"] = true,
     },
     ["Gui-shag"] = {
         ["enabled"] = true,
