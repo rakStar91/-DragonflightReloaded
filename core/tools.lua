@@ -240,10 +240,8 @@ function DFRL.tools.CreateButton(parent, text, width, height, noBackdrop, textCo
         btnTxt:SetTextColor(1, 1, 1)
     end
 
-    -- Store text object reference directly on the button
     btn.text = btnTxt
 
-    -- Override Enable/Disable to handle text color
     local origEnable = btn.Enable
     local origDisable = btn.Disable
 
@@ -286,7 +284,6 @@ function DFRL.tools.CreateEditBox(parent, width, height, letters, numbers, max)
     box:SetAutoFocus(false)
     box:SetMaxLetters(max or 33)
 
-    -- Create a fullscreen invisible frame to catch clicks outside
     box.clickCatcher = CreateFrame("Frame", nil, UIParent)
     box.clickCatcher:SetFrameStrata("TOOLTIP")
     box.clickCatcher:SetAllPoints(UIParent)
@@ -332,8 +329,6 @@ function DFRL.tools.CreateEditBox(parent, width, height, letters, numbers, max)
         end)
     end
 
-    -- DFRL.tools.GradientLine(box, "TOP", 1, 1)
-    -- DFRL.tools.GradientLine(box, "BOTTOM", -1, 1)
     return box
 end
 
@@ -353,7 +348,6 @@ function DFRL.tools.CreateCategoryHeader(parent, categoryName, noBG, width, heig
         categoryBg:SetBackdropBorderColor(0.1, 0.1, 0.1, 0.5)
     end
 
-    -- title
     local categoryTitle = categoryBg:CreateFontString(nil, "OVERLAY")
     categoryTitle:SetFont(DFRL:GetInfoOrCons("font") .. "BigNoodleTitling.ttf", txtSize or 14, "OUTLINE")
     categoryTitle:SetPoint("CENTER", categoryBg, "CENTER", 0, 1)
@@ -403,7 +397,6 @@ function DFRL.tools.CreateShaguCheckbox(parent, name, key)
     checkbox:SetWidth(20)
     checkbox:SetHeight(20)
 
-    -- label
     local label = checkbox:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     label:SetFont(DFRL:GetInfoOrCons("font") .. "BigNoodleTitling.ttf", 14, "OUTLINE")
     label:SetPoint("LEFT", checkbox, "RIGHT", 5, 0)
@@ -411,12 +404,10 @@ function DFRL.tools.CreateShaguCheckbox(parent, name, key)
     label:SetTextColor(.9,.9,.9)
     checkbox.label = label
 
-    -- get initial state from ShaguTweaks_config
     local initial = (ShaguTweaks_config and ShaguTweaks_config[key] == 1)
     checkbox:SetChecked(initial)
     debugprint("Initial state for "..key..": "..tostring(initial))
 
-    -- set handler for ShaguTweaks
     checkbox:SetScript("OnClick", function()
         local checked = checkbox:GetChecked() and true or false
         debugprint(key.." clicked, checked="..tostring(checked))
@@ -456,10 +447,8 @@ function DFRL.tools.CreateSlider(parent, name, moduleName, key, minVal, maxVal, 
         insets = { left = 3, right = 3, top = 6, bottom = 6 }
     })
 
-    -- range
     slider:SetMinMaxValues(minVal or 0, maxVal or 5)
 
-    -- label
     local label = slider:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     label:SetPoint("BOTTOMLEFT", slider, "TOPLEFT", 0, -0)
     local displayTxt = string.gsub(key, "(%l)(%u)", "%1 %2")
@@ -469,23 +458,19 @@ function DFRL.tools.CreateSlider(parent, name, moduleName, key, minVal, maxVal, 
     label:SetTextColor(.9,.9,.9)
     slider.label = label
 
-    -- value display
     local valueText = slider:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     valueText:SetPoint("LEFT", slider, "RIGHT", 1, -0)
     valueText:SetTextColor(1, 1, 1)
     valueText:SetFont(DFRL:GetInfoOrCons("font") .. "BigNoodleTitling.ttf", 12, "OUTLINE")
     slider.valueText = valueText
 
-    -- expose module and key for handler
     slider.moduleName = moduleName
     slider.configKey = key
 
-    -- get initial state
     local currentValue = DFRL:GetTempDB(moduleName, key)
     slider:SetValue(currentValue)
     valueText:SetText(string.format("%.1f", currentValue))
 
-    -- set handler
     slider:SetScript("OnValueChanged", function()
         local newValue = this:GetValue()
         local roundedValue = math.floor(newValue * 10 + 0.5) / 10
@@ -574,11 +559,9 @@ function DFRL.tools.CreateColour(parent, name, moduleName, key)
         insets = { left = 3, right = 3, top = 6, bottom = 6 }
     })
 
-    -- range for color index
     slider:SetMinMaxValues(1, COLOR_COUNT)
     slider:SetValueStep(1)
 
-    -- label
     local label = slider:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     label:SetPoint("BOTTOMLEFT", slider, "TOPLEFT", 0, -0)
     local displayText = string.gsub(key, "(%l)(%u)", "%1 %2")
@@ -588,25 +571,21 @@ function DFRL.tools.CreateColour(parent, name, moduleName, key)
     label:SetTextColor(.9,.9,.9)
     slider.label = label
 
-    -- value display
     local valueText = slider:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     valueText:SetPoint("LEFT", slider, "RIGHT", 1, -0)
     valueText:SetTextColor(1, 1, 1)
     valueText:SetFont("Fonts\\FRIZQT__.TTF", 10, "")
     slider.valueText = valueText
 
-    -- expose module and key for handler
     slider.moduleName = moduleName
     slider.configKey = key
 
-    -- color swatch
     local colorSwatch = parent:CreateTexture(nil, "ARTWORK")
     colorSwatch:SetWidth(20)
     colorSwatch:SetHeight(20)
     colorSwatch:SetPoint("LEFT", valueText, "RIGHT", 5, 0)
     colorSwatch:SetTexture("Interface\\ChatFrame\\ChatFrameColorSwatch")
 
-    -- find closest color index for current value
     local currentValue = DFRL:GetTempDB(moduleName, key)
     local initialIndex = 1
 

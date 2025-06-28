@@ -2,7 +2,7 @@ DFRL:NewDefaults("GUI-Dragonflight", {
     enabled = {true},
 
     smallerFrame = {false, "checkbox", nil, nil, "Home Screen", 1, "Changes the scale of the mainframe", nil, nil},
-    sideView = {.4, "slider", {.1, .8}, nil, "Home Screen", 2, "Changes the alpha of the side view", "", nil},
+    sideView = {.1, "slider", {.1, .8}, nil, "Home Screen", 2, "Changes the alpha of the side view", "", nil},
     homeMinMaxColor = {{1, .82, 0}, "colour", nil, nil, "Home Screen", 3, "Changes the color of the close and min button", nil, nil},
     homeTimeColor = {{1, .82, 0}, "colour", nil, nil, "Home Screen", 4, "Changes the color of the time on the home screen", nil, nil},
     noDonation = {false, "checkbox", nil, nil, "Home Screen", 5, "Do not show the donation button", "Re-Enabling requires reload due to animation", nil},

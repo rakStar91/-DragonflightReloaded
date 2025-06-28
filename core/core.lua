@@ -12,41 +12,50 @@
 --    preserving character-to-profile mapping
 --=========================================================================
 
+--=================
+-- DFRL MAINFRAME
+--=================
 DFRL = CreateFrame("Frame", nil, UIParent)
-
--- boot flag
-local boot = false
-local function debugprint() end
-debugprint(">> BOOTING")
 
 --=================
 -- TABLES
 --=================
+-- global
 DFRL_PROFILES = {}
 DFRL_DB_SETUP = {}
 
+-- character
 DFRL_CUR_PROFILE = {}
 DFRL_FRAMEPOS = {}
 
+-- internal
 DFRL.env = {}
 DFRL.tools = {}
 DFRL.hooks = {}
 DFRL.tempDB = {}
 DFRL.modules = {}
 DFRL.defaults = {}
+DFRL.profiles = {}
 DFRL.callbacks = {}
 DFRL.performance = {}
 DFRL.activeScripts = {}
 DFRL.gui = {}
 
--- db version
+-- DB VERSION
 DFRL.DBversion = "1.0"
 
 --=================
--- BLIZZ
+-- LOCALS
 --=================
 local gcinfo = gcinfo
 local GetTime = GetTime
+
+-- boot flag
+local boot = false
+
+-- stub
+local function debugprint() end
+debugprint(">> BOOTING")
 
 --=================
 -- UTILITY

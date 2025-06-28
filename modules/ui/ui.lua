@@ -457,7 +457,6 @@ DFRL:NewMod("Ui", 1, function()
             top:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, 0)
             top:SetPoint("TOPRIGHT", frame, "TOPRIGHT", 0, 0)
             top:SetHeight(64)
-            ---@diagnostic disable-next-line: undefined-field
             top:SetGradientAlpha("VERTICAL", 1, 0, 0, 0, 1, 0, 0, 0.7)
 
             local bottom = frame:CreateTexture(nil, "BACKGROUND")
@@ -465,7 +464,6 @@ DFRL:NewMod("Ui", 1, function()
             bottom:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 0, 0)
             bottom:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 0, 0)
             bottom:SetHeight(64)
-            ---@diagnostic disable-next-line: undefined-field
             bottom:SetGradientAlpha("VERTICAL", 1, 0, 0, 0.7, 1, 0, 0, 0)
 
             local left = frame:CreateTexture(nil, "BACKGROUND")
@@ -473,7 +471,6 @@ DFRL:NewMod("Ui", 1, function()
             left:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, 0)
             left:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 0, 0)
             left:SetWidth(64)
-            ---@diagnostic disable-next-line: undefined-field
             left:SetGradientAlpha("HORIZONTAL", 1, 0, 0, 0.7, 1, 0, 0, 0)
 
             local right = frame:CreateTexture(nil, "BACKGROUND")
@@ -481,7 +478,6 @@ DFRL:NewMod("Ui", 1, function()
             right:SetPoint("TOPRIGHT", frame, "TOPRIGHT", 0, 0)
             right:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 0, 0)
             right:SetWidth(64)
-            ---@diagnostic disable-next-line: undefined-field
             right:SetGradientAlpha("HORIZONTAL", 1, 0, 0, 0, 1, 0, 0, 0.7)
 
             -- store
@@ -526,16 +522,12 @@ DFRL:NewMod("Ui", 1, function()
                     for i = 1, 4 do
                         local texture = DFRL.lowHpWarnFrame.textures[i]
                         if i == 1 then -- top
-                            ---@diagnostic disable-next-line: undefined-field
                             texture:SetGradientAlpha("VERTICAL", 1, 0, 0, 0, 1, 0, 0, 0.7 * finalAlpha)
                         elseif i == 2 then -- bottom
-                            ---@diagnostic disable-next-line: undefined-field
                             texture:SetGradientAlpha("VERTICAL", 1, 0, 0, 0.7 * finalAlpha, 1, 0, 0, 0)
                         elseif i == 3 then -- left
-                            ---@diagnostic disable-next-line: undefined-field
                             texture:SetGradientAlpha("HORIZONTAL", 1, 0, 0, 0.7 * finalAlpha, 1, 0, 0, 0)
                         else -- right
-                            ---@diagnostic disable-next-line: undefined-field
                             texture:SetGradientAlpha("HORIZONTAL", 1, 0, 0, 0, 1, 0, 0, 0.7 * finalAlpha)
                         end
                     end

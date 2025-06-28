@@ -8,7 +8,7 @@ DFRL:NewDefaults("Bars", {
     mainBarScale = {1, "slider", {0.5, 2}, nil, "mainbar", 3, "Adjusts the scale of the main action bar", nil, nil},
     mainBarSpacing = {6, "slider", {0, 20}, nil, "mainbar", 4, "Adjusts spacing between main action bar buttons", nil, nil},
     mainBarAlpha = {1, "slider", {0.1, 1}, nil, "mainbar", 5, "Adjusts transparency of main action bar", nil, nil},
-    highlightColor = {{1, 0.82, 0}, "colour", nil, "mainBarBG", "mainbar", 6, "Changes the colour of action button highlights", nil, nil},
+    highlightColor = {{1, 0.82, 0}, "colour", nil, nil, "mainbar", 6, "Changes the colour of action button highlights", nil, nil},
 
     multiBarOneShow = {false, "checkbox", nil, nil, "multibar 1", 7, "Show or hide bottom left action bar", nil, nil},
     multiBarOneScale = {1, "slider", {0.2, 2}, nil, "multibar 1", 8, "Adjusts scale of bottom left action bar", nil, nil},
@@ -37,8 +37,8 @@ DFRL:NewDefaults("Bars", {
     altGryphoon = {false, "checkbox", nil, nil, "mainbar deco", 28, "Use the alternative gryphon/wyvern textures", nil, nil},
     flipGryphoon = {false, "checkbox", nil, nil, "mainbar deco", 29, "Flip the gryphon/wyvern textures", nil, nil},
     gryphoonScale = {1, "slider", {0.2, 2}, nil, "mainbar deco", 30, "Adjusts the size of the gryphon/wyvern decorations", nil, nil},
-    gryphoonX = {-48, "slider", {-200, 200}, nil, "mainbar deco", 31, "Adjusts horizontal position of gryphon/wyvern decorations", nil, nil},
-    gryphoonY = {10, "slider", {-200, 200}, nil, "mainbar deco", 32, "Adjusts vertical position of gryphon/wyvern decorations", nil, nil},
+    gryphoonX = {-48, "slider", {-200, 200, 3}, nil, "mainbar deco", 31, "Adjusts horizontal position of gryphon/wyvern decorations", nil, nil},
+    gryphoonY = {10, "slider", {-200, 200, 3}, nil, "mainbar deco", 32, "Adjusts vertical position of gryphon/wyvern decorations", nil, nil},
 
     pagingShow = {true, "checkbox", nil, nil, "mainbar paging", 33, "Show or hide the action bar paging buttons", nil, nil},
     pagingSwap = {true, "checkbox", nil, nil, "mainbar paging", 34, "Swap the anchorpoint of the paging buttons", nil, nil},
@@ -88,7 +88,9 @@ DFRL:NewMod("Bars", 1, function()
     f:SetScript("OnEvent", function()
         f:UnregisterEvent("PLAYER_ENTERING_WORLD")
 
-        -- setup
+        --=================
+        -- SETUP
+        --=================
         local Setup = {
             texpath = "Interface\\AddOns\\-DragonflightReloaded\\media\\tex\\actionbars\\",
             fontpath = "Interface\\AddOns\\-DragonflightReloaded\\media\\fnt\\",
@@ -643,10 +645,14 @@ DFRL:NewMod("Bars", 1, function()
             self:RangeIndicator()
         end
 
-        -- init setup
+        --=================
+        -- INIT
+        --=================
         Setup:Run()
 
-        -- expose
+        --=================
+        -- EXPOSE
+        --=================
         DFRL.mainBar = Setup.mainBar
         DFRL.actionBarFrame = Setup.actionBarFrame
         DFRL.newPetBar = Setup.newPetBar
@@ -655,7 +661,9 @@ DFRL:NewMod("Bars", 1, function()
         DFRL.actionBarBGleft = Setup.actionBarBGleft
         DFRL.actionBarBGright = Setup.actionBarBGright
 
-        -- callbacks
+        --=================
+        -- CALLBACKS
+        --=================
         local callbacks = {}
 
         callbacks.multiBarOneScale = function(value)

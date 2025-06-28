@@ -128,7 +128,6 @@ DFRL:NewMod("Player", 1, function()
         PlayerFrameManaBar:SetWidth(130)
         PlayerFrameManaBar:SetHeight(12)
         PlayerFrameManaBar:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 98, -53)
-        -- redFrame(PlayerFrameManaBar)
     end
 
     function Setup:ManaBarText()
@@ -285,7 +284,6 @@ DFRL:NewMod("Player", 1, function()
 
         local function CreateCutoutEffect(statusBar, barType, unit)
             -- debugprint("Creating cutout effect - BarType: " .. barType .. ", Unit: " .. (unit or "unknown"))
-
             local cutoutFrame = CreateFrame("Frame", nil, statusBar)
             cutoutFrame:SetFrameLevel(statusBar:GetFrameLevel() + 1)
             cutoutFrame:SetAllPoints(statusBar)
@@ -628,8 +626,6 @@ DFRL:NewMod("Player", 1, function()
     end
 
     callbacks.classColor = function(value)
-        -- if DFRL:GetTempDB("Player", "lowHpColor") then return end
-
         if value then
             local _, class = UnitClass("player")
             if class and RAID_CLASS_COLORS[class] then
@@ -814,8 +810,6 @@ DFRL:NewMod("Player", 1, function()
                     pulseTime = pulseTime - pulseDuration
                 end
                 local progress = pulseTime / pulseDuration
-
-                -- sine wave
                 local alpha = Setup.combatGlow.alphaMin + (Setup.combatGlow.alphaMax - Setup.combatGlow.alphaMin) * (0.5 + 0.5 * math.sin(progress * 2 * math.pi))
                 Setup.combatOverlayTex:SetAlpha(alpha)
             end)
@@ -873,7 +867,6 @@ DFRL:NewMod("Player", 1, function()
                 end
                 local progress = pulseTime / pulseDuration
 
-                -- sine wave
                 local alpha = Setup.restingGlow.alphaMin + (Setup.restingGlow.alphaMax - Setup.restingGlow.alphaMin) * (0.5 + 0.5 * math.sin(progress * 2 * math.pi))
                 Setup.restingOverlayTex:SetAlpha(alpha)
             end)

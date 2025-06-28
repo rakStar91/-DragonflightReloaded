@@ -111,7 +111,6 @@ DFRL:NewMod("Xprep", 1, function()
             local playerLevel = UnitLevel("player")
             local restXP = GetXPExhaustion()
 
-            -- hide XP at max lvl
             if playerLevel == 60 then
                 self.xpBar:Hide()
             else
@@ -124,20 +123,16 @@ DFRL:NewMod("Xprep", 1, function()
 
             debugprint("Rested XP: " .. tostring(restXP))
 
-            -- color
             if restXP and restXP > 0 then
-                -- blue
                 self.xpBar:SetStatusBarColor(0.2, 0.5, 0.9)
 
 
                 debugprint("Setting XP bar to blue (rested)")
             else
-                -- purple
                 self.xpBar:SetStatusBarColor(0.7, 0.2, 0.7)
                 debugprint("Setting XP bar to purple (normal)")
             end
 
-            -- update the text when XP changes
             if self.xpBarText then
                 local restPercent = 0
                 if restXP and maxXP > 0 then
@@ -210,7 +205,6 @@ DFRL:NewMod("Xprep", 1, function()
                     self.repBar:SetStatusBarColor(0, 0.8, 0.5)
                 end
 
-                -- update text if it exists and should be shown
                 if self.repBarText and self.repShowText then
                     local standingText = getglobal("FACTION_STANDING_LABEL"..standing)
                     self.repBarText:SetText(name .. " - " .. standingText .. " - " .. (value-min) .. "/" .. (max-min))
@@ -410,7 +404,6 @@ DFRL:NewMod("Xprep", 1, function()
                         restPercent = math.floor((restXP / maxXP) * 100)
                     end
                     Setup.xpBarText:SetText(currXP .. " / " .. maxXP .. " (" .. restPercent .. "% rested)")
-                    -- Only show if hoverXP is not enabled
                     if not DFRL:GetTempDB("Xprep", "hoverXP") then
                         Setup.xpBarText:Show()
                     else
@@ -442,7 +435,6 @@ DFRL:NewMod("Xprep", 1, function()
                 Setup.repBarText:Hide()
             end
 
-            -- store the setting for use in UpdateRepBar
             Setup.repShowText = value
 
             if Setup.repBarText then
@@ -575,7 +567,6 @@ DFRL:NewMod("Xprep", 1, function()
         -- EVENT
         --=================
         local f = CreateFrame("Frame")
-        -- f:RegisterEvent("PLAYER_ENTERING_WORLD")
         f:RegisterEvent("PLAYER_XP_UPDATE")
         f:RegisterEvent("PLAYER_LEVEL_UP")
         f:RegisterEvent("UPDATE_FACTION")

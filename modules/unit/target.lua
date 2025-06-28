@@ -8,7 +8,7 @@ DFRL:NewDefaults("Target", {
     textColoring = {false, "checkbox", nil, nil, "target text settings", 4, "Color text based on health/mana percentage", nil, nil},
     healthSize = {15, "slider", {8, 20}, nil, "target text settings", 5, "Health text font size", nil, nil},
     manaSize = {9, "slider", {8, 20}, nil, "target text settings", 6, "Mana text font size", nil, nil},
-    frameFont = {"Myriad-Pro", "dropdown", {
+    frameFont = {"BigNoodleTitling", "dropdown", {
         "FRIZQT__.TTF",
         "Expressway",
         "Homespun",
@@ -104,16 +104,14 @@ DFRL:NewMod("Target", 1, function()
         self.texts.healthValue:SetFont(cfg.font, cfg.healthFontSize, cfg.outline)
         self.texts.healthValue:SetPoint("RIGHT", TargetFrameHealthBar, "RIGHT", -5, 0)
 
-        -- Turtle-WoW <Status Bar Text> option fix
         if GetCVar("statusBarText") == "1" then
-                if TargetHPText then
-                    TargetHPText:Hide()
-                end
-                if TargetHPPercText then
-                    TargetHPPercText:Hide()
-                end
+            if TargetHPText then
+                TargetHPText:Hide()
+            end
+            if TargetHPPercText then
+                TargetHPPercText:Hide()
+            end
         end
-
     end
 
     function Setup:ManaBar()

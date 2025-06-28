@@ -29,7 +29,6 @@ DFRL:NewDefaults("Mini", {
 DFRL:NewMod("Mini", 1, function()
     debugprint("BOOTING")
 
-    -- Cache for config values to prevent repeated requests
     local configCache = {
         noPercent = nil,
         lastUpdate = 0
@@ -274,7 +273,6 @@ DFRL:NewMod("Mini", 1, function()
             local maxMana = UnitManaMax("pet")
             local manaPercent = maxMana > 0 and math.floor((mana / maxMana) * 100) or 0
 
-            -- Use cached value or update if needed
             local now = GetTime()
             if not configCache.noPercent or (now - configCache.lastUpdate > 1) then
                 configCache.noPercent = DFRL:GetTempDB("Mini", "noPercent")
@@ -315,12 +313,6 @@ DFRL:NewMod("Mini", 1, function()
             end
         end
     end
-
-    -- Cache for config values to prevent repeated requests
-    local configCache = {
-        noPercent = nil,
-        lastUpdate = 0
-    }
 
     function Setup:UpdateTargetOfTargetTexts()
         if not UnitExists("targettarget") then
@@ -647,7 +639,6 @@ DFRL:NewMod("Mini", 1, function()
 
         if event == "PLAYER_ENTERING_WORLD" or event == "PARTY_MEMBERS_CHANGED" or
             (event == "UNIT_HEALTH" and string.find(arg1, "party")) then
-            -- Use cached value or update if needed
             local now = GetTime()
             if not configCache.noPercent or (now - configCache.lastUpdate > 1) then
                 configCache.noPercent = DFRL:GetTempDB("Mini", "noPercent")
