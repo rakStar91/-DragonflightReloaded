@@ -52,4 +52,4 @@ A modern UI replacement for World of Warcraft Classic (1.12) inspired by the Dra
 ## Support
 
 - If you like Dragonflight:Reloaded and you want
-to support my work, send me a giftcard or paysafecard to: guzruul.live@gmail.com
+to support my work, you can send me a giftcard or paysafecard to: guzruul.live@gmail.com

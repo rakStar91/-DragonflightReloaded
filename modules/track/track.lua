@@ -21,6 +21,25 @@ DFRL:NewMod("UpdateTracker", 1, function()
         btn = nil,
     }
 
+    function Setup:ParseDate(dateStr)
+        debugprint("ParseDate - Input: " .. tostring(dateStr))
+        local slash1 = string.find(dateStr, "/")
+        local slash2 = string.find(dateStr, "/", slash1 + 1)
+        if slash1 and slash2 then
+            local day = tonumber(string.sub(dateStr, 1, slash1 - 1))
+            local month = tonumber(string.sub(dateStr, slash1 + 1, slash2 - 1))
+            local year = tonumber(string.sub(dateStr, slash2 + 1))
+            debugprint("ParseDate - Parsed: day=" .. tostring(day) .. ", month=" .. tostring(month) .. ", year=" .. tostring(year))
+            if day and month and year then
+                local timestamp = time({year = year, month = month, day = day})
+                debugprint("ParseDate - Timestamp: " .. tostring(timestamp))
+                return timestamp
+            end
+        end
+        debugprint("ParseDate - Failed to parse")
+        return nil
+    end
+
     function Setup:CheckVersionUpdate()
         debugprint(">> CheckVersionUpdate START")
         local stored = DFRL_DB_SETUP.lastVersionCheck
@@ -59,12 +78,17 @@ DFRL:NewMod("UpdateTracker", 1, function()
             local days = tonumber(setting) or self.updateDays
             debugprint("Days threshold: " .. tostring(days))
 
-            local today = date("%d/%m/%Y")
-            local overdue = stored.date ~= today
-            debugprint("Stored date: " .. stored.date .. ", Today: " .. today)
-            debugprint("Is overdue: " .. tostring(overdue))
-            debugprint("<< IsUpdateOverdue END")
-            return overdue
+            local storedTime = self:ParseDate(stored.date)
+            local todayTime = time()
+
+            if storedTime then
+                local daysDiff = math.floor((todayTime - storedTime) / 86400)
+                debugprint("Days elapsed: " .. tostring(daysDiff))
+                local overdue = daysDiff >= days
+                debugprint("Is overdue: " .. tostring(overdue))
+                debugprint("<< IsUpdateOverdue END")
+                return overdue
+            end
         end
         debugprint("Invalid/missing date - returning false")
         debugprint("<< IsUpdateOverdue END")
@@ -136,7 +160,6 @@ DFRL:NewMod("UpdateTracker", 1, function()
     debugprint("PLAYER_ENTERING_WORLD event registered")
     f:SetScript("OnEvent", function()
         debugprint(">> PLAYER_ENTERING_WORLD fired")
-        -- f:UnregisterEvent("PLAYER_ENTERING_WORLD")
         Setup:Run()
         local start = time()
         debugprint("Starting 3-second delay timer")
@@ -147,12 +170,12 @@ DFRL:NewMod("UpdateTracker", 1, function()
                 debugprint("Force showing notification for testing")
                 debugprint("Checking if update is overdue")
                 if Setup:IsUpdateOverdue() then
-                    local setting = DFRL:GetTempDB("UpdateTracker", "updateDays")
                     debugprint("Update is overdue - showing notification")
                     Setup:ShowNotification()
                 else
                     debugprint("Update not overdue - no notification needed")
                 end
+                f:UnregisterEvent("PLAYER_ENTERING_WORLD")
             end
         end)
     end)

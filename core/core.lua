@@ -2,12 +2,12 @@
 -- DRAGONFLIGHT: RELOADED DOCUMENTATION
 --=========================================================================
 ----> Workflow:
--- 1. ADDON_LOADED: VersionCheckDB() → detect character name →
---    get/create character's profile mapping → ensure profile exists →
---    load profile data into tempDB → apply missing defaults → RunMods()
--- 2. Runtime: SetTempDB() operations trigger callbacks,
---    modules execute in sandboxed environment with access to shortcuts
---    and track execution time, memory used, and active scripts
+-- 1. ADDON_LOADED: VersionCheckDB() checks/wipes DB versions → InitTempDB()
+--    detects character → creates/gets profile mapping → loads profile data
+--    into tempDB → applies missing defaults from NewDefaults() → RunMods()
+-- 2. Runtime: RegisterCallback() sets up listeners, SetTempDB() triggers
+--    TriggerCallback() for module reactions, modules execute in sandboxed
+--    environment with shortcuts and track exec time, mem used, and scripts
 -- 3. PLAYER_LOGOUT: SaveTempDB() writes tempDB back to character's profile,
 --    preserving character-to-profile mapping
 --=========================================================================
