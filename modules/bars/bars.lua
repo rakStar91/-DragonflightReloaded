@@ -10,25 +10,25 @@ DFRL:NewDefaults("Bars", {
     mainBarAlpha = {1, "slider", {0.1, 1}, nil, "mainbar", 5, "Adjusts transparency of main action bar", nil, nil},
     highlightColor = {{1, 0.82, 0}, "colour", nil, "mainBarBG", "mainbar", 6, "Changes the colour of action button highlights", nil, nil},
 
-    multiBarOneShow = {false, "checkbox", nil, nil, "multibar 1", 7, "Show or hide bottom left action bar", "BUG: REVERTS ON BLIZZARD INTERFACE OPEN - FIX SOON", nil},
+    multiBarOneShow = {false, "checkbox", nil, nil, "multibar 1", 7, "Show or hide bottom left action bar", nil, nil},
     multiBarOneScale = {1, "slider", {0.2, 2}, nil, "multibar 1", 8, "Adjusts scale of bottom left action bar", nil, nil},
     multiBarOneSpacing = {6, "slider", {0.1, 20}, nil, "multibar 1", 9, "Adjusts spacing between bottom left action bar buttons", nil, nil},
     multiBarOneAlpha = {1, "slider", {0.1, 1}, nil, "multibar 1", 10, "Adjusts transparency of bottom left action bar", nil, nil},
     multiBarOneGrid = {1, "slider", {1, 6}, nil, "multibar 1", 11, "Changes the grid layout of bottom left action bar", nil, nil},
 
-    multiBarTwoShow = {false, "checkbox", nil, nil, "multibar 2", 12, "Show or hide bottom right action bar", "BUG: REVERTS ON BLIZZARD INTERFACE OPEN - FIX SOON", nil},
+    multiBarTwoShow = {false, "checkbox", nil, nil, "multibar 2", 12, "Show or hide bottom right action bar", nil, nil},
     multiBarTwoScale = {1, "slider", {0.2, 2}, nil, "multibar 2", 13, "Adjusts scale of bottom right action bar", nil, nil},
     multiBarTwoSpacing = {6, "slider", {0.1, 20}, nil, "multibar 2", 14, "Adjusts spacing between bottom right action bar buttons", nil, nil},
     multiBarTwoAlpha = {1, "slider", {0.1, 1}, nil, "multibar 2", 15, "Adjusts transparency of bottom right action bar", nil, nil},
     multiBarTwoGrid = {1, "slider", {1, 6}, nil, "multibar 2", 16, "Changes the grid layout of bottom right action bar", nil, nil},
 
-    multiBarThreeShow = {false, "checkbox", nil, nil, "multibar 3", 17, "Show or hide left side action bar", "BUG: REVERTS ON BLIZZARD INTERFACE OPEN - FIX SOON", nil},
+    multiBarThreeShow = {false, "checkbox", nil, nil, "multibar 3", 17, "Show or hide left side action bar", nil, nil},
     multiBarThreeScale = {0.8, "slider", {0.2, 2}, nil, "multibar 3", 18, "Adjusts scale of left action bar", nil, nil},
     multiBarThreeSpacing = {6, "slider", {0.1, 20}, nil, "multibar 3", 19, "Adjusts spacing between left action bar buttons", nil, nil},
     multiBarThreeAlpha = {1, "slider", {0.1, 1}, nil, "multibar 3", 20, "Adjusts transparency of left action bar", nil, nil},
     multiBarThreeGrid = {6, "slider", {1, 6}, nil, "multibar 3", 21, "Changes the grid layout of left action bar", nil, nil},
 
-    multiBarFourShow = {true, "checkbox", nil, nil, "multibar 4", 22, "Show or hide right side action bar", "BUG: REVERTS ON BLIZZARD INTERFACE OPEN - FIX SOON", nil},
+    multiBarFourShow = {true, "checkbox", nil, nil, "multibar 4", 22, "Show or hide right side action bar", nil, nil},
     multiBarFourScale = {0.8, "slider", {0.2, 2}, nil, "multibar 4", 23, "Adjusts scale of right action bar", nil, nil},
     multiBarFourSpacing = {6, "slider", {0.1, 20}, nil, "multibar 4", 24, "Adjusts spacing between right action bar buttons", nil, nil},
     multiBarFourAlpha = {1, "slider", {0.1, 1}, nil, "multibar 4", 25, "Adjusts transparency of right action bar", nil, nil},
@@ -86,6 +86,8 @@ DFRL:NewMod("Bars", 1, function()
     local f = CreateFrame("Frame")
     f:RegisterEvent("PLAYER_ENTERING_WORLD")
     f:SetScript("OnEvent", function()
+        f:UnregisterEvent("PLAYER_ENTERING_WORLD")
+
         -- setup
         local Setup = {
             texpath = "Interface\\AddOns\\-DragonflightReloaded\\media\\tex\\actionbars\\",
@@ -1442,47 +1444,83 @@ DFRL:NewMod("Bars", 1, function()
         end
 
         callbacks.multiBarOneShow = function(value)
+            debugprint("[DEBUG] multiBarOneShow called with value: " .. tostring(value))
+            debugprint("[DEBUG] Current SHOW_MULTI_ACTIONBAR_1: " .. tostring(_G["SHOW_MULTI_ACTIONBAR_1"]))
+            debugprint("[DEBUG] MultiBarBottomLeft visibility before: " .. tostring(MultiBarBottomLeft:IsVisible()))
+
             if value then
+                debugprint("[DEBUG] Showing MultiBarBottomLeft")
                 MultiBarBottomLeft:Show()
                 _G["SHOW_MULTI_ACTIONBAR_1"] = 1
                 Setup:RepositionBars()
             else
+                debugprint("[DEBUG] Hiding MultiBarBottomLeft")
                 MultiBarBottomLeft:Hide()
                 _G["SHOW_MULTI_ACTIONBAR_1"] = nil
                 Setup:RepositionBars()
             end
+
+            debugprint("[DEBUG] MultiBarBottomLeft visibility after: " .. tostring(MultiBarBottomLeft:IsVisible()))
+            debugprint("[DEBUG] Final SHOW_MULTI_ACTIONBAR_1: " .. tostring(_G["SHOW_MULTI_ACTIONBAR_1"]))
         end
 
         callbacks.multiBarTwoShow = function(value)
+            debugprint("[DEBUG] multiBarTwoShow called with value: " .. tostring(value))
+            debugprint("[DEBUG] Current SHOW_MULTI_ACTIONBAR_2: " .. tostring(_G["SHOW_MULTI_ACTIONBAR_2"]))
+            debugprint("[DEBUG] MultiBarBottomRight visibility before: " .. tostring(MultiBarBottomRight:IsVisible()))
+
             if value then
+                debugprint("[DEBUG] Showing MultiBarBottomRight")
                 MultiBarBottomRight:Show()
                 _G["SHOW_MULTI_ACTIONBAR_2"] = 1
                 Setup:RepositionBars()
             else
+                debugprint("[DEBUG] Hiding MultiBarBottomRight")
                 MultiBarBottomRight:Hide()
                 _G["SHOW_MULTI_ACTIONBAR_2"] = nil
                 Setup:RepositionBars()
             end
+
+            debugprint("[DEBUG] MultiBarBottomRight visibility after: " .. tostring(MultiBarBottomRight:IsVisible()))
+            debugprint("[DEBUG] Final SHOW_MULTI_ACTIONBAR_2: " .. tostring(_G["SHOW_MULTI_ACTIONBAR_2"]))
         end
 
         callbacks.multiBarThreeShow = function(value)
+            debugprint("[DEBUG] multiBarThreeShow called with value: " .. tostring(value))
+            debugprint("[DEBUG] Current SHOW_MULTI_ACTIONBAR_3: " .. tostring(_G["SHOW_MULTI_ACTIONBAR_3"]))
+            debugprint("[DEBUG] MultiBarLeft visibility before: " .. tostring(MultiBarLeft:IsVisible()))
+
             if value then
+                debugprint("[DEBUG] Showing MultiBarLeft")
                 MultiBarLeft:Show()
                 _G["SHOW_MULTI_ACTIONBAR_3"] = 1
             else
+                debugprint("[DEBUG] Hiding MultiBarLeft")
                 MultiBarLeft:Hide()
                 _G["SHOW_MULTI_ACTIONBAR_3"] = nil
             end
+
+            debugprint("[DEBUG] MultiBarLeft visibility after: " .. tostring(MultiBarLeft:IsVisible()))
+            debugprint("[DEBUG] Final SHOW_MULTI_ACTIONBAR_3: " .. tostring(_G["SHOW_MULTI_ACTIONBAR_3"]))
         end
 
         callbacks.multiBarFourShow = function(value)
+            debugprint("[DEBUG] multiBarFourShow called with value: " .. tostring(value))
+            debugprint("[DEBUG] Current SHOW_MULTI_ACTIONBAR_4: " .. tostring(_G["SHOW_MULTI_ACTIONBAR_4"]))
+            debugprint("[DEBUG] MultiBarRight visibility before: " .. tostring(MultiBarRight:IsVisible()))
+
             if value then
+                debugprint("[DEBUG] Showing MultiBarRight")
                 MultiBarRight:Show()
                 _G["SHOW_MULTI_ACTIONBAR_4"] = 1
             else
+                debugprint("[DEBUG] Hiding MultiBarRight")
                 MultiBarRight:Hide()
                 _G["SHOW_MULTI_ACTIONBAR_4"] = nil
             end
+
+            debugprint("[DEBUG] MultiBarRight visibility after: " .. tostring(MultiBarRight:IsVisible()))
+            debugprint("[DEBUG] Final SHOW_MULTI_ACTIONBAR_4: " .. tostring(_G["SHOW_MULTI_ACTIONBAR_4"]))
         end
 
         callbacks.highlightColor = function(value)
@@ -1506,6 +1544,19 @@ DFRL:NewMod("Bars", 1, function()
 
         -- execute callbacks
         DFRL:NewCallbacks("Bars", callbacks)
+
+        -- disable blizzard's multiactionbar update
+        _G["MultiActionBar_Update"] = function() end
+
+        -- disable blizzard's interface checkboxes
+        local checkboxes = {33, 34, 35, 36}
+        for i = 1, 4 do
+            local checkbox = _G["UIOptionsFrameCheckButton" .. checkboxes[i]]
+            if checkbox then
+                checkbox:Hide()
+            end
+        end
+
         f:UnregisterEvent("PLAYER_ENTERING_WORLD")
     end)
 end)

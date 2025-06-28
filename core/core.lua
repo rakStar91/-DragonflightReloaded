@@ -16,7 +16,7 @@ DFRL = CreateFrame("Frame", nil, UIParent)
 
 -- boot flag
 local boot = false
--- local function debugprint() end
+local function debugprint() end
 debugprint(">> BOOTING")
 
 --=================
@@ -105,7 +105,7 @@ function DFRL:GetEnv()
     debugprint("GetEnv - Env requested")
     self.env._G = getfenv(0)
     self.env.T = self.tools
-    -- self.env.debugprint = debugprint
+    self.env.debugprint = debugprint
     return self.env
 end
 
