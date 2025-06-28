@@ -1506,5 +1506,6 @@ DFRL:NewMod("Bars", 1, function()
 
         -- execute callbacks
         DFRL:NewCallbacks("Bars", callbacks)
+        f:UnregisterEvent("PLAYER_ENTERING_WORLD")
     end)
 end)

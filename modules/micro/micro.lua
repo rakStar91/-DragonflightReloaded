@@ -178,7 +178,10 @@ DFRL:NewMod("Micro", 1, function()
             local talentVisibilityFrame = CreateFrame("Frame")
             talentVisibilityFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
             talentVisibilityFrame:RegisterEvent("PLAYER_LEVEL_UP")
-            talentVisibilityFrame:SetScript("OnEvent", UpdateTalentButtonVisibility)
+            talentVisibilityFrame:SetScript("OnEvent", function()
+                UpdateTalentButtonVisibility()
+                talentVisibilityFrame:UnregisterEvent("PLAYER_ENTERING_WORLD")
+            end)
 
             UpdateTalentButtonVisibility()
         end

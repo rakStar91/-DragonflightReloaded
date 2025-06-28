@@ -465,6 +465,10 @@ DFRL:NewMod("Target", 1, function()
             Setup:UpdateTexts()
             Setup:UpdateBarColor()
         end
+
+        if event == "PLAYER_ENTERING_WORLD" then
+            f:UnregisterEvent("PLAYER_ENTERING_WORLD")
+        end
     end)
 
     -- execute callbacks

@@ -575,7 +575,7 @@ DFRL:NewMod("Xprep", 1, function()
         -- EVENT
         --=================
         local f = CreateFrame("Frame")
-        f:RegisterEvent("PLAYER_ENTERING_WORLD")
+        -- f:RegisterEvent("PLAYER_ENTERING_WORLD")
         f:RegisterEvent("PLAYER_XP_UPDATE")
         f:RegisterEvent("PLAYER_LEVEL_UP")
         f:RegisterEvent("UPDATE_FACTION")
@@ -604,7 +604,9 @@ DFRL:NewMod("Xprep", 1, function()
                 end
             end
         end)
-
+        Setup:UpdateXPBar()
         DFRL:NewCallbacks("Xprep", callbacks)
+
+        f2:UnregisterEvent("PLAYER_ENTERING_WORLD")
     end)
 end)

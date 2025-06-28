@@ -257,8 +257,8 @@ DFRL:NewMod("Frames", 2, function()
 
         -- init
         RestoreFramePositions()
+        hookEvent:UnregisterEvent("PLAYER_ENTERING_WORLD")
     end)
 
     DFRL.activeScripts["FrameControlScript"] = false
-    -- hookEvent:UnregisterEvent("PLAYER_ENTERING_WORLD")
 end)

@@ -693,6 +693,10 @@ DFRL:NewMod("Mini", 1, function()
         (event == "UNIT_HEALTH" and arg1 == "targettarget") then
             Setup.framesState:updateToTColor()
         end
+
+        if event == "PLAYER_ENTERING_WORLD" then
+            f:UnregisterEvent("PLAYER_ENTERING_WORLD")
+        end
     end)
 
     -- execute callbacks

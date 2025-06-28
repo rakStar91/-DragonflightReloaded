@@ -579,5 +579,6 @@ DFRL:NewMod("Bags", 1, function()
 
         -- execute callbacks
         DFRL:NewCallbacks("Bags", callbacks)
+        f:UnregisterEvent("PLAYER_ENTERING_WORLD")
     end)
 end)

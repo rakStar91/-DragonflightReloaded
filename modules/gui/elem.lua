@@ -76,6 +76,7 @@ DFRL:NewMod("Gui-elem", 3, function()
             ["Ui"]      = {10, 2},
             ["Micro"]   = {11, 1},
             ["Map"]     = {12, 1},
+            ["Collector"] = {12, 2},
             ["Player"]  = {14, 1},
             ["Target"]  = {14, 2},
             ["Mini"]    = {14, 3},
@@ -85,7 +86,6 @@ DFRL:NewMod("Gui-elem", 3, function()
 
     function Setup:MetaData()
         debugprint("MetaData - Preparing element metadata")
-
 
         for moduleName, defaults in pairs(DFRL.defaults) do
             for elementName, valueTable in pairs(defaults) do
@@ -140,19 +140,17 @@ DFRL:NewMod("Gui-elem", 3, function()
     function Setup:Elements()
         debugprint("HeadersAndElements - Setting up headers and elements")
 
-
-        -- Group elements by module and category
+        -- group elements by module and category
         local moduleElements = {}
         local moduleCategories = {}
 
-        -- Process each module directly from DFRL.defaults
+        -- process each module directly from dfrl.defaults
         for moduleName, defaults in pairs(DFRL.defaults) do
             if self.moduleMapping[moduleName] then
                 local enabledValue = DFRL.tempDB[moduleName] and DFRL.tempDB[moduleName].enabled
                 if enabledValue == true then
                 local tabIndex = self.moduleMapping[moduleName][1]
 
-                -- Initialize module structure if needed
                 if not moduleElements[moduleName] then
                     moduleElements[moduleName] = {}
                     moduleCategories[moduleName] = {}
@@ -164,7 +162,6 @@ DFRL:NewMod("Gui-elem", 3, function()
                         local data = self.metadata[metaKey]
 
                         if data then
-                            -- Collect categories for headers
                             if data.category then
                                 local categoryKey = tabIndex .. "_" .. data.category
                                 if not moduleCategories[moduleName][categoryKey] then
@@ -176,7 +173,6 @@ DFRL:NewMod("Gui-elem", 3, function()
                                 end
                             end
 
-                            -- Collect elements
                             if data.elementType == "checkbox" or data.elementType == "slider" or data.elementType == "dropdown" or data.elementType == "colour" then
                                 local categoryKey = tabIndex .. "_" .. (data.category or "default")
 
@@ -198,7 +194,7 @@ DFRL:NewMod("Gui-elem", 3, function()
             end
         end
 
-        -- Create sorted list of modules by their order
+        -- create sorted list of modules by their order
         local sortedModules = {}
         for moduleName, moduleData in pairs(self.moduleMapping) do
             if moduleElements[moduleName] then
@@ -212,7 +208,7 @@ DFRL:NewMod("Gui-elem", 3, function()
             return a.order < b.order
         end)
 
-        -- Process each module in order
+        -- process each module in order
         for _, moduleInfo in ipairs(sortedModules) do
             local moduleName = moduleInfo.name
             local tabIndex = self.moduleMapping[moduleName][1]
@@ -220,12 +216,10 @@ DFRL:NewMod("Gui-elem", 3, function()
 
             debugprint("HeadersAndElements - Processing module: " .. moduleName .. " in tab " .. tabIndex)
 
-            -- Initialize tab position if needed
             if not self.tabPositions[tabIndex] then
                 self.tabPositions[tabIndex] = -self.HEADER_TOP_SPACING
             end
 
-            -- Create module header
             local moduleKey = tabIndex .. "_" .. moduleName
             if not self.moduleHeaders[moduleKey] then
                 local moduleHeader = DFRL.tools.CreateCategoryHeader(scrollChild, moduleName, nil, 300, 50, 30)
@@ -234,7 +228,6 @@ DFRL:NewMod("Gui-elem", 3, function()
                 self.tabPositions[tabIndex] = self.tabPositions[tabIndex] - self.MODULE_TOP_SPACING - self.MODULE_BOTTOM_SPACING
             end
 
-            -- Get and sort categories for this module
             local sortedCategories = {}
             for categoryKey, categoryData in pairs(moduleCategories[moduleName] or {}) do
                 table.insert(sortedCategories, {key = categoryKey, data = categoryData})
@@ -245,17 +238,14 @@ DFRL:NewMod("Gui-elem", 3, function()
                 return aIndex < bIndex
             end)
 
-            -- Process each category in this module
             for i, categoryInfo in ipairs(sortedCategories) do
                 local categoryKey = categoryInfo.key
                 local categoryData = categoryInfo.data
 
-                -- Add spacing before header (except first one)
                 if i > 1 then
                     self.tabPositions[tabIndex] = self.tabPositions[tabIndex] - self.HEADER_TOP_SPACING
                 end
 
-                -- Create header for this category
                 local yOffset = self.tabPositions[tabIndex]
                 debugprint("HeadersAndElements - Creating header for category: " .. categoryData.category .. " in tab " .. tabIndex .. " at yOffset " .. yOffset)
 
@@ -267,7 +257,6 @@ DFRL:NewMod("Gui-elem", 3, function()
                     self.tabPositions[tabIndex] = yOffset - self.HEADER_BOTTOM_SPACING
                 end
 
-                -- Get and sort elements for this category
                 local elements = moduleElements[moduleName][categoryKey] or {}
                 table.sort(elements, function(a, b)
                     local aIndex = tonumber(a.data.categoryIndex) or 999
@@ -275,7 +264,6 @@ DFRL:NewMod("Gui-elem", 3, function()
                     return aIndex < bIndex
                 end)
 
-                -- Create elements for this category
                 for _, element in ipairs(elements) do
                     local elementName = element.name
                     local data = element.data
@@ -606,7 +594,6 @@ DFRL:NewMod("Gui-elem", 3, function()
                 end
             end
 
-            -- Add spacing between modules (only if there are more modules after this one)
             if moduleInfo ~= sortedModules[table.getn(sortedModules)] then
                 self.tabPositions[tabIndex] = self.tabPositions[tabIndex] - self.MODULE_SPACING
             end
@@ -892,7 +879,6 @@ DFRL:NewMod("Gui-elem", 3, function()
         Setup:MetaData()
         Setup:Elements()
         Setup:DependencyHandler()
-        -- Setup:UpdateHandler()
     end
 
     Setup:Run()
