@@ -69,6 +69,7 @@ DFRL:NewMod("Gui-elem", 3, function()
                 --             [15] = "Xprep",
         moduleMapping = {
             ["Bars"]    = {6, 1},
+            ["RangeIndicator"]    = {6, 2},
             ["Bags"]    = {7, 1},
             ["Cast"]    = {8, 1},
             ["Chat"]    = {9, 1},

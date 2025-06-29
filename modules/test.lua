@@ -1,40 +1,40 @@
---=================
+-- =================
 -- MODULE TEMPLATE
---=================
+-- =================
 
--- DFRL:NewDefaults("Test", {
+-- DFRL:NewDefaults("TEMPLATE", {
 --     enabled = { true },
 -- })
 
--- DFRL:NewMod("Test", 1, function()
+-- DFRL:NewMod("TEMPLATE", 1, function()
 --     debugprint(">> BOOTING")
 
---     --=================
---     -- SETUP
---     --=================
+--     =================
+--     SETUP
+--     =================
 --     local Setup = {
 --     }
 
 --     function Setup:Run()
 --     end
 
---     --=================
---     -- INIT
---     --=================
+--     =================
+--     INIT
+--     =================
 --     Setup:Run()
 
---     --=================
---     -- EXPOSE
---     --=================
+--     =================
+--     EXPOSE
+--     =================
 
---     --=================
---     -- CALLBACKS
---     --=================
+--     =================
+--     CALLBACKS
+--     =================
 --     local callbacks = {}
 
---     --=================
---     -- EVENT
---     --=================
+--     =================
+--     EVENT
+--     =================
 
---     DFRL:NewCallbacks("Test", callbacks)
+--     DFRL:NewCallbacks("TEMPLATE", callbacks)
 -- end)

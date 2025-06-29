@@ -27,6 +27,7 @@ DFRL_DB_SETUP = {}
 -- character
 DFRL_CUR_PROFILE = {}
 DFRL_FRAMEPOS = {}
+DFRL_ERRORS = {}
 
 -- internal
 DFRL.env = {}

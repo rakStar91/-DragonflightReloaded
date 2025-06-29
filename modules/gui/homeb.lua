@@ -2,7 +2,7 @@ DFRL:NewDefaults("GUI-Dragonflight", {
     enabled = {true},
 
     smallerFrame = {false, "checkbox", nil, nil, "Home Screen", 1, "Changes the scale of the mainframe", nil, nil},
-    sideView = {.1, "slider", {.1, .8}, nil, "Home Screen", 2, "Changes the alpha of the side view", "", nil},
+    sideView = {.3, "slider", {.1, .8}, nil, "Home Screen", 2, "Changes the alpha of the side view", "", nil},
     homeMinMaxColor = {{1, .82, 0}, "colour", nil, nil, "Home Screen", 3, "Changes the color of the close and min button", nil, nil},
     homeTimeColor = {{1, .82, 0}, "colour", nil, nil, "Home Screen", 4, "Changes the color of the time on the home screen", nil, nil},
     noDonation = {false, "checkbox", nil, nil, "Home Screen", 5, "Do not show the donation button", "Re-Enabling requires reload due to animation", nil},
@@ -175,7 +175,7 @@ DFRL:NewMod("GUI-Dragonflight", 4, function()
 
     function Setup:Donate()
         if not self.donateText then
-            self.donateText = DFRL.tools.CreateFont(Base.scrollChildren[1], 16, "greetings turtles =)\n\n\ni hope you like |cFFFFD700dragonflight:|r reloaded,\n\nI'm a solo basement developer working on this addon.\nif you want to support me,\nyou can send me a Giftcard or paysafecard to my email.\n\n\n|cFFFFD700guzruul.live @ gmail.com|r\n\n\notherwise - Enjoy |cFFFFD700Dragonflight:|r Reloaded.\n\n\nsafe travels,\n\nGuzruul")
+            self.donateText = DFRL.tools.CreateFont(Base.scrollChildren[1], 16, "greetings turtles =)\n\n\ni hope you like |cFFFFD700dragonflight:|r reloaded,\n\nI'm a solo basement developer working on this addon.\nif you want to support me,\nyou can send me a Giftcard or paysafecard to my email.\n\n\n|cFFFFD700guzruul.live @ gmail.com - Discord @Guzruul|r\n\n\notherwise - Enjoy |cFFFFD700Dragonflight:|r Reloaded.\n\n\nsafe travels,\n\nGuzruul")
             self.donateText:SetPoint("TOP", Base.scrollChildren[1], "TOP", 1, -50)
             self.donateText:Hide()
         end
@@ -340,9 +340,11 @@ DFRL:NewMod("GUI-Dragonflight", 4, function()
         if value then
             newScale = 0.8
             Base.mainFrame:SetScale(newScale)
+            Base.titleFrame:SetScale(newScale)
         else
             newScale = 1
             Base.mainFrame:SetScale(newScale)
+            Base.titleFrame:SetScale(newScale)
         end
 
         local adjustedX = x * oldScale / newScale

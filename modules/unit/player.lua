@@ -39,8 +39,6 @@ DFRL:NewDefaults("Player", {
     restingAlpha = {1, "slider", {0.1, 1}, nil, "effects", 18, "Adjust the maximum alpha of the resting pulsing", nil, nil},
     restingColor = {{0, 1, 1}, "colour", nil, nil, "effects", 19, "Changes the colour of the resting glow animation", nil, nil},
 
-
-
 })
 
 DFRL:NewMod("Player", 1, function()

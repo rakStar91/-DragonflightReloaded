@@ -64,19 +64,18 @@ function Setup:ShowWelcomePage()
 
     T.GradientLine(self.welcomeFrame, "TOP", 1)
     T.GradientLine(self.welcomeFrame, "TOP", -60, nil, 200)
-    T.GradientLine(self.welcomeFrame, "TOP", -260, nil, 200)
-    T.GradientLine(self.welcomeFrame, "TOP", -60, nil, 200)
+    T.GradientLine(self.welcomeFrame, "TOP", -290, nil, 200)
     T.GradientLine(self.welcomeFrame, "BOTTOM", -1, 3)
 
-    local title = DFRL.tools.CreateFont(self.welcomeFrame, 18, "|cFFFFFFFFWelcome to|r |cFFFFD700Dragonflight|r: |cFFFFFFFFReloaded 2.0")
+    local title = DFRL.tools.CreateFont(self.welcomeFrame, 18, "|cFFFFFFFFWelcome to|r |cFFFFD700Dragonflight|r: |cFFFFFFFFReloaded|r |cFFFFD7002.0")
     title:SetPoint("TOP", 0, -25)
 
-    local text = DFRL.tools.CreateFont(self.welcomeFrame, 15, "Tip:\nHold CTRL + SHIFT + ALT to move frames.\n\n\nBefore reporting bugs:\n|cffff6060Please disable all other addons|n except for Dragonflight: Reloaded.|r\n\n90% of bug reports lead to conflicts with other addons.\nThank you for helping us keep bug reports accurate!")
+    local text = DFRL.tools.CreateFont(self.welcomeFrame, 15, "Tip:\nHold CTRL + SHIFT + ALT to move frames.\n\n\nBefore reporting bugs:\n|cffff6060Please disable all other addons|n except for Dragonflight: Reloaded.|r\n\n90% of bug reports lead to conflicts with other addons.\nThank you for helping us keep bug reports accurate.\n\nEnjoy |cFFFFD700Dragonflight|r and dont forget to update. ")
     text:SetPoint("TOP", title, "BOTTOM", 0, -40)
     text:SetWidth(380)
 
     local okBtn = DFRL.tools.CreateButton(self.welcomeFrame, "Okay", 65, 27)
-    okBtn:SetPoint("BOTTOM", 0, 70)
+    okBtn:SetPoint("BOTTOM", 0, 60)
     okBtn:Disable()
 
     local menuBtn = DFRL.tools.CreateButton(self.welcomeFrame, "Menu", 65, 27)

@@ -13,7 +13,9 @@ DFRL:NewDefaults("Chat", {
 DFRL:NewMod("Chat", 1, function()
     debugprint(">> BOOTING")
 
-    -- setup
+    --=================
+    -- SETUP
+    --=================
     local Setup = {
         tex = DFRL:GetInfoOrCons("tex"),
     }
@@ -22,10 +24,14 @@ DFRL:NewMod("Chat", 1, function()
         ChatFrame1Tab:SetClampedToScreen(true)
     end
 
-    -- init setup
+    --=================
+    -- INIT
+    --=================
     Setup:ChatFrame()
 
-    -- callbacks
+    --=================
+    -- CALLBACKS
+    --=================
     local callbacks = {}
 
     callbacks.chatDarkMode = function(value)

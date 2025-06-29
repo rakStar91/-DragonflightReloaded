@@ -31,6 +31,12 @@ local darkMode = {
         ["miniTextShow"] = true,
         ["colorClass"] = false,
     },
+    ["RangeIndicator"] = {
+        ["enabled"] = true,
+        ["indicatorAlpha"] = 1,
+        ["indicatorFade"] = true,
+        ["indicatorDark"] = true,
+    },
     ["Frames"] = {
         ["enabled"] = true,
     },
@@ -61,7 +67,7 @@ local darkMode = {
         ["textShow"] = true,
         ["textColoring"] = false,
         ["manaSize"] = 9,
-        ["frameFont"] = "Myriad-Pro",
+        ["frameFont"] = "BigNoodleTitling",
         ["targetDarkMode"] = 1,
         ["colorClass"] = false,
         ["frameScale"] = 1,
@@ -180,7 +186,7 @@ local darkMode = {
         ["pagingSwap"] = true,
         ["multiBarFourSpacing"] = 6,
         ["multiBarTwoSpacing"] = 6,
-        ["movable"] = true,
+        ["movable"] = false,
         ["hotkeyFont"] = "BigNoodleTitling",
         ["mainBarScale"] = 1,
         ["mainBarSpacing"] = 6,
@@ -245,7 +251,7 @@ local darkMode = {
     },
     ["GUI-Dragonflight"] = {
         ["enabled"] = true,
-        ["sideView"] = 0.1,
+        ["sideView"] = 0.3,
         ["homeMinMaxColor"] = {
             [1] = 1,
             [2] = 0.82,
@@ -299,6 +305,12 @@ local lightMode = {
         ["noPercent"] = true,
         ["colorClass"] = false,
         ["colorReaction"] = true,
+    },
+    ["RangeIndicator"] = {
+        ["enabled"] = true,
+        ["indicatorAlpha"] = 1,
+        ["indicatorFade"] = true,
+        ["indicatorDark"] = false,
     },
     ["Frames"] = {
         ["enabled"] = true,
@@ -449,7 +461,7 @@ local lightMode = {
         ["pagingSwap"] = true,
         ["multiBarFourSpacing"] = 6,
         ["multiBarTwoSpacing"] = 6,
-        ["movable"] = true,
+        ["movable"] = false,
         ["petbarAlpha"] = 1,
         ["mainBarScale"] = 1,
         ["mainBarSpacing"] = 6,
@@ -514,7 +526,7 @@ local lightMode = {
     },
     ["GUI-Dragonflight"] = {
         ["enabled"] = true,
-        ["sideView"] = 0.1,
+        ["sideView"] = 0.3,
         ["homeMinMaxColor"] = {
             [1] = 1,
             [2] = 0.82,
@@ -540,3 +552,5 @@ local lightMode = {
 
 DFRL.profiles.darkMode = darkMode
 DFRL.profiles.lightMode = lightMode
+
+
