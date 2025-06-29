@@ -28,6 +28,8 @@ A modern UI replacement for World of Warcraft Classic (1.12) inspired by the Dra
 
 ![Screenshot 5](https://i.ibb.co/B5hSbbvC/5.png)
 
+![Screenshot 6](https://i.ibb.co/RpzzgpnD/prev0.gif)
+
 ## Installation
 
 1. Download the latest version
