@@ -48,7 +48,7 @@ function Setup:TempDBForSwitching(isDarkMode)
     DFRL.gui.Base:UpdateHandler()
 end
 
-function Setup:ShowWelcomePage()
+function Setup:WelcomePage()
     if not self.welcomeFrame then
         self.welcomeFrame = CreateFrame("Frame", "DFRL_WelcomeFrame", UIParent)
     end
@@ -212,7 +212,7 @@ local f = CreateFrame("Frame")
 f:RegisterEvent("VARIABLES_LOADED")
 f:SetScript("OnEvent", function()
     if not DFRL:GetTempValue("Generic", "firstRun") then
-        Setup:ShowWelcomePage()
+        Setup:WelcomePage()
     end
 
     -- if not DFRL:GetTempValue("Generic", "patchWarn") then

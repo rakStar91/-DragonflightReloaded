@@ -1,6 +1,12 @@
 setfenv(1, DFRL:GetEnv())
 
 local darkMode = {
+    ["Tooltip"] = {
+        ["enabled"] = true,
+        ["toolTipY"] = 0,
+        ["toolTipMouse"] = false,
+        ["toolTipX"] = 0,
+    },
 	["Gui-elem"] = {
 		["enabled"] = true,
 	},
@@ -276,6 +282,12 @@ local darkMode = {
 }
 
 local lightMode = {
+    ["Tooltip"] = {
+        ["enabled"] = true,
+        ["toolTipY"] = 0,
+        ["toolTipMouse"] = false,
+        ["toolTipX"] = 0,
+    },
     ["Gui-elem"] = {
         ["enabled"] = true,
     },

@@ -1,10 +1,10 @@
 ## Interface: 11200
 ## Title: Dragonflight: |cFFFFFFFFReloaded
 ## Notes: A World of Warcraft UI replacement.
-## Version: 2.0.6
+## Version: 2.0.7
 ## Author: Guzruul
 ## SavedVariables: DFRL_PROFILES, DFRL_DB_SETUP
-## SavedVariablesPerCharacter: DFRL_CUR_PROFILE, DFRL_FRAMEPOS, DFRL_ERRORS
+## SavedVariablesPerCharacter: DFRL_CUR_PROFILE, DFRL_FRAMEPOS
 
 # CORE
 core\error.lua
@@ -29,11 +29,15 @@ modules\bags\bags.lua
 modules\map\map.lua
 modules\map\collect.lua
 
+modules\menu\menu.lua
+modules\menu\addons.lua
+
 modules\micro\micro.lua
 
 modules\frames\frames.lua
 
 modules\ui\ui.lua
+modules\ui\tooltip.lua
 
 modules\unit\player.lua
 modules\unit\target.lua

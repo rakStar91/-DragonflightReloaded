@@ -590,6 +590,9 @@ DFRL:NewMod("Xprep", 1, function()
                                 Setup.xpBarText:Hide()
                             end
                             this:SetScript("OnUpdate", nil)
+                            DFRL.activeScripts["XpGainTimerScript"] = false
+                        else
+                            DFRL.activeScripts["XpGainTimerScript"] = true
                         end
                     end)
                 end

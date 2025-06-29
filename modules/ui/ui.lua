@@ -489,7 +489,10 @@ DFRL:NewMod("Ui", 5, function()
 
             local healthCheckFrame = CreateFrame("Frame")
             local updateFunc = function()
-                if (this.tick or 0) > GetTime() then return end
+                if (this.tick or 0) > GetTime() then 
+                    DFRL.activeScripts["LowHpWarnScript"] = false
+                    return 
+                end
                 this.tick = GetTime() + 0.01
 
                 local healthPercent = UnitHealth("player") / UnitHealthMax("player") * 100

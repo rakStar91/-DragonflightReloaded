@@ -200,6 +200,8 @@ DFRL:NewMod("RangeIndicator", 1, function()
             Setup:ProcessAllButtons(Setup.UpdateIndicatorVisibility)
             updateTimer = 0
             DFRL.activeScripts["RangeIndicatorScript"] = true
+        else
+            DFRL.activeScripts["RangeIndicatorScript"] = false
         end
     end)
 

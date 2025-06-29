@@ -256,6 +256,9 @@ DFRL:NewMod("Player", 1, function()
                 texture:SetTexCoord(coords[1], coords[2], coords[3], coords[4])
 
                 timeSinceLastUpdate = 0
+                DFRL.activeScripts["RestingAnimationScript"] = true
+            else
+                DFRL.activeScripts["RestingAnimationScript"] = false
             end
         end)
 
@@ -744,6 +747,7 @@ DFRL:NewMod("Player", 1, function()
             DFRL.totPortraitFrame = CreateFrame("Frame", nil, TargetFrame)
             DFRL.totPortraitFrame:SetScript("OnUpdate", function()
                 DFRL.UpdatePortraits(TargetofTargetFrame)
+                DFRL.activeScripts["PortraitUpdateScript"] = true
             end)
         else
             -- disable class portraits
@@ -759,6 +763,7 @@ DFRL:NewMod("Player", 1, function()
             -- remove target of target updates
             if DFRL.totPortraitFrame then
                 DFRL.totPortraitFrame:SetScript("OnUpdate", nil)
+                DFRL.activeScripts["PortraitUpdateScript"] = false
             end
 
             -- reset portraits to default
@@ -791,7 +796,10 @@ DFRL:NewMod("Player", 1, function()
 
         if value then
             Setup.combatOverlay:SetScript("OnUpdate", function()
-                if (this.tick or 0) > GetTime() then return end
+                if (this.tick or 0) > GetTime() then 
+                    DFRL.activeScripts["CombatGlowScript"] = false
+                    return 
+                end
                 this.tick = GetTime() + 0.01
 
                 local elapsed = arg1
@@ -800,6 +808,7 @@ DFRL:NewMod("Player", 1, function()
                     alpha = alpha - (Setup.combatGlow.fadeSpeed * elapsed * 2)
                     if alpha < 0 then alpha = PlayerFrameHealthBar:GetAlpha() * 0 end
                     Setup.combatOverlayTex:SetAlpha(alpha)
+                    DFRL.activeScripts["CombatGlowScript"] = true
                     return
                 end
 
@@ -810,6 +819,7 @@ DFRL:NewMod("Player", 1, function()
                 local progress = pulseTime / pulseDuration
                 local alpha = Setup.combatGlow.alphaMin + (Setup.combatGlow.alphaMax - Setup.combatGlow.alphaMin) * (0.5 + 0.5 * math.sin(progress * 2 * math.pi))
                 Setup.combatOverlayTex:SetAlpha(alpha)
+                DFRL.activeScripts["CombatGlowScript"] = true
             end)
         else
             Setup.combatOverlay:SetScript("OnUpdate", nil)
@@ -847,7 +857,10 @@ DFRL:NewMod("Player", 1, function()
 
         if value then
             Setup.restingOverlay:SetScript("OnUpdate", function()
-                if (this.tick or 0) > GetTime() then return end
+                if (this.tick or 0) > GetTime() then 
+                    DFRL.activeScripts["RestingGlowScript"] = false
+                    return 
+                end
                 this.tick = GetTime() + 0.01
 
                 local elapsed = arg1
@@ -856,6 +869,7 @@ DFRL:NewMod("Player", 1, function()
                     alpha = alpha - (Setup.restingGlow.fadeSpeed * elapsed * 2)
                     if alpha < 0 then alpha = PlayerFrameHealthBar:GetAlpha() * 0 end
                     Setup.restingOverlayTex:SetAlpha(alpha)
+                    DFRL.activeScripts["RestingGlowScript"] = true
                     return
                 end
 
@@ -867,6 +881,7 @@ DFRL:NewMod("Player", 1, function()
 
                 local alpha = Setup.restingGlow.alphaMin + (Setup.restingGlow.alphaMax - Setup.restingGlow.alphaMin) * (0.5 + 0.5 * math.sin(progress * 2 * math.pi))
                 Setup.restingOverlayTex:SetAlpha(alpha)
+                DFRL.activeScripts["RestingGlowScript"] = true
             end)
         else
             Setup.restingOverlay:SetScript("OnUpdate", nil)

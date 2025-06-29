@@ -77,27 +77,6 @@ HookScript = function(f, script, func)
     end)
 end
 
-function HookAddonOrVariable(addon, func)
-    local lurker = CreateFrame("Frame", nil)
-    lurker.func = func
-    lurker:RegisterEvent("ADDON_LOADED")
-    lurker:RegisterEvent("VARIABLES_LOADED")
-    lurker:RegisterEvent("PLAYER_ENTERING_WORLD")
-    lurker:SetScript("OnEvent",function()
-        -- only run when config is available
-        if event == "ADDON_LOADED" and not this.foundConfig then
-            return
-        elseif event == "VARIABLES_LOADED" then
-            this.foundConfig = true
-        end
-
-        if IsAddOnLoaded(addon) or _G[addon] then
-            this:func()
-            this:UnregisterAllEvents()
-        end
-    end)
-end
-
 function hooksecurefunc(name, func, append)
     if not _G[name] then return end
 
@@ -118,6 +97,27 @@ function hooksecurefunc(name, func, append)
     end
 
     _G[name] = DFRL.hooks[tostring(func)]["function"]
+end
+
+function HookAddonOrVariable(addon, func)
+    local lurker = CreateFrame("Frame", nil)
+    lurker.func = func
+    lurker:RegisterEvent("ADDON_LOADED")
+    lurker:RegisterEvent("VARIABLES_LOADED")
+    lurker:RegisterEvent("PLAYER_ENTERING_WORLD")
+    lurker:SetScript("OnEvent",function()
+        -- only run when config is available
+        if event == "ADDON_LOADED" and not this.foundConfig then
+            return
+        elseif event == "VARIABLES_LOADED" then
+            this.foundConfig = true
+        end
+
+        if IsAddOnLoaded(addon) or _G[addon] then
+            this:func()
+            this:UnregisterAllEvents()
+        end
+    end)
 end
 
 --=================
@@ -151,18 +151,6 @@ function DFRL.tools.GradientLine(frame, anchor, yOffset, height, width)
     right:SetWidth(width / 2)
     right:SetHeight(height or 2)
     right:SetGradientAlpha("HORIZONTAL", 1, 0.82, 0, 1, 1, 0.82, 0, 0)
-end
-
-function DFRL.tools.CreateDFRLFrame(parent, w, h, gradPos, alpha, mouse)
-    parent = parent or UIParent
-    local f = CreateFrame("Frame", nil, parent)
-    f:SetWidth(w or 100)
-    f:SetHeight(h or 100)
-    f:EnableMouse(mouse or false)
-    f:SetBackdrop({bgFile = "Interface\\Buttons\\WHITE8X8"})
-    f:SetBackdropColor(0, 0, 0, alpha or 0.5)
-    DFRL.tools.GradientLine(f, gradPos or "TOP", -1, 3)
-    return f
 end
 
 function DFRL.tools.MoveFrame(f, dirX, dirY, time, dist)
@@ -202,6 +190,30 @@ function DFRL.tools.MoveFrame(f, dirX, dirY, time, dist)
             this:SetPoint("CENTER", UIParent, "BOTTOMLEFT", currentX + moveX, currentY + moveY)
         end
     end)
+end
+
+function DFRL.tools.CreateDFRLFrame(parent, w, h, gradPos, alpha, mouse)
+    parent = parent or UIParent
+    local f = CreateFrame("Frame", nil, parent)
+    f:SetWidth(w or 100)
+    f:SetHeight(h or 100)
+    f:EnableMouse(mouse or false)
+    f:SetBackdrop({bgFile = "Interface\\Buttons\\WHITE8X8"})
+    f:SetBackdropColor(0, 0, 0, alpha or 0.5)
+    DFRL.tools.GradientLine(f, gradPos or "TOP", -1, 3)
+    return f
+end
+
+function DFRL.tools.CreateDFRLFrameName(parent, w, h, gradPos, alpha, mouse, name)
+    parent = parent or UIParent
+    local f = CreateFrame("Frame", name, parent)
+    f:SetWidth(w or 100)
+    f:SetHeight(h or 100)
+    f:EnableMouse(mouse or false)
+    f:SetBackdrop({bgFile = "Interface\\Buttons\\WHITE8X8"})
+    f:SetBackdropColor(0, 0, 0, alpha or 0.5)
+    DFRL.tools.GradientLine(f, gradPos or "TOP", -1, 3)
+    return f
 end
 
 function DFRL.tools.CreateFont(parent, size, text, colour, align)
@@ -264,6 +276,163 @@ function DFRL.tools.CreateButton(parent, text, width, height, noBackdrop, textCo
     highlight:SetPoint("TOPLEFT", btn, "TOPLEFT", 2, -4)
     highlight:SetPoint("BOTTOMRIGHT", btn, "BOTTOMRIGHT", -2, 4)
     highlight:SetBlendMode("ADD")
+
+    return btn
+end
+
+function DFRL.tools.CreateIndiCheckbox(parent, name, text)
+    local checkbox = CreateFrame("CheckButton", name, parent, "UICheckButtonTemplate")
+    checkbox:SetWidth(20)
+    checkbox:SetHeight(20)
+
+    local label = checkbox:CreateFontString(nil, "BACKGROUND")
+    label:SetFont(DFRL:GetInfoOrCons("font") .. "BigNoodleTitling.ttf", 12, "OUTLINE")
+    label:SetPoint("LEFT", checkbox, "RIGHT", 5, 0)
+    label:SetText(text or "Checkbox")
+    label:SetTextColor(.9,.9,.9)
+    checkbox.label = label
+
+    checkbox:SetChecked(false)
+
+    local origEnable = checkbox.Enable
+    local origDisable = checkbox.Disable
+
+    checkbox.Enable = function(self)
+        origEnable(self)
+        self.label:SetTextColor(.9,.9,.9)
+    end
+
+    checkbox.Disable = function(self)
+        origDisable(self)
+        self.label:SetTextColor(0.5, 0.5, 0.5)
+    end
+
+    return checkbox
+end
+
+function DFRL.tools.CreateIndiSlider(parent, name, text, minVal, maxVal, step)
+    local slider = CreateFrame("Slider", name, parent)
+    slider:SetWidth(136)
+    slider:SetHeight(24)
+    slider:SetOrientation("HORIZONTAL")
+    slider:SetThumbTexture("Interface\\Buttons\\UI-SliderBar-Button-Horizontal")
+    slider:SetBackdrop({
+        bgFile = "Interface\\Buttons\\UI-SliderBar-Background",
+        edgeFile = "Interface\\Buttons\\UI-SliderBar-Border",
+        tile = true, tileSize = 8, edgeSize = 8,
+        insets = { left = 3, right = 3, top = 6, bottom = 6 }
+    })
+
+    slider:SetMinMaxValues(minVal or 0, maxVal or 5)
+    slider:SetValueStep(step or 0.1)
+
+    local label = slider:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    label:SetPoint("BOTTOMLEFT", slider, "TOPLEFT", 0, -0)
+    label:SetText(text or "Slider")
+    label:SetFont(DFRL:GetInfoOrCons("font") .. "BigNoodleTitling.ttf", 12, "OUTLINE")
+    label:SetTextColor(.9,.9,.9)
+    slider.label = label
+
+    local valueText = slider:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    valueText:SetPoint("LEFT", slider, "RIGHT", 1, -0)
+    valueText:SetTextColor(1, 1, 1)
+    valueText:SetFont(DFRL:GetInfoOrCons("font") .. "BigNoodleTitling.ttf", 12, "OUTLINE")
+    slider.valueText = valueText
+
+    slider:SetValue(minVal or 0)
+    valueText:SetText(string.format("%.1f", minVal or 0))
+
+    local function updateValueText()
+        local newValue = slider:GetValue()
+        local roundedValue = math.floor(newValue * 10 + 0.5) / 10
+        valueText:SetText(string.format("%.1f", roundedValue))
+    end
+
+    slider.updateValueText = updateValueText
+    slider:SetScript("OnValueChanged", updateValueText)
+
+    slider:EnableMouseWheel(true)
+    slider:SetScript("OnMouseWheel", function()
+        local wheelStep = step or 0.1
+        local value = this:GetValue()
+        local minValue, maxValue = this:GetMinMaxValues()
+
+        if arg1 > 0 then
+            value = math.min(value + wheelStep, maxValue)
+        else
+            value = math.max(value - wheelStep, minValue)
+        end
+        this:SetValue(value)
+    end)
+
+    local origEnable = slider.Enable
+    local origDisable = slider.Disable
+
+    slider.Enable = function(self)
+        origEnable(self)
+        self.label:SetTextColor(.9,.9,.9)
+        self.valueText:SetTextColor(1, 1, 1)
+    end
+
+    slider.Disable = function(self)
+        origDisable(self)
+        self.label:SetTextColor(0.5, 0.5, 0.5)
+        self.valueText:SetTextColor(0.5, 0.5, 0.5)
+    end
+
+    return slider
+end
+
+function DFRL.tools.CreateIndiDropDown(parent, text, items, width, height)
+    local btn = DFRL.tools.CreateButton(parent, text or "Dropdown", width or 120, height or 25)
+
+    local popup = CreateFrame("Frame", nil, UIParent)
+    popup:SetWidth(btn:GetWidth())
+    popup:SetHeight(table.getn(items) * 22 + 10)
+    popup:SetPoint("TOP", btn, "BOTTOM", 0, -2)
+    popup:SetFrameLevel(btn:GetFrameLevel() + 1)
+    popup:SetFrameStrata("DIALOG")
+    popup:EnableMouse(true)
+    popup:Hide()
+
+    local bg = popup:CreateTexture(nil, "BACKGROUND")
+    bg:SetTexture("Interface\\Buttons\\WHITE8X8")
+    bg:SetAllPoints(popup)
+    bg:SetVertexColor(0, 0, 0, 0.8)
+
+    btn.popup = popup
+    btn.selectedValue = items[1]
+
+    for i = 1, table.getn(items) do
+        local itemBtn = DFRL.tools.CreateButton(popup, items[i], popup:GetWidth() - 4, 20, true)
+        itemBtn:SetPoint("TOP", popup, "TOP", 0, -(i - 1) * 22 - 5)
+        itemBtn:SetScript("OnClick", function()
+            btn.text:SetText(this.text:GetText())
+            btn.selectedValue = this.text:GetText()
+            popup:Hide()
+        end)
+    end
+
+    btn:SetScript("OnClick", function()
+        if popup:IsVisible() then
+            popup:Hide()
+        else
+            popup:Show()
+        end
+    end)
+
+    local origEnable = btn.Enable
+    local origDisable = btn.Disable
+
+    btn.Enable = function(self)
+        origEnable(self)
+        self.text:SetTextColor(1, 1, 1)
+    end
+
+    btn.Disable = function(self)
+        origDisable(self)
+        self.text:SetTextColor(0.5, 0.5, 0.5)
+    end
 
     return btn
 end

@@ -88,7 +88,7 @@ DFRL:NewMod("Gui-base", 2, function()
             [10] = "Interface",
             [11] = "Micromenu",
             [12] = "Minimap",
-            [13] = "Tooltip",
+            [13] = "Third Party",
             [14] = "Unitframes",
             [15] = "Xprep",
         }
@@ -130,7 +130,7 @@ DFRL:NewMod("Gui-base", 2, function()
     end
 
     function Setup:TabFrame()
-        debugprint("TabFrame - Creating tab sidebar 130px wide")
+        debugprint("TabFrame - Creating tab sidebar")
         if not self.tabFrame then
             self.tabFrame = CreateFrame("Frame", "DFRLTabFrame", self.mainFrame)
             self.tabFrame:SetPoint("RIGHT", self.mainFrame, "LEFT", 0, 0)
@@ -157,6 +157,7 @@ DFRL:NewMod("Gui-base", 2, function()
             tex:SetTexture("Interface\\Buttons\\WHITE8X8")
             tex:SetAllPoints(self.titleFrame)
             tex:SetVertexColor(0, 0, 0, self.CONSTANTS.BACKGROUND_ALPHA)
+
             tinsert(UISpecialFrames, self.titleFrame:GetName())
 
             self.titleFrame:SetScript("OnHide", function()
@@ -414,7 +415,7 @@ DFRL:NewMod("Gui-base", 2, function()
                 if self.targetScroll > self.scrollRange then
                     self.targetScroll = self.scrollRange
                 end
-                self:StartSmoothScroll()
+                self:SmoothScroll()
             end)
 
             self.slider = CreateFrame("Slider", "DFRLSlider", self.mainFrame)
@@ -475,7 +476,7 @@ DFRL:NewMod("Gui-base", 2, function()
         end
     end
 
-    function Setup:StartSmoothScroll()
+    function Setup:SmoothScroll()
         if not self.isScrolling then
             self.currentScroll = self.scrollFrame:GetVerticalScroll()
             self.isScrolling = true

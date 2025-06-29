@@ -132,7 +132,9 @@ DFRL:NewMod("Map", 1, function()
 
             self.updateTimer = CreateFrame("Frame")
             self.updateTimer:SetScript("OnUpdate", function()
-                if (this.tick or 0) > GetTime() then return end
+                if (this.tick or 0) > GetTime() then
+                    return
+                end
                 this.tick = GetTime() + 5
 
                 local localTime = date("%H:%M")
