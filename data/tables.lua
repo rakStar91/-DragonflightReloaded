@@ -43,6 +43,7 @@ local darkMode = {
         ["indicatorAlpha"] = .5,
         ["indicatorFade"] = true,
         ["indicatorDark"] = true,
+        ["indicatorSimple"] = false,
     },
     ["Frames"] = {
         ["enabled"] = true,
@@ -325,6 +326,8 @@ local lightMode = {
         ["indicatorAlpha"] = .5,
         ["indicatorFade"] = true,
         ["indicatorDark"] = false,
+        ["indicatorSimple"] = false,
+
     },
     ["Frames"] = {
         ["enabled"] = true,
