@@ -4,6 +4,7 @@ DFRL:NewDefaults("RangeIndicator", {
     indicatorDark = {false, "checkbox", nil, nil, "appearance", 1, "Use dark color instead of red", nil, nil},
     indicatorFade = {true, "checkbox", nil, nil, "appearance", 2, "Enable fade in/out animation", nil, nil},
     indicatorAlpha = {.5, "slider", {0, 1}, nil, "appearance", 3, "Adjust range indicator opacity", nil, nil},
+    indicatorSimple = {false, "checkbox", nil, nil, "appearance", 4, "Use simple X instead of texture", nil, nil},
 })
 
 DFRL:NewMod("RangeIndicator", 1, function()
@@ -32,16 +33,28 @@ DFRL:NewMod("RangeIndicator", 1, function()
             return
         end
 
-        local indicator = button:CreateTexture(nil, "OVERLAY")
-        indicator:SetTexture(self.texpath .. "indicator_.tga")
-        indicator:SetVertexColor(1, 0, 0)
-        indicator:SetAllPoints(button)
-        indicator:SetPoint("CENTER", button, "CENTER", -0, -0)
-        indicator:Hide()
-        indicator.showing = false
-        indicator.useFade = true
+        self.useSimple = DFRL:GetTempDB("RangeIndicator", "indicatorSimple")
+        
+        if self.useSimple then
+            self.indicator = button:CreateFontString(nil, "OVERLAY")
+            self.indicator:SetFont("Fonts\\FRIZQT__.TTF", 20, "OUTLINE")
+            self.indicator:SetText("•")
+            self.indicator:SetTextColor(1, 0.2, 0.2)
+            self.indicator:SetPoint("TOPRIGHT", button, "TOPRIGHT", -0, 3)
+        else
+            self.indicator = button:CreateTexture(nil, "OVERLAY")
+            self.indicator:SetTexture(self.texpath .. "indicator_.tga")
+            self.indicator:SetVertexColor(1, 0, 0)
+            self.indicator:SetAllPoints(button)
+            self.indicator:SetPoint("CENTER", button, "CENTER", -0, -0)
+        end
+        
+        self.indicator:Hide()
+        self.indicator.showing = false
+        self.indicator.useFade = true
+        self.indicator.isSimple = self.useSimple
 
-        button.rangeIndicator = indicator
+        button.rangeIndicator = self.indicator
     end
 
     function Setup:CheckButtonRange(button)
@@ -154,10 +167,18 @@ DFRL:NewMod("RangeIndicator", 1, function()
                     break
                 end
                 if button.rangeIndicator then
-                    if value then
-                        button.rangeIndicator:SetVertexColor(0, 0, 0)
+                    if button.rangeIndicator.isSimple then
+                        if value then
+                            button.rangeIndicator:SetTextColor(0, 0, 0)
+                        else
+                            button.rangeIndicator:SetTextColor(1, 0.2, 0.2)
+                        end
                     else
-                        button.rangeIndicator:SetVertexColor(1, 0, 0)
+                        if value then
+                            button.rangeIndicator:SetVertexColor(0, 0, 0)
+                        else
+                            button.rangeIndicator:SetVertexColor(1, 0, 0)
+                        end
                     end
                 end
                 i = i + 1
@@ -179,6 +200,24 @@ DFRL:NewMod("RangeIndicator", 1, function()
                 i = i + 1
             end
         end
+    end
+
+    callbacks.indicatorSimple = function(value)
+        for _, buttonType in ipairs(Setup.buttonTypes) do
+            local i = 1
+            while true do
+                local button = getglobal(buttonType .. i)
+                if not button then
+                    break
+                end
+                if button.rangeIndicator then
+                    button.rangeIndicator:Hide()
+                    button.rangeIndicator = nil
+                end
+                i = i + 1
+            end
+        end
+        Setup:ProcessAllButtons(Setup.CreateIndicatorTexture)
     end
 
     -- =================
