@@ -39,7 +39,7 @@ local darkMode = {
     },
     ["RangeIndicator"] = {
         ["enabled"] = true,
-        ["indicatorAlpha"] = 1,
+        ["indicatorAlpha"] = .5,
         ["indicatorFade"] = true,
         ["indicatorDark"] = true,
     },
@@ -320,7 +320,7 @@ local lightMode = {
     },
     ["RangeIndicator"] = {
         ["enabled"] = true,
-        ["indicatorAlpha"] = 1,
+        ["indicatorAlpha"] = .5,
         ["indicatorFade"] = true,
         ["indicatorDark"] = false,
     },

@@ -3,7 +3,7 @@ DFRL:NewDefaults("RangeIndicator", {
     enabled = { true },
     indicatorDark = {false, "checkbox", nil, nil, "appearance", 1, "Use dark color instead of red", nil, nil},
     indicatorFade = {true, "checkbox", nil, nil, "appearance", 2, "Enable fade in/out animation", nil, nil},
-    indicatorAlpha = {1, "slider", {0, 1}, nil, "appearance", 3, "Adjust range indicator opacity", nil, nil},
+    indicatorAlpha = {.5, "slider", {0, 1}, nil, "appearance", 3, "Adjust range indicator opacity", nil, nil},
 })
 
 DFRL:NewMod("RangeIndicator", 1, function()

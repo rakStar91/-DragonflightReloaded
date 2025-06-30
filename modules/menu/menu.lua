@@ -29,17 +29,15 @@ DFRL:NewMod("Menu", 1, function()
             else
                 local closedMenus = CloseMenus()
                 local closedWindows = CloseAllWindows()
-                if not closedMenus and not closedWindows then
-                    Setup.menuframe:Show()
+                if not (closedMenus or closedWindows) then
+                    if UnitExists("target") then
+                        ClearTarget()
+                    else
+                        Setup.menuframe:Show()
+                    end
                 end
             end
         end
-
-        hooksecurefunc("KeyBindingFrame_OnKeyDown", function()
-            if arg1 == "ESCAPE" then
-                HideUIPanel(KeyBindingFrame)
-            end
-        end, true)
 
         local origShowUIPanel = ShowUIPanel
         _G.ShowUIPanel = function(frame, force)
