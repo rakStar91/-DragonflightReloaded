@@ -34,17 +34,26 @@ DFRL:NewMod("RangeIndicator", 1, function()
         end
 
         self.useSimple = DFRL:GetTempDB("RangeIndicator", "indicatorSimple")
+        self.useDark = DFRL:GetTempDB("RangeIndicator", "indicatorDark")
         
         if self.useSimple then
             self.indicator = button:CreateFontString(nil, "OVERLAY")
             self.indicator:SetFont("Fonts\\FRIZQT__.TTF", 20, "OUTLINE")
             self.indicator:SetText("•")
-            self.indicator:SetTextColor(1, 0.2, 0.2)
+            if self.useDark then
+                self.indicator:SetTextColor(0, 0, 0)
+            else
+                self.indicator:SetTextColor(1, 0.2, 0.2)
+            end
             self.indicator:SetPoint("TOPRIGHT", button, "TOPRIGHT", -0, 3)
         else
             self.indicator = button:CreateTexture(nil, "OVERLAY")
             self.indicator:SetTexture(self.texpath .. "indicator_.tga")
-            self.indicator:SetVertexColor(1, 0, 0)
+            if self.useDark then
+                self.indicator:SetVertexColor(0, 0, 0)
+            else
+                self.indicator:SetVertexColor(1, 0, 0)
+            end
             self.indicator:SetAllPoints(button)
             self.indicator:SetPoint("CENTER", button, "CENTER", -0, -0)
         end
