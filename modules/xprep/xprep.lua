@@ -3,12 +3,13 @@ DFRL:NewDefaults("Xprep", {
 
     xprepDarkMode = {0, "slider", {0, 1}, nil, "appearance", 1, "Adjust dark mode intensity", nil, nil},
 
-    showXpText = {true, "checkbox", nil, nil, "experience Bar", 1, "Show or hide XP text on the XP bar", nil, nil},
-    hoverXP = {true, "checkbox", nil, nil, "experience Bar", 2, "Show XP text when hovering over the XP bar", nil, nil},
-    showXpOnGain = {true, "checkbox", nil, nil, "experience Bar", 3, "Show XP text for 5 seconds when gaining XP", nil, nil},
-    xpBarTextSize = {12, "slider", {8, 20}, nil, "experience Bar", 4, "Adjusts the font size of the XP bar text", nil, nil},
-    xpBarHeight = {12, "slider", {5, 20}, nil, "experience Bar", 5, "Adjusts the height of the XP bar", nil, nil},
-    xpBarWidth = {400, "slider", {200, 700}, nil, "experience Bar", 6, "Adjusts the width of the XP bar", nil, nil},
+    showXpBar = {true, "checkbox", nil, nil, "experience Bar", 1, "Show or hide the XP bar", nil, nil},
+    showXpText = {true, "checkbox", nil, nil, "experience Bar", 2, "Show or hide XP text on the XP bar", nil, nil},
+    hoverXP = {true, "checkbox", nil, "showXpText", "experience Bar", 3, "Show XP text when hovering over the XP bar", nil, nil},
+    showXpOnGain = {true, "checkbox", nil, "showXpText", "experience Bar", 4, "Show XP text for 5 seconds when gaining XP", nil, nil},
+    xpBarTextSize = {12, "slider", {8, 20}, "showXpText", "experience Bar", 5, "Adjusts the font size of the XP bar text", nil, nil},
+    xpBarHeight = {12, "slider", {5, 20}, "showXpBar", "experience Bar", 6, "Adjusts the height of the XP bar", nil, nil},
+    xpBarWidth = {400, "slider", {200, 700}, "showXpBar", "experience Bar", 7, "Adjusts the width of the XP bar", nil, nil},
 
     barFont = {"Myriad-Pro", "dropdown", {
         "FRIZQT__.TTF",
@@ -23,16 +24,16 @@ DFRL:NewDefaults("Xprep", {
         "BigNoodleTitling",
         "Continuum",
         "DieDieDie"
-    }, nil, "font", 7, "Change the font used for the experience and reputation bar", nil, nil},
+    }, nil, "font", 8, "Change the font used for the experience and reputation bar", nil, nil},
 
 
-    showRepText = {true, "checkbox", nil, nil, "reputation Bar", 8, "Show or hide reputation text on the reputation bar", nil, nil},
-    autoTrack = {true, "checkbox", nil, nil, "reputation Bar", 9, "Automatically track reputation for factions you gain reputation with", nil, nil},
-    hoverRep = {true, "checkbox", nil, nil, "reputation Bar", 10, "Show reputation text when hovering over the reputation bar", nil, nil},
-    showRepOnGain = {true, "checkbox", nil, nil, "reputation Bar", 11, "Show reputation text for 5 seconds when gaining reputation", nil, nil},
-    repBarTextSize = {11, "slider", {8, 20}, nil, "reputation Bar", 12, "Adjusts the font size of the reputation bar text", nil, nil},
-    repBarHeight = {10, "slider", {5, 20}, nil, "reputation Bar", 13, "Adjusts the height of the reputation bar", nil, nil},
-    repBarWidth = {300, "slider", {200, 700}, nil, "reputation Bar", 14, "Adjusts the width of the reputation bar", nil, nil},
+    showRepText = {true, "checkbox", nil, nil, "reputation Bar", 9, "Show or hide reputation text on the reputation bar", nil, nil},
+    autoTrack = {true, "checkbox", nil, nil, "reputation Bar", 10, "Automatically track reputation for factions you gain reputation with", nil, nil},
+    hoverRep = {true, "checkbox", nil, nil, "reputation Bar", 11, "Show reputation text when hovering over the reputation bar", nil, nil},
+    showRepOnGain = {true, "checkbox", nil, nil, "reputation Bar", 12, "Show reputation text for 5 seconds when gaining reputation", nil, nil},
+    repBarTextSize = {11, "slider", {8, 20}, nil, "reputation Bar", 13, "Adjusts the font size of the reputation bar text", nil, nil},
+    repBarHeight = {10, "slider", {5, 20}, nil, "reputation Bar", 14, "Adjusts the height of the reputation bar", nil, nil},
+    repBarWidth = {300, "slider", {200, 700}, nil, "reputation Bar", 15, "Adjusts the width of the reputation bar", nil, nil},
 
 })
 
@@ -105,13 +106,20 @@ DFRL:NewMod("Xprep", 1, function()
             self.xpBarRightBorder:SetTexCoord(1, 0, 0, 1)
         end
 
+        function Setup:XpBarText()
+            self.xpBarText = self.xpBar:CreateFontString(nil, "OVERLAY")
+            self.xpBarText:SetPoint("CENTER", self.xpBar, "CENTER", 0, 1)
+            self.xpBarText:SetFont("Fonts\\FRIZQT__.TTF", 10, "OUTLINE")
+            self.xpBarText:Hide()
+        end
+
         function Setup:UpdateXPBar()
             local currXP = UnitXP("player")
             local maxXP = UnitXPMax("player")
             local playerLevel = UnitLevel("player")
             local restXP = GetXPExhaustion()
 
-            if playerLevel == 60 then
+            if playerLevel == 60 or not DFRL:GetTempDB("Xprep", "showXpBar") then
                 self.xpBar:Hide()
             else
                 self.xpBar:Show()
@@ -129,7 +137,7 @@ DFRL:NewMod("Xprep", 1, function()
 
                 debugprint("Setting XP bar to blue (rested)")
             else
-                self.xpBar:SetStatusBarColor(0.7, 0.2, 0.7)
+                self.xpBar:SetStatusBarColor(0.85, 0.4, 0.85)
                 debugprint("Setting XP bar to purple (normal)")
             end
 
@@ -225,6 +233,7 @@ DFRL:NewMod("Xprep", 1, function()
         function Setup:Run()
             Setup:BlizzardBars()
             Setup:XPBar()
+            Setup:XpBarText()
             Setup:RepBar()
             Setup:UpdateRepBar()
         end
@@ -244,6 +253,14 @@ DFRL:NewMod("Xprep", 1, function()
         -- CALLBACKS
         --=================
         local callbacks = {}
+
+        callbacks.showXpBar = function(value)
+            if value then
+                Setup.xpBar:Show()
+            else
+                Setup.xpBar:Hide()
+            end
+        end
 
         callbacks.xprepDarkMode = function(value)
             local intensity = DFRL:GetTempDB("Xprep", "xprepDarkMode") or 0
@@ -319,21 +336,19 @@ DFRL:NewMod("Xprep", 1, function()
         end
 
         callbacks.hoverXP = function(value)
-            if Setup.xpBarText then
-                if value then
-                    Setup.xpBar:SetScript("OnEnter", function()
-                        Setup.xpBarText:Show()
-                    end)
-                    Setup.xpBar:SetScript("OnLeave", function()
-                        Setup.xpBarText:Hide()
-                    end)
+            if value then
+                Setup.xpBar:SetScript("OnEnter", function()
+                    Setup.xpBarText:Show()
+                end)
+                Setup.xpBar:SetScript("OnLeave", function()
                     Setup.xpBarText:Hide()
-                else
-                    Setup.xpBar:SetScript("OnEnter", nil)
-                    Setup.xpBar:SetScript("OnLeave", nil)
-                    if DFRL:GetTempDB("Xprep", "showXpText") then
-                        Setup.xpBarText:Show()
-                    end
+                end)
+                Setup.xpBarText:Hide()
+            else
+                Setup.xpBar:SetScript("OnEnter", nil)
+                Setup.xpBar:SetScript("OnLeave", nil)
+                if DFRL:GetTempDB("Xprep", "showXpText") then
+                    Setup.xpBarText:Show()
                 end
             end
         end
@@ -341,15 +356,11 @@ DFRL:NewMod("Xprep", 1, function()
         callbacks.showXpOnGain = function(value)
             Setup.xpOnGainEnabled = value
             if value then
-                if Setup.xpBarText then
-                    Setup.xpBarText:Hide()
-                end
+                Setup.xpBarText:Hide()
                 Setup.xpOnGainTimer = 0
             else
-                if Setup.xpBarText then
-                    if DFRL:GetTempDB("Xprep", "showXpOnGain") then
-                        Setup.xpBarText:Show()
-                    end
+                if DFRL:GetTempDB("Xprep", "showXpText") and not DFRL:GetTempDB("Xprep", "hoverXP") then
+                    Setup.xpBarText:Show()
                 end
             end
         end
@@ -388,30 +399,22 @@ DFRL:NewMod("Xprep", 1, function()
         end
 
         callbacks.showXpText = function(value)
-            if not Setup.xpBarText and value then
-                Setup.xpBarText = Setup.xpBar:CreateFontString(nil, "OVERLAY")
-                Setup.xpBarText:SetPoint("CENTER", Setup.xpBar, "CENTER", 0, 1)
-                Setup.xpBarText:SetFont("Fonts\\FRIZQT__.TTF", 10, "OUTLINE")
-            end
-
-            if Setup.xpBarText then
-                if value then
-                    local currXP = UnitXP("player")
-                    local maxXP = UnitXPMax("player")
-                    local restXP = GetXPExhaustion() or 0
-                    local restPercent = 0
-                    if maxXP > 0 then
-                        restPercent = math.floor((restXP / maxXP) * 100)
-                    end
-                    Setup.xpBarText:SetText(currXP .. " / " .. maxXP .. " (" .. restPercent .. "% rested)")
-                    if not DFRL:GetTempDB("Xprep", "hoverXP") then
-                        Setup.xpBarText:Show()
-                    else
-                        Setup.xpBarText:Hide()
-                    end
+            if value then
+                local currXP = UnitXP("player")
+                local maxXP = UnitXPMax("player")
+                local restXP = GetXPExhaustion() or 0
+                local restPercent = 0
+                if maxXP > 0 then
+                    restPercent = math.floor((restXP / maxXP) * 100)
+                end
+                Setup.xpBarText:SetText(currXP .. " / " .. maxXP .. " (" .. restPercent .. "% rested)")
+                if not DFRL:GetTempDB("Xprep", "hoverXP") and not DFRL:GetTempDB("Xprep", "showXpOnGain") then
+                    Setup.xpBarText:Show()
                 else
                     Setup.xpBarText:Hide()
                 end
+            else
+                Setup.xpBarText:Hide()
             end
         end
 
@@ -586,9 +589,7 @@ DFRL:NewMod("Xprep", 1, function()
                     f:SetScript("OnUpdate", function()
                         Setup.xpOnGainTimer = Setup.xpOnGainTimer - arg1
                         if Setup.xpOnGainTimer <= 0 then
-                            if not DFRL:GetTempDB("Xprep", "showXpText") or DFRL:GetTempDB("Xprep", "hoverXP") then
-                                Setup.xpBarText:Hide()
-                            end
+                            Setup.xpBarText:Hide()
                             this:SetScript("OnUpdate", nil)
                             DFRL.activeScripts["XpGainTimerScript"] = false
                         else
@@ -600,6 +601,11 @@ DFRL:NewMod("Xprep", 1, function()
         end)
         Setup:UpdateXPBar()
         DFRL:NewCallbacks("Xprep", callbacks)
+        
+        -- -- Apply hover setting after everything is initialized
+        -- if DFRL:GetTempDB("Xprep", "hoverXP") then
+        --     callbacks.hoverXP(true)
+        -- end
 
         f2:UnregisterEvent("PLAYER_ENTERING_WORLD")
     end)

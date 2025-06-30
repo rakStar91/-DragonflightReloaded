@@ -11,6 +11,7 @@ local darkMode = {
 		["enabled"] = true,
 	},
     ["Xprep"] = {
+        ["showXpBar"] = true,
         ["showXpText"] = true,
         ["xprepDarkMode"] = 1,
         ["showRepText"] = true,
@@ -292,6 +293,7 @@ local lightMode = {
         ["enabled"] = true,
     },
     ["Xprep"] = {
+        ["showXpBar"] = true,
         ["showXpText"] = true,
         ["xprepDarkMode"] = 0,
         ["showRepText"] = true,

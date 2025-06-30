@@ -205,5 +205,7 @@ DFRL:NewMod("RangeIndicator", 1, function()
         end
     end)
 
+    DFRL.activeScripts["RangeIndicatorScript"] = false
+
     DFRL:NewCallbacks("RangeIndicator", callbacks)
 end)

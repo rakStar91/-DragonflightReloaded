@@ -305,6 +305,12 @@ DFRL:NewMod("Bags", 1, function()
                 pushed:SetVertexColor(color[1], color[2], color[3])
             end
 
+            if DFRL.bagToggleButton then
+                DFRL.bagToggleButton:GetNormalTexture():SetVertexColor(color[1], color[2], color[3])
+                DFRL.bagToggleButton:GetHighlightTexture():SetVertexColor(color[1], color[2], color[3])
+                DFRL.bagToggleButton:GetPushedTexture():SetVertexColor(color[1], color[2], color[3])
+            end
+
             if KeyRingButton then
                 KeyRingButton.Border:SetVertexColor(color[1], color[2], color[3])
                 local normal = KeyRingButton:GetNormalTexture()
@@ -356,6 +362,7 @@ DFRL:NewMod("Bags", 1, function()
 
         callbacks.bagScale = function(value)
             MainMenuBarBackpackButton:SetScale(value)
+            DFRL.bagToggleButton:SetScale(value / 1.8)
         end
 
         callbacks.bagAlpha = function(value)

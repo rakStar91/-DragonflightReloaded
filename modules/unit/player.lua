@@ -186,6 +186,7 @@ DFRL:NewMod("Player", 1, function()
     end
 
     function Setup:CombatGlow()
+        function _G.PlayerFrame_UpdateStatus() end
         PlayerAttackGlow:SetTexture("")
         PlayerAttackIcon:SetTexture("")
 

@@ -146,7 +146,6 @@ DFRL:NewMod("Bars", 1, function()
             MainMenuBarArtFrame:EnableMouse(false)
             PetActionBarFrame:EnableMouse(false)
 
-            ---@diagnostic disable-next-line: undefined-field
             KillFrame(_G.ExhaustionTick)
 
             SlidingActionBarTexture0:SetTexture(nil)
@@ -1435,15 +1434,12 @@ DFRL:NewMod("Bars", 1, function()
         end
 
         DFRL.activeScripts["BarRepositionScript"] = false
-        DFRL.activeScripts["RangeIndicatorScript"] = false
 
         -- execute callbacks
         DFRL:NewCallbacks("Bars", callbacks)
 
-        -- disable blizzard's multiactionbar update
         _G["MultiActionBar_Update"] = function() end
 
-        -- disable blizzard's interface checkboxes
         local checkboxes = {33, 34, 35, 36}
         for i = 1, 4 do
             local checkbox = _G["UIOptionsFrameCheckButton" .. checkboxes[i]]
