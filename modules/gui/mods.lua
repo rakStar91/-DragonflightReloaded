@@ -39,8 +39,8 @@ DFRL:NewMod("Gui-mods", 3, function()
 
             table.sort(modules)
 
-            local row, line, count = 2, 6, 0
-            local maxPerRow = 5
+            local row, line, count = 1, 6, 0
+            local maxPerRow = 4
 
             for i = 1, table.getn(modules) do
                 if count >= maxPerRow then

@@ -1,9 +1,9 @@
-DFRL:NewDefaults("UpdateTracker", {
+DFRL:NewDefaults("UpdateNotifier", {
     enabled = {true},
     updateDays = {"7"},
 })
 
-DFRL:NewMod("UpdateTracker", 1, function()
+DFRL:NewMod("UpdateNotifier", 1, function()
     debugprint(">> BOOTING")
 
     --=================
@@ -67,7 +67,7 @@ DFRL:NewMod("UpdateTracker", 1, function()
 
         if stored and stored.date then
             debugprint("Valid date found: " .. tostring(stored.date))
-            local setting = DFRL:GetTempDB("UpdateTracker", "updateDays")
+            local setting = DFRL:GetTempDB("UpdateNotifier", "updateDays")
             debugprint("Update setting: " .. tostring(setting))
 
             if setting == "never" then
@@ -126,7 +126,7 @@ DFRL:NewMod("UpdateTracker", 1, function()
         end
 
         if not self.dd then
-            self.dd = DFRL.tools.CreateDropDown(self.frame, "Days to remind again:", "UpdateTracker", "updateDays", {"7", "14", "30", "never"}, true, 20, 60)
+            self.dd = DFRL.tools.CreateDropDown(self.frame, "Days to remind again:", "UpdateNotifier", "updateDays", {"7", "14", "30", "never"}, true, 20, 60)
             self.dd:SetPoint("CENTER", self.frame, "CENTER", 0, -15)
             debugprint("Dropdown created")
         end

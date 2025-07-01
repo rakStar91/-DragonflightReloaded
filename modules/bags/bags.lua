@@ -4,7 +4,7 @@ DFRL:NewDefaults("Bags", {
     bagDarkMode = {0, "slider", {0, 1}, "showBags", "appearance", 1, "Adjust dark mode intensity", nil, nil},
     showBags = {true, "checkbox", nil, nil, "appearance", 2, "Show or hide the bag frame", nil, nil},
 
-    hoverShow = {false, "checkbox", nil, "showBags", "bag basic", 3, "Show or hide bags on mouse hover", "BUG: REVERTS KEYRING - FIX SOON", nil},
+    hoverShow = {false, "checkbox", nil, "showBags", "bag basic", 3, "Show or hide bags on mouse hover", nil, nil},
     toggleBags = {true, "checkbox", nil, "showBags", "bag basic", 4, "Show or hide the small bag slots", nil, nil},
     showToggle = {true, "checkbox", nil, "showBags", "bag basic", 5, "Show or hide the bag toggle button", nil, nil},
     bagScale = {1.5, "slider", {0.5, 2.5}, "showBags", "bag basic", 6, "Adjusts the scale of the main backpack", nil, nil},
@@ -489,13 +489,13 @@ DFRL:NewMod("Bags", 1, function()
                     end
                 end
                 if KeyRingButton then
-                    if toggleBags then
+                    if toggleBags and HasKey() then
                         KeyRingButton:SetAlpha(alpha)
                     else
                         KeyRingButton:SetAlpha(0)
                     end
                 end
-                if DFRL.bagToggleButton then
+                if DFRL.bagToggleButton and DFRL:GetTempDB("Bags", "showToggle") then
                     DFRL.bagToggleButton:SetAlpha(alpha)
                 end
             end
@@ -516,9 +516,9 @@ DFRL:NewMod("Bags", 1, function()
                         if toggleBags then FadeIn(slot) else slot:SetAlpha(0) end
                     end
                     if KeyRingButton then
-                        if toggleBags then FadeIn(KeyRingButton) else KeyRingButton:SetAlpha(0) end
+                        if toggleBags and HasKey() then FadeIn(KeyRingButton) else KeyRingButton:SetAlpha(0) end
                     end
-                    if DFRL.bagToggleButton then FadeIn(DFRL.bagToggleButton) end
+                    if DFRL.bagToggleButton and DFRL:GetTempDB("Bags", "showToggle") then FadeIn(DFRL.bagToggleButton) end
                 end
 
                 local function OnLeave()
@@ -529,9 +529,9 @@ DFRL:NewMod("Bags", 1, function()
                         if toggleBags then FadeOut(slot) else slot:SetAlpha(0) end
                     end
                     if KeyRingButton then
-                        if toggleBags then FadeOut(KeyRingButton) else KeyRingButton:SetAlpha(0) end
+                        if toggleBags and HasKey() then FadeOut(KeyRingButton) else KeyRingButton:SetAlpha(0) end
                     end
-                    if DFRL.bagToggleButton then FadeOut(DFRL.bagToggleButton) end
+                    if DFRL.bagToggleButton and DFRL:GetTempDB("Bags", "showToggle") then FadeOut(DFRL.bagToggleButton) end
                 end
 
                 MainMenuBarBackpackButton:SetScript("OnEnter", OnEnter)
@@ -567,12 +567,8 @@ DFRL:NewMod("Bags", 1, function()
                     DFRL.bagToggleButton:SetScript("OnLeave", nil)
                 end
 
-                local showBags = DFRL:GetTempDB("Bags", "showBags")
-                if showBags then
-                    SetBagAlpha(1)
-                else
-                    SetBagAlpha(0)
-                end
+                callbacks.bagAlpha(DFRL:GetTempDB("Bags", "bagAlpha"))
+                callbacks.toggleBags(DFRL:GetTempDB("Bags", "toggleBags"))
             end
         end
 
