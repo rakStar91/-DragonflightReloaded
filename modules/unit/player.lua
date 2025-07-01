@@ -341,7 +341,7 @@ DFRL:NewMod("Player", 1, function()
 
             if not Setup.texts.healthPercentShow then
                 Setup.texts.healthValue:ClearAllPoints()
-                Setup.texts.healthValue:SetPoint("CENTER", PlayerFrameHealthBar, "CENTER", 0, 1)
+                Setup.texts.healthValue:SetPoint("CENTER", PlayerFrameHealthBar, "CENTER", -3, 1)
             else
                 Setup.texts.healthValue:ClearAllPoints()
                 Setup.texts.healthValue:SetPoint("RIGHT", PlayerFrameHealthBar, "RIGHT", -5, 1)
@@ -765,10 +765,8 @@ DFRL:NewMod("Player", 1, function()
     f:RegisterEvent("PLAYER_REGEN_DISABLED")
     f:SetScript("OnEvent", function()
         if event == "PLAYER_ENTERING_WORLD" then
-            -- init setup
-            Setup:Run()
 
-            -- execute callbacks
+            Setup:Run()
             DFRL:NewCallbacks("Player", callbacks)
 
             f:UnregisterEvent("PLAYER_ENTERING_WORLD")
