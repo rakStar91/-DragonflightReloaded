@@ -23,9 +23,9 @@ local darkMode = {
         ["barFont"] = "Myriad-Pro",
         ["xpBarWidth"] = 400,
     },
-    ["UpdateTracker"] = {
+    ["PVPIcon"] = {
         ["enabled"] = true,
-        ["updateDays"] = "7",
+        ["pvpDark"] = true,
     },
     ["Micro"] = {
         ["microScale"] = 0.85,
@@ -35,9 +35,7 @@ local darkMode = {
         ["microSpacing"] = 3,
         ["enabled"] = true,
     },
-    ["Chat"] = {
-        ["chatDarkMode"] = 1,
-        ["showButtons"] = true,
+    ["Gui-mods"] = {
         ["enabled"] = true,
     },
     ["Cast"] = {
@@ -57,6 +55,7 @@ local darkMode = {
         ["castDarkMode"] = 1,
         ["showTime"] = true,
         ["setFillDirection"] = "left",
+        ["showIcon"] = true,
     },
     ["Target"] = {
         ["enabled"] = true,
@@ -72,8 +71,13 @@ local darkMode = {
     ["Gui-prof"] = {
         ["enabled"] = true,
     },
-    ["Cut-Out"] = {
+    ["Mini"] = {
         ["enabled"] = true,
+        ["noPercent"] = true,
+        ["frameFont"] = "BigNoodleTitling",
+        ["miniDarkMode"] = 1,
+        ["colorReaction"] = true,
+        ["miniTextShow"] = true,
     },
     ["Collector"] = {
         ["enabled"] = true,
@@ -81,17 +85,17 @@ local darkMode = {
     },
     ["Map"] = {
         ["alphaShadow"] = 1,
-        ["showTopPanel"] = true,
+        ["timeSize"] = 10,
         ["mapDarkMode"] = 1,
         ["zoneTextY"] = -3,
         ["mapAlpha"] = 1,
         ["alphaZoom"] = 1,
         ["showZoom"] = true,
-        ["zoomY"] = 40,
+        ["enabled"] = true,
         ["timeY"] = -3,
         ["zoneTextX"] = 4,
         ["mapSize"] = 180,
-        ["timeSize"] = 10,
+        ["showTopPanel"] = true,
         ["mapTime"] = true,
         ["timeX"] = -4,
         ["zoomX"] = -5,
@@ -100,19 +104,15 @@ local darkMode = {
         ["mapShadow"] = true,
         ["topPanelHeight"] = 11.9,
         ["topPanelFont"] = "BigNoodleTitling",
-        ["enabled"] = true,
+        ["zoomY"] = 40,
         ["topPanelWidth"] = 180,
     },
     ["Frames"] = {
         ["enabled"] = true,
     },
-    ["Mini"] = {
+    ["UpdateNotifier"] = {
         ["enabled"] = true,
-        ["noPercent"] = true,
-        ["frameFont"] = "BigNoodleTitling",
-        ["miniDarkMode"] = 1,
-        ["colorReaction"] = true,
-        ["miniTextShow"] = true,
+        ["updateDays"] = "7",
     },
     ["RangeIndicator"] = {
         ["enabled"] = true,
@@ -122,10 +122,10 @@ local darkMode = {
     },
     ["Ui"] = {
         ["enabled"] = true,
-        ["questLog"] = true,
+        ["cameraDistanceFactor"] = 3,
         ["lowHpThreshold"] = 70,
         ["gameMenu"] = true,
-        ["cameraDistanceFactor"] = 3,
+        ["questLog"] = true,
         ["lowHpWarn"] = true,
         ["characterPanel"] = true,
     },
@@ -141,9 +141,6 @@ local darkMode = {
         ["enabled"] = true,
     },
     ["Gui-home"] = {
-        ["enabled"] = true,
-    },
-    ["Gui-base"] = {
         ["enabled"] = true,
     },
     ["Player"] = {
@@ -168,6 +165,9 @@ local darkMode = {
         ["glowAlpha"] = 1,
         ["restingGlow"] = true,
     },
+    ["Gui-base"] = {
+        ["enabled"] = true,
+    },
     ["Bags"] = {
         ["enabled"] = true,
         ["bagScale"] = 1.5,
@@ -178,14 +178,13 @@ local darkMode = {
         ["freeSlots"] = true,
         ["showToggle"] = true,
     },
-    ["PVPIcon"] = {
+    ["Cut-Out"] = {
         ["enabled"] = true,
-        ["pvpDark"] = true,
     },
     ["Bars"] = {
-        ["multiBarThreeAlpha"] = 1,
+        ["showGryphoon"] = true,
         ["pagingShow"] = true,
-        ["multiBarTwoGrid"] = 1,
+        ["pagingSwap"] = true,
         ["multiBarFourSpacing"] = 6,
         ["multiBarTwoSpacing"] = 6,
         ["gryphoonY"] = 10,
@@ -193,56 +192,56 @@ local darkMode = {
         ["mainBarScale"] = 1,
         ["mainBarSpacing"] = 6,
         ["multiBarThreeScale"] = 0.8,
-        ["hotkeyShow"] = true,
+        ["shapeshiftScale"] = 0.8,
         ["multiBarFourAlpha"] = 1,
         ["multiBarFourScale"] = 0.8,
         ["gryphoonX"] = -48,
-        ["mainBarAlpha"] = 1,
-        ["macroY"] = 2,
+        ["multiBarOneSpacing"] = 6,
+        ["multiBarOneGrid"] = 1,
         ["macroScale"] = 1.3,
         ["highlightColor"] = {
             [1] = 1,
             [2] = 0.82,
             [3] = 0,
         },
-        ["petbarScale"] = 0.8,
         ["macroColour"] = {
             [1] = 1,
             [2] = 1,
             [3] = 1,
         },
-        ["multiBarOneSpacing"] = 6,
-        ["multiBarOneAlpha"] = 1,
         ["barsDarkMode"] = 1,
+        ["mainBarAlpha"] = 1,
+        ["multiBarOneAlpha"] = 1,
+        ["hotkeyShow"] = true,
         ["multiBarThreeSpacing"] = 6,
-        ["pagingSwap"] = true,
+        ["pagingX"] = 15,
         ["hotkeyX"] = 0,
         ["multiBarTwoAlpha"] = 1,
         ["shapeshiftSpacing"] = 6,
-        ["showGryphoon"] = true,
+        ["multiBarTwoGrid"] = 1,
         ["multiBarOneScale"] = 1,
         ["multiBarFourGrid"] = 6,
-        ["pagingX"] = 15,
+        ["multiBarThreeAlpha"] = 1,
         ["macroShow"] = true,
         ["multiBarFourShow"] = true,
         ["multiBarTwoScale"] = 1,
         ["hotkeyY"] = -2,
         ["petbarSpacing"] = 6,
-        ["shapeshiftAlpha"] = 1,
         ["hotkeyColour"] = {
             [1] = 1,
             [2] = 0.82,
             [3] = 0,
         },
         ["mainBarBG"] = true,
+        ["shapeshiftAlpha"] = 1,
         ["pagingScale"] = 0.9,
         ["hotkeyScale"] = 1.4,
         ["hotkeyFont"] = "BigNoodleTitling",
         ["enabled"] = true,
+        ["petbarScale"] = 0.8,
         ["gryphoonScale"] = 1,
-        ["shapeshiftScale"] = 0.8,
         ["macroX"] = 0,
-        ["multiBarOneGrid"] = 1,
+        ["macroY"] = 2,
         ["multiBarThreeGrid"] = 6,
     },
     ["GUI-Dragonflight"] = {
@@ -259,8 +258,10 @@ local darkMode = {
             [3] = 0,
         },
     },
-    ["Gui-mods"] = {
+    ["Chat"] = {
         ["enabled"] = true,
+        ["showButtons"] = true,
+        ["chatDarkMode"] = 1,
     },
 }
 
@@ -287,8 +288,9 @@ local lightMode = {
         ["barFont"] = "Myriad-Pro",
         ["xpBarWidth"] = 400,
     },
-    ["PVPIcon"] = {
+    ["UpdateNotifier"] = {
         ["enabled"] = true,
+        ["updateDays"] = "7",
     },
     ["Micro"] = {
         ["microScale"] = 0.85,
@@ -298,9 +300,7 @@ local lightMode = {
         ["microSpacing"] = 3,
         ["enabled"] = true,
     },
-    ["Chat"] = {
-        ["chatDarkMode"] = 0,
-        ["showButtons"] = true,
+    ["Gui-mods"] = {
         ["enabled"] = true,
     },
     ["Cast"] = {
@@ -320,6 +320,7 @@ local lightMode = {
         ["castDarkMode"] = 0,
         ["showTime"] = true,
         ["setFillDirection"] = "left",
+        ["showIcon"] = true,
     },
     ["Target"] = {
         ["enabled"] = true,
@@ -335,8 +336,13 @@ local lightMode = {
     ["Gui-prof"] = {
         ["enabled"] = true,
     },
-    ["Cut-Out"] = {
+    ["Mini"] = {
         ["enabled"] = true,
+        ["noPercent"] = true,
+        ["frameFont"] = "BigNoodleTitling",
+        ["miniDarkMode"] = 0,
+        ["miniTextShow"] = true,
+        ["colorReaction"] = true,
     },
     ["Collector"] = {
         ["enabled"] = true,
@@ -344,17 +350,17 @@ local lightMode = {
     },
     ["Map"] = {
         ["alphaShadow"] = 0.3,
-        ["showTopPanel"] = true,
+        ["timeSize"] = 10,
         ["mapDarkMode"] = 0,
         ["zoneTextY"] = -3,
         ["mapAlpha"] = 1,
         ["alphaZoom"] = 1,
         ["showZoom"] = true,
-        ["zoomY"] = 40,
+        ["enabled"] = true,
         ["timeY"] = -3,
         ["zoneTextX"] = 4,
         ["mapSize"] = 180,
-        ["timeSize"] = 10,
+        ["showTopPanel"] = true,
         ["mapTime"] = true,
         ["timeX"] = -4,
         ["zoomX"] = -5,
@@ -363,19 +369,14 @@ local lightMode = {
         ["mapShadow"] = true,
         ["topPanelHeight"] = 12,
         ["topPanelFont"] = "BigNoodleTitling",
-        ["enabled"] = true,
+        ["zoomY"] = 40,
         ["topPanelWidth"] = 180,
     },
     ["Frames"] = {
         ["enabled"] = true,
     },
-    ["Mini"] = {
+    ["PVPIcon"] = {
         ["enabled"] = true,
-        ["noPercent"] = true,
-        ["frameFont"] = "BigNoodleTitling",
-        ["miniDarkMode"] = 0,
-        ["miniTextShow"] = true,
-        ["colorReaction"] = true,
     },
     ["RangeIndicator"] = {
         ["enabled"] = true,
@@ -402,9 +403,6 @@ local lightMode = {
     ["Gui-home"] = {
         ["enabled"] = true,
     },
-    ["Gui-base"] = {
-        ["enabled"] = true,
-    },
     ["Player"] = {
         ["noPercent"] = true,
         ["glowSpeed"] = 1,
@@ -427,6 +425,9 @@ local lightMode = {
         ["glowAlpha"] = 1,
         ["restingGlow"] = true,
     },
+    ["Gui-base"] = {
+        ["enabled"] = true,
+    },
     ["Bags"] = {
         ["enabled"] = true,
         ["bagScale"] = 1.5,
@@ -437,27 +438,26 @@ local lightMode = {
         ["freeSlots"] = true,
         ["showToggle"] = true,
     },
-    ["UpdateTracker"] = {
+    ["Cut-Out"] = {
         ["enabled"] = true,
-        ["updateDays"] = "7",
     },
     ["Bars"] = {
-        ["multiBarThreeAlpha"] = 1,
+        ["pagingX"] = 15,
         ["pagingShow"] = true,
-        ["multiBarTwoGrid"] = 1,
+        ["pagingSwap"] = true,
         ["multiBarFourSpacing"] = 6,
         ["multiBarTwoSpacing"] = 6,
         ["gryphoonY"] = 10,
-        ["hotkeyFont"] = "BigNoodleTitling",
+        ["petbarAlpha"] = 1,
         ["mainBarScale"] = 1,
         ["mainBarSpacing"] = 6,
-        ["multiBarThreeScale"] = 0.8,
+        ["petbarScale"] = 0.8,
         ["hotkeyShow"] = true,
         ["multiBarFourAlpha"] = 1,
         ["multiBarFourScale"] = 0.8,
         ["gryphoonX"] = -48,
-        ["multiBarOneSpacing"] = 6,
-        ["macroY"] = 2,
+        ["mainBarAlpha"] = 1,
+        ["multiBarOneGrid"] = 1,
         ["macroScale"] = 1.3,
         ["highlightColor"] = {
             [1] = 1,
@@ -466,42 +466,42 @@ local lightMode = {
         },
         ["barsDarkMode"] = 0,
         ["gryphoonScale"] = 1,
-        ["shapeshiftScale"] = 0.8,
+        ["multiBarOneSpacing"] = 6,
         ["multiBarOneAlpha"] = 1,
-        ["mainBarAlpha"] = 1,
+        ["shapeshiftScale"] = 0.8,
         ["multiBarThreeSpacing"] = 6,
-        ["petbarAlpha"] = 1,
+        ["hotkeyFont"] = "BigNoodleTitling",
         ["hotkeyX"] = 0,
         ["multiBarTwoAlpha"] = 1,
         ["shapeshiftSpacing"] = 6,
-        ["pagingSwap"] = true,
+        ["multiBarTwoGrid"] = 1,
         ["multiBarOneScale"] = 1,
         ["multiBarFourGrid"] = 6,
-        ["pagingX"] = 15,
+        ["multiBarThreeAlpha"] = 1,
         ["macroShow"] = true,
         ["multiBarFourShow"] = true,
         ["multiBarTwoScale"] = 1,
         ["hotkeyY"] = -2,
         ["petbarSpacing"] = 6,
-        ["shapeshiftAlpha"] = 1,
         ["hotkeyColour"] = {
             [1] = 1,
             [2] = 0.82,
             [3] = 0,
         },
         ["mainBarBG"] = true,
+        ["shapeshiftAlpha"] = 1,
         ["pagingScale"] = 0.9,
         ["hotkeyScale"] = 1.4,
         ["showGryphoon"] = true,
         ["enabled"] = true,
+        ["multiBarThreeScale"] = 0.8,
         ["macroColour"] = {
             [1] = 1,
             [2] = 1,
             [3] = 1,
         },
-        ["petbarScale"] = 0.8,
         ["macroX"] = 0,
-        ["multiBarOneGrid"] = 1,
+        ["macroY"] = 2,
         ["multiBarThreeGrid"] = 6,
     },
     ["GUI-Dragonflight"] = {
@@ -518,8 +518,10 @@ local lightMode = {
             [3] = 0,
         },
     },
-    ["Gui-mods"] = {
+    ["Chat"] = {
         ["enabled"] = true,
+        ["showButtons"] = true,
+        ["chatDarkMode"] = 0,
     },
 }
 

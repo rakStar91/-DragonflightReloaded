@@ -25,8 +25,9 @@ DFRL:NewDefaults("Cast", {
     }, nil, "text settings", 7, "Change the font used for the castbar", nil, nil},
     showTime = {true, "checkbox", nil, nil, "text settings", 8, "Show casting time", nil, nil},
     showSpell = {true, "checkbox", nil, nil, "text settings", 9, "Show spell name text", nil, nil},
-    fontSize = {12, "slider", {5, 25}, nil, "text settings", 10, "Change castbar font size", nil, nil},
-    fontY = {-16, "slider", {-20, 20}, nil, "text settings", 11, "Change castbar font Y offset", nil, nil},
+    showIcon = {true, "checkbox", nil, nil, "text settings", 10, "Show casting spell icon", "REQUIRES SHAGUTWEAKS", nil},
+    fontSize = {12, "slider", {5, 25}, nil, "text settings", 11, "Change castbar font size", nil, nil},
+    fontY = {-16, "slider", {-20, 20}, nil, "text settings", 12, "Change castbar font Y offset", nil, nil},
 
 })
 
@@ -496,6 +497,26 @@ DFRL:NewMod("Cast", 1, function()
         end
     end
 
+    local UnitCastingInfo, UnitChannelInfo
+
+    local function InitShaguTweaks()
+        if ShaguTweaks and ShaguTweaks.UnitCastingInfo then
+            UnitCastingInfo = ShaguTweaks.UnitCastingInfo
+            UnitChannelInfo = ShaguTweaks.UnitChannelInfo
+            return true
+        end
+        return false
+    end
+
+    local checkFrame = CreateFrame("Frame")
+    checkFrame:RegisterEvent("ADDON_LOADED")
+    checkFrame:SetScript("OnEvent", function()
+        if event == "ADDON_LOADED" and arg1 == "ShaguTweaks" then
+            InitShaguTweaks()
+            checkFrame:UnregisterEvent("ADDON_LOADED")
+        end
+    end)
+
     --=================
     -- INIT
     --=================
@@ -600,6 +621,53 @@ DFRL:NewMod("Cast", 1, function()
     callbacks.fontY = function(value)
         Setup.text:SetPoint("LEFT", Setup.frame, "LEFT", 5, value)
         Setup.timeText:SetPoint("RIGHT", Setup.frame, "RIGHT", -5, value)
+    end
+
+    -- Create target icon frame
+    Setup.targetIcon = CreateFrame("Frame", nil, Setup.frame)
+    Setup.targetIcon:SetPoint("RIGHT", Setup.frame, "LEFT", -2, 0)
+    Setup.targetIcon:SetHeight(20)
+    Setup.targetIcon:SetWidth(20)
+    Setup.targetIcon:SetBackdrop({
+        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+        tile = true, tileSize = 8, edgeSize = 12,
+        insets = { left = 3, right = 3, top = 3, bottom = 3 }
+    })
+    
+    Setup.targetIcon.texture = Setup.targetIcon:CreateTexture(nil, "BACKGROUND")
+    Setup.targetIcon.texture:SetPoint("CENTER", 0, 0)
+    Setup.targetIcon.texture:SetWidth(16)
+    Setup.targetIcon.texture:SetHeight(16)
+    Setup.targetIcon:Hide()
+
+    local targetUpdateFrame
+    
+    callbacks.showIcon = function(value)
+        if value then
+            if not targetUpdateFrame then
+                targetUpdateFrame = CreateFrame("Frame")
+                targetUpdateFrame:SetScript("OnUpdate", function()
+                    if UnitCastingInfo then
+                        local cast, nameSubtext, text, texture = UnitCastingInfo("player")
+                        if not cast then
+                            cast, nameSubtext, text, texture = UnitChannelInfo("player")
+                        end
+                        
+                        if cast and texture and Setup.frame:IsShown() then
+                            Setup.targetIcon.texture:SetTexture(texture)
+                            Setup.targetIcon:Show()
+                        else
+                            Setup.targetIcon:Hide()
+                        end
+                    end
+                end)
+            end
+        else
+            Setup.targetIcon:Hide()
+            if targetUpdateFrame then
+                targetUpdateFrame:SetScript("OnUpdate", nil)
+            end
+        end
     end
 
     callbacks.castFont = function(value)
