@@ -43,6 +43,7 @@ DFRL:NewMod("Cut-Out", 1, function()
         cutoutFrame.barType = barType
         cutoutFrame.unit = unit
         cutoutFrame.lastValue = nil
+        cutoutFrame.initialized = false
 
         return cutoutFrame
     end
@@ -59,7 +60,17 @@ DFRL:NewMod("Cut-Out", 1, function()
             currentValue, maxValue = UnitMana(unit), UnitManaMax(unit)
         end
         
-        if maxValue == 0 or not frame.lastValue or currentValue >= frame.lastValue then
+        if maxValue == 0 then
+            return
+        end
+        
+        if not frame.initialized then
+            frame.lastValue = currentValue
+            frame.initialized = true
+            return
+        end
+        
+        if currentValue >= frame.lastValue then
             frame.lastValue = currentValue
             return
         end
@@ -120,11 +131,21 @@ DFRL:NewMod("Cut-Out", 1, function()
 
     local f = CreateFrame("Frame")
     f:RegisterEvent("PLAYER_ENTERING_WORLD")
+    f:RegisterEvent("PLAYER_TARGET_CHANGED")
     f:SetScript("OnEvent", function()
-        Setup:InitializeCutouts()
-        f:UnregisterEvent("PLAYER_ENTERING_WORLD")
-        f:SetScript("OnUpdate", function()
-            Setup:ProcessFadeAnimations()
-        end)
+        if event == "PLAYER_ENTERING_WORLD" then
+            Setup:InitializeCutouts()
+            f:UnregisterEvent("PLAYER_ENTERING_WORLD")
+            f:SetScript("OnUpdate", function()
+                Setup:ProcessFadeAnimations()
+            end)
+        elseif event == "PLAYER_TARGET_CHANGED" then
+            if TargetFrameHealthBar and TargetFrameHealthBar.cutoutFrame then
+                TargetFrameHealthBar.cutoutFrame.initialized = false
+            end
+            if TargetFrameManaBar and TargetFrameManaBar.cutoutFrame then
+                TargetFrameManaBar.cutoutFrame.initialized = false
+            end
+        end
     end)
 end)
