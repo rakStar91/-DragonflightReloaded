@@ -106,7 +106,8 @@ function Setup:WelcomePage()
                 _G.SlashCmdList["DFRL"]()
             end
         end)
-        DFRL:SetTempDBNoCallback("Generic", "firstRun", true)
+        local char = UnitName("player")
+        DFRL_CUR_PROFILE[char .. "_firstRun"] = true
     end)
 
     okBtn:SetScript("OnClick", function()
@@ -119,7 +120,8 @@ function Setup:WelcomePage()
                 self.welcomeFrame:SetScript("OnUpdate", nil)
             end
         end)
-        DFRL:SetTempDBNoCallback("Generic", "firstRun", true)
+        local char = UnitName("player")
+        DFRL_CUR_PROFILE[char .. "_firstRun"] = true
     end)
 
     local barWidth = self.welcomeConfig.barWidth
@@ -212,7 +214,8 @@ DFRL.activeScripts["PatchWarningScript"] = false
 local f = CreateFrame("Frame")
 f:RegisterEvent("VARIABLES_LOADED")
 f:SetScript("OnEvent", function()
-    if not DFRL:GetTempValue("Generic", "firstRun") then
+    local char = UnitName("player")
+    if not DFRL_CUR_PROFILE[char .. "_firstRun"] then
         Setup:WelcomePage()
     end
 
