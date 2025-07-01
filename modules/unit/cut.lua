@@ -52,29 +52,29 @@ DFRL:NewMod("Cut-Out", 1, function()
         if UnitIsDead(unit) or UnitIsGhost(unit) then
             return
         end
-        
+
         local currentValue, maxValue
         if frame.barType == "health" then
             currentValue, maxValue = UnitHealth(unit), UnitHealthMax(unit)
         else
             currentValue, maxValue = UnitMana(unit), UnitManaMax(unit)
         end
-        
+
         if maxValue == 0 then
             return
         end
-        
+
         if not frame.initialized then
             frame.lastValue = currentValue
             frame.initialized = true
             return
         end
-        
+
         if currentValue >= frame.lastValue then
             frame.lastValue = currentValue
             return
         end
-        
+
         local lostAmount = frame.lastValue - currentValue
         self:TriggerCutoutAnimation(frame, lostAmount, currentValue, maxValue)
         frame.lastValue = currentValue

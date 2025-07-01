@@ -80,8 +80,9 @@ DFRL:NewMod("Gui-elem", 3, function()
             ["Map"]     = {12, 1},
             ["Collector"] = {12, 2},
             ["Player"]  = {14, 1},
-            ["Target"]  = {14, 2},
-            ["Mini"]    = {14, 3},
+            ["PVPIcon"]  = {14, 2},
+            ["Target"]  = {14, 3},
+            ["Mini"]    = {14, 4},
             ["Xprep"]   = {15, 1},
         },
     }
