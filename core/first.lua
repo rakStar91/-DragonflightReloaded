@@ -22,6 +22,7 @@ local Setup = {
         title = "|cFFFF0000Important Patch Warning|r",
         text = "Patch 2.0.11 implemented the pvp icon natively.\n\nDo not place the 'TargetingFrame' folder into\nyour WoW/Interface/ dir anymore.\nDeactivate module for Blizzard default.",
         additionalText = "",
+        version = "2.0.11",
     },
 
     welcomeFrame = nil,
@@ -175,7 +176,7 @@ function Setup:PatchWarning()
 
     okBtn:SetScript("OnClick", function()
         patchFrame:Hide()
-        DFRL:SetTempDBNoCallback("Generic", "patchWarn", true)
+        DFRL:SetTempDBNoCallback("Generic", "patchWarnVersion", self.patchConfig.version)
     end)
 
     local barWidth = self.patchConfig.barWidth
@@ -215,7 +216,8 @@ f:SetScript("OnEvent", function()
         Setup:WelcomePage()
     end
 
-    if not DFRL:GetTempValue("Generic", "patchWarn") then
+    local seenVersion = DFRL:GetTempValue("Generic", "patchWarnVersion")
+    if seenVersion ~= Setup.patchConfig.version then
         Setup:PatchWarning()
     end
 end)
