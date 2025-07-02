@@ -572,7 +572,23 @@ DFRL:NewMod("Bags", 1, function()
             end
         end
 
-        -- event handler
+        --=================
+        -- HOOKS
+        --=================
+        local orig = _G.SetItemButtonCount
+        _G.SetItemButtonCount = function(button, count)
+            orig(button, count)
+            if button.isBag and count and count > 0 then
+                local countFrame = _G[button:GetName().."Count"]
+                if countFrame then
+                    countFrame:SetDrawLayer("ARTWORK")
+                end
+            end
+        end
+
+        --=================
+        -- EVENT
+        --=================        
         local f2 = CreateFrame("Frame")
         f2:RegisterEvent("BAG_UPDATE")
         f2:SetScript("OnEvent", function()

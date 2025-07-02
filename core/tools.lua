@@ -120,6 +120,26 @@ function HookAddonOrVariable(addon, func)
     end)
 end
 
+function HookUnitData(unit, func)
+    local lurker = CreateFrame("Frame", nil)
+    lurker.func = func
+    lurker:RegisterEvent("ADDON_LOADED")
+    lurker:RegisterEvent("VARIABLES_LOADED")
+    lurker:RegisterEvent("PLAYER_ENTERING_WORLD")
+    lurker:SetScript("OnEvent", function()
+        if event == "ADDON_LOADED" and not this.foundConfig then
+            return
+        elseif event == "VARIABLES_LOADED" then
+            this.foundConfig = true
+        end
+
+        if UnitHealth(unit) > 0 then
+            this:func()
+            this:UnregisterAllEvents()
+        end
+    end)
+end
+
 --=================
 -- GUI TOOLS
 --=================
