@@ -71,7 +71,7 @@ DFRL:NewMod("Bags", 1, function()
 
         function Setup:SmallBags()
             local bagAtlas = self.texpath .. "bagslots2x"
-            CharacterBag0Slot:SetPoint("RIGHT", MainMenuBarBackpackButton, "LEFT", -12, 0)
+            CharacterBag0Slot:SetPoint("RIGHT", MainMenuBarBackpackButton, "LEFT", -16, 0)
 
             for i = 1, 3 do
                 local gap = 0
@@ -228,7 +228,7 @@ DFRL:NewMod("Bags", 1, function()
                 local texture = GetInventoryItemTexture("player", ContainerIDToInventoryID(bagID))
 
                 if texture then
-                    iconTexture:SetTexture(texture)
+                    SetPortraitToTexture(iconTexture, texture)
                     iconTexture:Show()
                 else
                     iconTexture:Hide()

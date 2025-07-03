@@ -124,6 +124,7 @@ local darkMode = {
         ["enabled"] = true,
         ["cameraDistanceFactor"] = 3,
         ["lowHpThreshold"] = 70,
+        ["showPlates"] = false,
         ["gameMenu"] = true,
         ["questLog"] = true,
         ["lowHpWarn"] = true,
@@ -388,6 +389,7 @@ local lightMode = {
         ["cameraDistanceFactor"] = 3,
         ["lowHpWarn"] = true,
         ["lowHpThreshold"] = 70,
+        ["showPlates"] = false,
     },
     ["Tooltip"] = {
         ["enabled"] = true,

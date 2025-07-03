@@ -8,6 +8,7 @@ DFRL:NewDefaults("Ui", {
     lowHpWarn = {true, "checkbox", nil, nil, "tweaks", 5, "Show red border when health is low", nil, nil},
     lowHpThreshold = {70, "slider", {5, 95}, nil, "tweaks", 6, "Health threshold for low HP warning", nil, nil},
     cameraDistanceFactor = {3, "slider", {1, 5}, nil, "tweaks", 7, "Extended maximum camera distance", nil, nil},
+    showPlates = {false, "checkbox", nil, nil, "tweaks", 8, "Show nameplates only in combat", nil, nil},
 
 })
 
@@ -43,8 +44,6 @@ DFRL:NewMod("Ui", 5, function()
 
         FriendsFrameCloseButton:SetFrameLevel(100) -- for some reason this button is always behind the other frames
         FriendsFrameCloseButton:Show()
-
-
 
         for i = 1, 5 do
             table.insert(closeButtonData, {"ContainerFrame"..i, "ContainerFrame"..i.."CloseButton", -8, -8})
@@ -235,25 +234,25 @@ DFRL:NewMod("Ui", 5, function()
                 for i = 1, 12 do
                     local button = _G["SpellButton" .. i]
                     if button then
-                        local bg = button:CreateTexture("DFRL_SpellButtonBG" .. i, "BACKGROUND", 7)
-                        bg:SetTexture("Interface\\AddOns\\-DragonflightReloaded\\media\\tex\\ui\\spell_bg.tga")
-                        bg:SetPoint("TOPLEFT", button, "TOPLEFT", -3, 3)
-                        bg:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 3, -3)
+                        local bg = _G["SpellButton" .. i .. "Background"]
+                        if bg then
+                            bg:SetTexture("Interface\\AddOns\\-DragonflightReloaded\\media\\tex\\ui\\spell_bg.tga")
+                            bg:SetWidth(44)
+                            bg:SetHeight(44)
+                        end
                         _G["SpellButton" .. i.."SubSpellName"]:SetTextColor(0.9, 0.9, 0.8,0.6);
                     end
                 end
             end
         end
 
-        local function ReplaceSpellBookTextures()
-            ApplyCustomTextures(SpellBookFrame)
-        end
-
         if SpellBookFrame then
-            HookScript(SpellBookFrame, "OnShow", ReplaceSpellBookTextures)
+            HookScript(SpellBookFrame, "OnShow", function()
+                ApplyCustomTextures(SpellBookFrame)
+            end)
         end
 
-        ReplaceSpellBookTextures()
+        ApplyCustomTextures(SpellBookFrame)
     end
 
     -- callbacks
@@ -565,6 +564,32 @@ DFRL:NewMod("Ui", 5, function()
 
     callbacks.cameraDistanceFactor = function(value)
         SetCVar("CameraDistanceMaxFactor", value)
+    end
+
+    callbacks.showPlates = function(value)
+        if not DFRL.nameplateFrame then
+            local f = CreateFrame("Frame")
+            f:SetScript("OnEvent", function()
+                if event == "PLAYER_ENTERING_WORLD" then
+                    this:UnregisterEvent("PLAYER_ENTERING_WORLD")
+                    HideNameplates()
+                elseif event == "PLAYER_REGEN_DISABLED" then
+                    ShowNameplates()
+                else
+                    HideNameplates()
+                end
+            end)
+            DFRL.nameplateFrame = f
+        end
+        
+        if value then
+            DFRL.nameplateFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+            DFRL.nameplateFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
+            DFRL.nameplateFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+            HideNameplates()
+        else
+            DFRL.nameplateFrame:UnregisterAllEvents()
+        end
     end
 
     DFRL.activeScripts["LowHpWarnScript"] = false

@@ -25,7 +25,6 @@ DFRL:NewMod("RangeIndicator", 1, function()
 
     function Setup:KillBlizz()
         function _G.ActionButton_UpdateHotkeys() end
-        function _G.ActionButton_OnUpdate() end
     end
 
     function Setup:CreateIndicatorTexture(button)
@@ -35,7 +34,7 @@ DFRL:NewMod("RangeIndicator", 1, function()
 
         self.useSimple = DFRL:GetTempDB("RangeIndicator", "indicatorSimple")
         self.useDark = DFRL:GetTempDB("RangeIndicator", "indicatorDark")
-        
+
         if self.useSimple then
             self.indicator = button:CreateFontString(nil, "OVERLAY")
             self.indicator:SetFont("Fonts\\FRIZQT__.TTF", 20, "OUTLINE")
@@ -57,7 +56,7 @@ DFRL:NewMod("RangeIndicator", 1, function()
             self.indicator:SetAllPoints(button)
             self.indicator:SetPoint("CENTER", button, "CENTER", -0, -0)
         end
-        
+
         self.indicator:Hide()
         self.indicator.showing = false
         self.indicator.useFade = true

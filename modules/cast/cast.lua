@@ -38,7 +38,6 @@ DFRL:NewMod("Cast", 1, function()
     local string = string
     local FAILED = FAILED
     local GetTime = GetTime
-    local UIParent = UIParent
     local INTERRUPTED = INTERRUPTED
 
     --=================
@@ -623,7 +622,6 @@ DFRL:NewMod("Cast", 1, function()
         Setup.timeText:SetPoint("RIGHT", Setup.frame, "RIGHT", -5, value)
     end
 
-    -- Create target icon frame
     Setup.targetIcon = CreateFrame("Frame", nil, Setup.frame)
     Setup.targetIcon:SetPoint("RIGHT", Setup.frame, "LEFT", -2, 0)
     Setup.targetIcon:SetHeight(20)
