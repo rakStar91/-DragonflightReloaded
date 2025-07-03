@@ -1,3 +1,23 @@
+-- local f = CreateFrame("Frame")
+-- f:RegisterEvent("PLAYER_ENTERING_WORLD")
+-- f:SetScript("OnEvent", function ()
+--     UIOptionsFrame:SetParent(UIParent)
+--     UIOptionsFrame:SetWidth(1024)
+--     UIOptionsFrame:SetHeight(700)
+
+
+--     UIOptionsFrame:ClearAllPoints()
+--     UIOptionsFrame:SetPoint("CENTER", 0, 0)
+
+
+-- end)
+
+
+
+
+
+
+
 -- =================
 -- MODULE TEMPLATE
 -- =================

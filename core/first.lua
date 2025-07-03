@@ -221,6 +221,6 @@ f:SetScript("OnEvent", function()
 
     local seenVersion = DFRL:GetTempValue("Generic", "patchWarnVersion")
     if seenVersion ~= Setup.patchConfig.version then
-        Setup:PatchWarning()
+        -- Setup:PatchWarning()
     end
 end)

@@ -141,7 +141,7 @@ DFRL:NewMod("Player", 1, function()
 
         self.texts.manaPercent = self.texts.manaTextFrame:CreateFontString(nil)
         self.texts.manaPercent:SetFont(cfg.font, cfg.manaFontSize, cfg.outline)
-        self.texts.manaPercent:SetPoint("LEFT", PlayerFrameManaBar, "LEFT", 5, 0)
+        self.texts.manaPercent:SetPoint("LEFT", PlayerFrameManaBar, "LEFT", 10, 0)
 
         self.texts.manaValue = self.texts.manaTextFrame:CreateFontString(nil)
         self.texts.manaValue:SetFont(cfg.font, cfg.manaFontSize, cfg.outline)
