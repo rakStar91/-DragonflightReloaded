@@ -255,6 +255,32 @@ DFRL:NewMod("Ui", 5, function()
         ApplyCustomTextures(SpellBookFrame)
     end
 
+    -- optionsframe
+    do
+        local f = CreateFrame("Frame")
+        f:RegisterEvent("PLAYER_ENTERING_WORLD")
+        f:SetScript("OnEvent", function ()
+            UIOptionsFrame:SetParent(UIParent)
+            UIOptionsFrame:SetWidth(1024)
+            UIOptionsFrame:SetHeight(700)
+            UIOptionsFrame:SetFrameStrata("DIALOG")
+
+            UIOptionsFrame:ClearAllPoints()
+            UIOptionsFrame:SetPoint("CENTER", 0, 0)
+            
+            -- Fix frame levels - set higher than main frame
+            UIOptionsFrameTab1:SetFrameLevel(10)
+            UIOptionsFrameTab2:SetFrameLevel(10)
+            UIOptionsFrameDefaults:SetFrameLevel(10)
+            UIOptionsFrameCancel:SetFrameLevel(10)
+            UIOptionsFrameOkay:SetFrameLevel(10)
+            
+            -- Fix hit detection
+            UIOptionsFrame:SetHitRectInsets(0,0,0,50)
+        end)
+
+    end
+    
     -- callbacks
     local callbacks = {}
 

@@ -90,7 +90,7 @@ DFRL:NewMod("Addons", 1, function()
         if self.frame then return end
         self.frame = DFRL.tools.CreateDFRLFrameName(nil, 600, 530, nil, nil, nil, "DFRLAddonFrame")
         self.frame:SetPoint("CENTER", 0, 0)
-        self.frame:EnableMouse(true)
+        self.frame:SetFrameStrata("DIALOG")
         tinsert(UISpecialFrames, self.frame:GetName())
         self.frame:Hide()
 

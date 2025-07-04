@@ -363,6 +363,7 @@ DFRL:NewMod("Micro", 1, function()
     -- expose
     DFRL.microMenuContainer = Setup.microMenuContainer
     DFRL.netStatsFrame = Setup.netStatsFrame
+    DFRL.gameMenuButton = MainMenuMicroButton
 
     -- callbacks
     local callbacks = {}

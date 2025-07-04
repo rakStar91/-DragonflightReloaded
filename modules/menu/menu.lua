@@ -20,6 +20,14 @@ DFRL:NewMod("Menu", 1, function()
 
     function Setup:KillBlizz()
         KillFrame(GameMenuFrame)
+        
+        local origUpdateMicroButtons = UpdateMicroButtons
+        _G.UpdateMicroButtons = function()
+            origUpdateMicroButtons()
+            if Setup.menuframe and Setup.menuframe:IsVisible() then
+                MainMenuMicroButton:SetButtonState("PUSHED", 1)
+            end
+        end
 
         _G.ToggleGameMenu = function()
             if StaticPopup_EscapePressed() then
@@ -46,8 +54,23 @@ DFRL:NewMod("Menu", 1, function()
             end
             return origShowUIPanel(frame, force)
         end
-
-        _G.Disable_BagButtons = function() end
+        
+        local frames = {OptionsFrame, SoundOptionsFrame, UIOptionsFrame}
+        for _, frame in ipairs(frames) do
+            if frame then
+                local origOnShow = frame:GetScript("OnShow")
+                frame:SetScript("OnShow", function()
+                    if origOnShow then origOnShow() end
+                    Disable_BagButtons()
+                end)
+                
+                local origOnHide = frame:GetScript("OnHide")
+                frame:SetScript("OnHide", function()
+                    if origOnHide then origOnHide() end
+                    Enable_BagButtons()
+                end)
+            end
+        end
     end
 
     function Setup:MenuFrame()
@@ -56,6 +79,16 @@ DFRL:NewMod("Menu", 1, function()
             self.menuframe:SetPoint("CENTER", 0,0)
             self.menuframe:EnableMouse(true)
             self.menuframe:Hide()
+            
+            self.menuframe:SetScript("OnShow", function()
+                UpdateMicroButtons()
+                Disable_BagButtons()
+            end)
+            
+            self.menuframe:SetScript("OnHide", function()
+                UpdateMicroButtons()
+                Enable_BagButtons()
+            end)
 
             local drBtn = DFRL.tools.CreateButton(self.menuframe, "|cFFFFD100Dragonflight:|r Reloaded", self.btnw, self.btnh)
             drBtn:SetPoint("TOP", self.menuframe, "TOP", 0, -self.space)
@@ -107,6 +140,18 @@ DFRL:NewMod("Menu", 1, function()
             keyBtn:SetScript("OnClick", function()
                 self.menuframe:Hide()
                 KeyBindingFrame_LoadUI()
+                if KeyBindingFrame then
+                    local origOnShow = KeyBindingFrame:GetScript("OnShow")
+                    KeyBindingFrame:SetScript("OnShow", function()
+                        if origOnShow then origOnShow() end
+                        Disable_BagButtons()
+                    end)
+                    local origOnHide = KeyBindingFrame:GetScript("OnHide")
+                    KeyBindingFrame:SetScript("OnHide", function()
+                        if origOnHide then origOnHide() end
+                        Enable_BagButtons()
+                    end)
+                end
                 ShowUIPanel(KeyBindingFrame)
             end)
 
@@ -115,6 +160,18 @@ DFRL:NewMod("Menu", 1, function()
             macroBtn:SetScript("OnClick", function()
                 self.menuframe:Hide()
                 ShowMacroFrame()
+                if MacroFrame then
+                    local origOnShow = MacroFrame:GetScript("OnShow")
+                    MacroFrame:SetScript("OnShow", function()
+                        if origOnShow then origOnShow() end
+                        Disable_BagButtons()
+                    end)
+                    local origOnHide = MacroFrame:GetScript("OnHide")
+                    MacroFrame:SetScript("OnHide", function()
+                        if origOnHide then origOnHide() end
+                        Enable_BagButtons()
+                    end)
+                end
             end)
 
             local logBtn = DFRL.tools.CreateButton(self.menuframe, "Logout", self.btnw, self.btnh)
@@ -133,7 +190,9 @@ DFRL:NewMod("Menu", 1, function()
 
             local resumeBtn = DFRL.tools.CreateButton(self.menuframe, "Resume Game", self.btnw, self.btnh)
             resumeBtn:SetPoint("TOP", exitBtn, "BOTTOM", 0, -self.gap)
-            resumeBtn:SetScript("OnClick", function() self.menuframe:Hide() end)
+            resumeBtn:SetScript("OnClick", function() 
+                self.menuframe:Hide()
+            end)
         end
     end
 

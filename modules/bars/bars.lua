@@ -181,6 +181,8 @@ DFRL:NewMod("Bars", 1, function()
             self.mainBar:SetHeight(45)
             self.mainBar:SetWidth(500)
             self.mainBar:SetClampedToScreen(true)
+            self.mainBar:SetFrameStrata("LOW")
+            self.mainBar:SetFrameLevel(1)
 
             ActionButton1:ClearAllPoints()
             ActionButton1:SetPoint("BOTTOMLEFT", self.mainBar, "BOTTOMLEFT", 0, 0)
@@ -191,6 +193,8 @@ DFRL:NewMod("Bars", 1, function()
             self.actionBarFrame = CreateFrame("Frame", "DFRL_ActionBar", UIParent)
             self.actionBarFrame:SetPoint("TOPLEFT", ActionButton1, "TOPLEFT", 0, 0)
             self.actionBarFrame:SetPoint("BOTTOMRIGHT", ActionButton12, "BOTTOMRIGHT", 0, 0)
+            self.actionBarFrame:SetFrameStrata("LOW")
+            self.actionBarFrame:SetFrameLevel(2)
         end
 
         function Setup:RepositionBars()
@@ -201,14 +205,16 @@ DFRL:NewMod("Bars", 1, function()
                 local bottomLeftState = _G["SHOW_MULTI_ACTIONBAR_1"]
                 local bottomRightState = _G["SHOW_MULTI_ACTIONBAR_2"]
 
-                MultiBarBottomRight:ClearAllPoints()
-                if bottomLeftState then
-                    MultiBarBottomRight:SetPoint("BOTTOM", MultiBarBottomLeft, "TOP", 0, 10)
-                else
-                    MultiBarBottomRight:SetPoint("BOTTOM", self.actionBarFrame, "TOP", 0, 10)
+                if not (DFRL_FRAMEPOS and DFRL_FRAMEPOS["MultiBarBottomRight"]) then
+                    MultiBarBottomRight:ClearAllPoints()
+                    if bottomLeftState then
+                        MultiBarBottomRight:SetPoint("BOTTOM", MultiBarBottomLeft, "TOP", 0, 10)
+                    else
+                        MultiBarBottomRight:SetPoint("BOTTOM", self.actionBarFrame, "TOP", 0, 10)
+                    end
                 end
 
-                if self.newPetBar then
+                if self.newPetBar and not (DFRL_FRAMEPOS and DFRL_FRAMEPOS["DFRL_PetBar"]) then
                     self.newPetBar:ClearAllPoints()
                     if bottomLeftState and bottomRightState then
                         self.newPetBar:SetPoint("BOTTOM", MultiBarBottomRight, "TOP", 0, 9)
@@ -221,7 +227,7 @@ DFRL:NewMod("Bars", 1, function()
                     end
                 end
 
-                if self.newShapeshiftBar then
+                if self.newShapeshiftBar and not (DFRL_FRAMEPOS and DFRL_FRAMEPOS["DFRL_ShapeshiftBar"]) then
                     self.newShapeshiftBar:ClearAllPoints()
                     if bottomLeftState and bottomRightState then
                         self.newShapeshiftBar:SetPoint("BOTTOM", MultiBarBottomRight, "TOP", 0, 9)
@@ -322,16 +328,24 @@ DFRL:NewMod("Bars", 1, function()
             MultiBarBottomLeft:ClearAllPoints()
             MultiBarBottomLeft:SetPoint("BOTTOM", self.actionBarFrame, "TOP", 0, 12)
             MultiBarBottomLeft:SetClampedToScreen(true)
+            MultiBarBottomLeft:SetFrameStrata("LOW")
+            MultiBarBottomLeft:SetFrameLevel(1)
 
             MultiBarBottomRight:ClearAllPoints()
             MultiBarBottomRight:SetPoint("BOTTOM", MultiBarBottomLeft, "TOP", 0, 10)
             MultiBarBottomRight:SetClampedToScreen(true)
+            MultiBarBottomRight:SetFrameStrata("LOW")
+            MultiBarBottomRight:SetFrameLevel(1)
 
             MultiBarRight:ClearAllPoints()
             MultiBarRight:SetPoint("RIGHT", UIParent, "RIGHT", -15, -50)
             MultiBarRight:SetClampedToScreen(true)
+            MultiBarRight:SetFrameStrata("LOW")
+            MultiBarRight:SetFrameLevel(1)
 
             MultiBarLeft:SetClampedToScreen(true)
+            MultiBarLeft:SetFrameStrata("LOW")
+            MultiBarLeft:SetFrameLevel(1)
         end
 
         function Setup:PetBar()
@@ -339,6 +353,8 @@ DFRL:NewMod("Bars", 1, function()
             self.newPetBar:SetPoint("BOTTOM", self.actionBarFrame, "TOP", 0, 8)
             self.newPetBar:SetHeight(36)
             self.newPetBar:SetWidth(360)
+            self.newPetBar:SetFrameStrata("LOW")
+            self.newPetBar:SetFrameLevel(1)
 
             for i = 1, 10 do
                 local button = _G["PetActionButton"..i]
@@ -353,6 +369,8 @@ DFRL:NewMod("Bars", 1, function()
             self.newShapeshiftBar:SetPoint("BOTTOM", self.newPetBar, "TOP", 0, 8)
             self.newShapeshiftBar:SetHeight(36)
             self.newShapeshiftBar:SetWidth(360)
+            self.newShapeshiftBar:SetFrameStrata("LOW")
+            self.newShapeshiftBar:SetFrameLevel(1)
 
             for i = 1, 10 do
                 local button = _G["ShapeshiftButton"..i]
@@ -385,7 +403,7 @@ DFRL:NewMod("Bars", 1, function()
             self.pagingContainer:SetWidth(ActionBarUpButton:GetWidth())
             self.pagingContainer:SetHeight(65)
             self.pagingContainer:SetPoint("LEFT", ActionButton12, "RIGHT", 15, -1)
-            self.pagingContainer:SetFrameStrata("DIALOG")
+            self.pagingContainer:SetFrameStrata("MEDIUM")
             self.pagingContainer:SetFrameLevel(5)
 
             ActionBarUpButton:SetNormalTexture(self.texpath.. "page_up_normal.tga")
@@ -398,7 +416,8 @@ DFRL:NewMod("Bars", 1, function()
 
             ActionBarUpButton:ClearAllPoints()
             ActionBarUpButton:SetPoint("TOP", self.pagingContainer, "TOP", -1, 0)
-            ActionBarUpButton:SetFrameStrata("DIALOG")
+            ActionBarUpButton:SetFrameStrata("MEDIUM")
+            ActionBarUpButton:SetFrameLevel(6)
             ActionBarUpButton:SetHeight(25)
             ActionBarUpButton:SetWidth(25)
 
@@ -408,7 +427,8 @@ DFRL:NewMod("Bars", 1, function()
 
             ActionBarDownButton:ClearAllPoints()
             ActionBarDownButton:SetPoint("BOTTOM", self.pagingContainer, "BOTTOM", 1, 0)
-            ActionBarDownButton:SetFrameStrata("DIALOG")
+            ActionBarDownButton:SetFrameStrata("MEDIUM")
+            ActionBarDownButton:SetFrameLevel(6)
             ActionBarDownButton:SetHeight(25)
             ActionBarDownButton:SetWidth(25)
         end
@@ -487,8 +507,8 @@ DFRL:NewMod("Bars", 1, function()
 
         function Setup:Gryphoons()
             self.gryphonContainer = CreateFrame("Frame", "DFRL_GryphonContainer", UIParent)
-            self.gryphonContainer:SetFrameStrata("HIGH")
-            self.gryphonContainer:SetFrameLevel(10)
+            self.gryphonContainer:SetFrameStrata("LOW")
+            self.gryphonContainer:SetFrameLevel(3)
             self.gryphonContainer:SetAllPoints(self.actionBarFrame)
 
             self.leftGryphon = self.gryphonContainer:CreateTexture("DFRL_LeftGryphon", "OVERLAY")
