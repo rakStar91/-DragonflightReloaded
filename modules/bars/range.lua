@@ -8,8 +8,6 @@ DFRL:NewDefaults("RangeIndicator", {
 })
 
 DFRL:NewMod("RangeIndicator", 1, function()
-    debugprint(">> BOOTING")
-
     -- =================
     -- SETUP
     -- =================

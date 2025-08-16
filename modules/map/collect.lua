@@ -6,7 +6,6 @@ DFRL:NewDefaults("Collector", {
 })
 
 DFRL:NewMod("Collector", 1, function()
-    debugprint(">> BOOTING")
 
     --=================
     -- SETUP
@@ -23,15 +22,12 @@ DFRL:NewMod("Collector", 1, function()
     DFRL.MinimapButtonsPerRow = 3
 
     function Setup:CleanupFrames()
-        debugprint("Cleaning up existing minimap button frames...")
         KillFrame(_G.MBB_MinimapButtonFrame)
         KillFrame(_G.MinimapButtonFrame)
         KillFrame(_G.MBFMiniButtonFrame)
-        debugprint("Cleanup complete")
     end
 
     function Setup:CollectorFrame()
-        debugprint("Creating collector frame...")
         self.collector = CreateFrame("Frame", "MinimapButtonCollector", UIParent)
         self.collector:SetFrameStrata("MEDIUM")
         self.collector:SetPoint("RIGHT", Minimap, "LEFT", -35, 0)
@@ -42,11 +38,9 @@ DFRL:NewMod("Collector", 1, function()
         self.collector.bg:SetTexture("Interface\\Buttons\\WHITE8X8")
         self.collector.bg:SetAllPoints()
         self.collector.bg:SetGradientAlpha("HORIZONTAL", 0.1, 0.1, 0.1, 0, 0.1, 0.1, 0.1, 0.7)
-        debugprint("Collector frame created with background")
     end
 
     function Setup:IsValidButton(frame)
-        debugprint("Validating button: " .. (frame:GetName() or "unnamed"))
         if not frame:GetName() then return false end
         if not frame:IsVisible() then return false end
         if frame:GetHeight() > 40 then return false end
@@ -62,20 +56,17 @@ DFRL:NewMod("Collector", 1, function()
         local name = frame:GetName()
         for i = 1, table.getn(ignored) do
             if string.find(string.lower(name), string.lower(ignored[i])) then
-                debugprint("Button ignored by pattern: " .. name)
                 return false
             end
         end
 
         if frame:IsObjectType("Button") then
             if frame:GetScript("OnClick") or frame:GetScript("OnMouseDown") or frame:GetScript("OnMouseUp") then
-                debugprint("Valid button found: " .. name)
                 return true
             end
         elseif frame:IsObjectType("Frame") then
             if string.find(string.lower(name), "icon") or string.find(string.lower(name), "button") then
                 if frame:GetScript("OnMouseDown") or frame:GetScript("OnMouseUp") then
-                    debugprint("Valid frame button found: " .. name)
                     return true
                 end
             end
@@ -83,38 +74,29 @@ DFRL:NewMod("Collector", 1, function()
             local children = {frame:GetChildren()}
             for j = 1, table.getn(children) do
                 if children[j] and children[j]:IsObjectType("Button") then
-                    debugprint("Valid frame with button child found: " .. name)
                     return true
                 end
             end
         end
 
-        debugprint("Button validation failed: " .. name)
         return false
     end
 
     function Setup:FindButtons()
-        debugprint("Starting minimap button collection...")
         local buttons = {}
         local children = { Minimap:GetChildren() }
         local numChildren = table.getn(children)
-
-        debugprint("Found " .. numChildren .. " children on Minimap")
 
         for i = 1, numChildren do
             local child = children[i]
             if child and self:IsValidButton(child) then
                 table.insert(buttons, child)
-                debugprint("Added valid button: " .. child:GetName())
-            elseif child and child:GetName() then
-                debugprint("Skipped invalid button: " .. child:GetName())
             end
         end
         return buttons
     end
 
     function Setup:ArrangeButtons(buttons)
-        debugprint("Arranging " .. table.getn(buttons) .. " buttons...")
         buttons = self:LoadSavedOrder(buttons)
         self.buttonOrder = buttons
 
@@ -142,7 +124,6 @@ DFRL:NewMod("Collector", 1, function()
 
             self:EnableDrag(button, i)
 
-            debugprint("Positioned button " .. (button:GetName() or "unnamed") .. " at position " .. count)
             count = count + 1
         end
 
@@ -151,12 +132,9 @@ DFRL:NewMod("Collector", 1, function()
         local newHeight = math.max(30, 12 + (math.min(count, buttonsPerRow) * (buttonSize + padding)))
         self.collector:SetWidth(newWidth)
         self.collector:SetHeight(newHeight)
-
-        debugprint("Collector resized to height: " .. newHeight .. " for " .. count .. " buttons")
     end
 
     function Setup:AddBorders()
-        debugprint("Adding golden borders to collector...")
         local positions = {
             {point1="BOTTOMLEFT", point2="TOPLEFT", point3="BOTTOMRIGHT", point4="TOPRIGHT", width=nil, height=1, gradient=true},
             {point1="TOPLEFT", point2="TOPRIGHT", point3="BOTTOMLEFT", point4="BOTTOMRIGHT", width=1, height=nil, gradient=false},
@@ -177,13 +155,10 @@ DFRL:NewMod("Collector", 1, function()
             if positions[i].gradient then
                 border:SetGradientAlpha("HORIZONTAL", 1, 0.82, 0, 0, 1, 0.82, 0, 1)
             end
-            debugprint("Created " .. names[i] .. " border")
         end
-        debugprint("All borders added")
     end
 
     function Setup:CreateToggleButton()
-        debugprint("Creating toggle button...")
         local toggleButton = CreateFrame("Button", "MinimapButtonCollectorToggle", UIParent)
         toggleButton:SetWidth(16)
         toggleButton:SetHeight(16)
@@ -193,12 +168,10 @@ DFRL:NewMod("Collector", 1, function()
 
         toggleButton:SetScript("OnClick", function()
             if self.collector:IsVisible() then
-                debugprint("Hiding collector")
                 UIFrameFadeOut(self.collector, 0.3, 1, 0)
                 self.collector.fadeInfo.finishedFunc = self.collector.Hide
                 self.collector.fadeInfo.finishedArg1 = self.collector
             else
-                debugprint("Showing collector")
                 self.collector:SetAlpha(0)
                 self.collector:Show()
                 UIFrameFadeIn(self.collector, 0.3, 0, 1)
@@ -206,20 +179,16 @@ DFRL:NewMod("Collector", 1, function()
         end)
 
         DFRL.toggleButton = toggleButton
-        debugprint("Toggle button created and exposed")
     end
 
     function Setup:StartDelayedCollection()
-        debugprint("Starting delayed collection timer...")
         local timer = 0
         self.collector:SetScript("OnUpdate", function()
             timer = timer + arg1
             if timer > 0.1 then
-                debugprint("Timer expired, collecting buttons now...")
                 self:CleanupFrames()
                 local buttons = self:FindButtons()
                 if table.getn(buttons) == 0 then
-                    debugprint("No buttons found, hiding collector and toggle")
                     self.collector:Hide()
                     DFRL.toggleButton:Hide()
                     self.collector:SetScript("OnUpdate", nil)
@@ -233,20 +202,16 @@ DFRL:NewMod("Collector", 1, function()
     end
 
     function Setup:LoadSavedOrder(buttons)
-        debugprint("Loading saved button order...")
         local saved = DFRL:GetTempDB("Collector", "buttonOrder")
         if not saved then
-            debugprint("No saved order found, using default")
             return buttons
         end
-        debugprint("Found saved order with " .. table.getn(saved) .. " entries")
 
         local ordered = {}
         for i = 1, table.getn(saved) do
             for j = 1, table.getn(buttons) do
                 if buttons[j]:GetName() == saved[i] then
                     table.insert(ordered, buttons[j])
-                    debugprint("Matched saved button: " .. saved[i])
                     break
                 end
             end
@@ -262,26 +227,21 @@ DFRL:NewMod("Collector", 1, function()
             end
             if not found then
                 table.insert(ordered, buttons[i])
-                debugprint("Added new button: " .. buttons[i]:GetName())
             end
         end
 
-        debugprint("Loaded order complete with " .. table.getn(ordered) .. " buttons")
         return ordered
     end
 
     function Setup:SaveButtonOrder(buttons)
-        debugprint("Saving button order...")
         local order = {}
         for i = 1, table.getn(buttons) do
             table.insert(order, buttons[i]:GetName())
         end
         DFRL:SetTempDBNoCallback("Collector", "buttonOrder", order)
-        debugprint("Saved order with " .. table.getn(order) .. " buttons")
     end
 
     function Setup:RepositionAllButtons()
-        debugprint("Repositioning all buttons after reorder")
         local buttonSize = 24
         local padding = 4
         local buttonsPerRow = DFRL.MinimapButtonsPerRow
@@ -296,12 +256,10 @@ DFRL:NewMod("Collector", 1, function()
             local newY = -6 - (col * (buttonSize + padding))
 
             button.originalSetPoint(button, "TOPRIGHT", self.collector, "TOPRIGHT", newX, newY)
-            debugprint("Repositioned " .. button:GetName() .. " to position " .. i .. " (" .. newX .. ", " .. newY .. ")")
         end
     end
 
     function Setup:FindDropPosition(button)
-        debugprint("Finding drop position for " .. button:GetName())
         local bx = button:GetLeft() + 12
         local by = button:GetTop() - 12
         local cx = self.collector:GetLeft()
@@ -324,12 +282,10 @@ DFRL:NewMod("Collector", 1, function()
             pos = table.getn(self.buttonOrder)
         end
 
-        debugprint("Drop position: " .. pos .. " (row:" .. row .. ", col:" .. col .. ")")
         return pos
     end
 
     function Setup:SnapBack(button)
-        debugprint("Checking snap back for " .. button:GetName())
         local left = self.collector:GetLeft()
         local right = self.collector:GetRight()
         local top = self.collector:GetTop()
@@ -338,18 +294,13 @@ DFRL:NewMod("Collector", 1, function()
         local by = button:GetBottom()
 
         if bx < left or bx > right or by < bottom or by > top then
-            debugprint("Button outside bounds, snapping back")
             return true
         end
-        debugprint("Button within bounds")
         return false
     end
 
     function Setup:ReorderButtons(fromIndex, toIndex)
-        debugprint("Reordering from " .. fromIndex .. " to " .. toIndex)
-
         if fromIndex == toIndex then
-            debugprint("Same position, repositioning to grid")
             self:RepositionAllButtons()
             return
         end
@@ -360,19 +311,15 @@ DFRL:NewMod("Collector", 1, function()
 
         self:SaveButtonOrder(self.buttonOrder)
         self:RepositionAllButtons()
-        debugprint("Reorder complete - saved to DB")
     end
 
     function Setup:EnableDrag(button, index)
-        debugprint("Enabling drag for " .. button:GetName() .. " at index " .. index)
-
         local dragTarget = button
         if button:IsObjectType("Frame") then
             local children = {button:GetChildren()}
             for i = 1, table.getn(children) do
                 if children[i]:IsObjectType("Button") then
                     dragTarget = children[i]
-                    debugprint("Found button child: " .. (dragTarget:GetName() or "unnamed"))
                     break
                 end
             end
@@ -383,7 +330,6 @@ DFRL:NewMod("Collector", 1, function()
         dragTarget:EnableMouse(true)
 
         dragTarget:SetScript("OnDragStart", function()
-            debugprint("Drag started for " .. button:GetName())
             self.dragStartIndex = index
             button.origRow = math.floor((index - 1) / DFRL.MinimapButtonsPerRow)
             button.origCol = (index - 1) - (button.origRow * DFRL.MinimapButtonsPerRow)
@@ -391,11 +337,9 @@ DFRL:NewMod("Collector", 1, function()
         end)
 
         dragTarget:SetScript("OnDragStop", function()
-            debugprint("=== DRAG STOP START for " .. button:GetName() .. " ===")
             button:StopMovingOrSizing()
 
             if self:SnapBack(button) then
-                debugprint("SNAP BACK: Button outside bounds")
                 local currentIndex = nil
                 for i = 1, table.getn(self.buttonOrder) do
                     if self.buttonOrder[i] == button then
@@ -413,19 +357,16 @@ DFRL:NewMod("Collector", 1, function()
                 local newY = -6 - (col * (buttonSize + padding))
 
                 button.originalSetPoint(button, "TOPRIGHT", self.collector, "TOPRIGHT", newX, newY)
-                debugprint("Snapped back to position " .. currentIndex)
                 return
             end
 
             local dropIndex = self:FindDropPosition(button)
-            debugprint("Drop index: " .. dropIndex)
 
             if self.dragStartIndex ~= dropIndex then
                 self:ReorderButtons(self.dragStartIndex, dropIndex)
             else
                 self:RepositionAllButtons()
             end
-            debugprint("=== DRAG STOP END ===")
         end)
     end
 
@@ -433,13 +374,11 @@ DFRL:NewMod("Collector", 1, function()
     -- INIT
     --=================
     function Setup:Run()
-        debugprint("Running collector setup...")
         self:CleanupFrames()
         self:CollectorFrame()
         self:StartDelayedCollection()
         self:AddBorders()
         self:CreateToggleButton()
-        debugprint("Collector setup complete")
     end
 
     Setup:Run()

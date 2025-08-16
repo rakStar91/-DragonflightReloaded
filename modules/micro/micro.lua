@@ -13,8 +13,6 @@ DFRL:NewDefaults("Micro", {
 })
 
 DFRL:NewMod("Micro", 1, function()
-    debugprint("BOOTING")
-
     -- setup
     local Setup = {
         texpath = "Interface\\AddOns\\-DragonflightReloaded\\media\\tex\\micromenu\\",

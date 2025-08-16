@@ -3,8 +3,6 @@ DFRL:NewDefaults("Menu", {
 })
 
 DFRL:NewMod("Menu", 1, function()
-    debugprint(">> BOOTING")
-
     --=================
     -- SETUP
     --=================
@@ -20,7 +18,7 @@ DFRL:NewMod("Menu", 1, function()
 
     function Setup:KillBlizz()
         KillFrame(GameMenuFrame)
-        
+
         local origUpdateMicroButtons = UpdateMicroButtons
         _G.UpdateMicroButtons = function()
             origUpdateMicroButtons()
@@ -54,7 +52,7 @@ DFRL:NewMod("Menu", 1, function()
             end
             return origShowUIPanel(frame, force)
         end
-        
+
         local frames = {OptionsFrame, SoundOptionsFrame, UIOptionsFrame}
         for _, frame in ipairs(frames) do
             if frame then
@@ -63,7 +61,7 @@ DFRL:NewMod("Menu", 1, function()
                     if origOnShow then origOnShow() end
                     Disable_BagButtons()
                 end)
-                
+
                 local origOnHide = frame:GetScript("OnHide")
                 frame:SetScript("OnHide", function()
                     if origOnHide then origOnHide() end
@@ -79,12 +77,12 @@ DFRL:NewMod("Menu", 1, function()
             self.menuframe:SetPoint("CENTER", 0,0)
             self.menuframe:EnableMouse(true)
             self.menuframe:Hide()
-            
+
             self.menuframe:SetScript("OnShow", function()
                 UpdateMicroButtons()
                 Disable_BagButtons()
             end)
-            
+
             self.menuframe:SetScript("OnHide", function()
                 UpdateMicroButtons()
                 Enable_BagButtons()
@@ -190,7 +188,7 @@ DFRL:NewMod("Menu", 1, function()
 
             local resumeBtn = DFRL.tools.CreateButton(self.menuframe, "Resume Game", self.btnw, self.btnh)
             resumeBtn:SetPoint("TOP", exitBtn, "BOTTOM", 0, -self.gap)
-            resumeBtn:SetScript("OnClick", function() 
+            resumeBtn:SetScript("OnClick", function()
                 self.menuframe:Hide()
             end)
         end

@@ -9,8 +9,6 @@ DFRL:NewDefaults("GUI-Dragonflight", {
 })
 
 DFRL:NewMod("GUI-Dragonflight", 4, function()
-    debugprint("BOOTING")
-
     --=================
     -- SETUP
     --=================
@@ -85,7 +83,6 @@ DFRL:NewMod("GUI-Dragonflight", 4, function()
             this.tick = GetTime() + 0.01
 
             if not started and Home.logoStarted then
-                debugprint("Setup:Animate() - Animation started")
                 started = true
                 self.frame:Show()
                 DFRL.activeScripts["GUI DonateScript"] = true
@@ -97,7 +94,6 @@ DFRL:NewMod("GUI-Dragonflight", 4, function()
                 if h >= 30 then
                     h = 30
                     heightDone = true
-                    debugprint("Setup:Animate() - Height animation done")
                     UIFrameFadeIn(self.button, 0.2, 0, 1)
                 end
                 self.frame:SetHeight(h)
@@ -106,7 +102,6 @@ DFRL:NewMod("GUI-Dragonflight", 4, function()
             if heightDone and not buttonDone then
                 if self.button:GetAlpha() >= 1 then
                     buttonDone = true
-                    debugprint("Setup:Animate() - Button fade done, setting animComplete=true")
                     animFrame:SetScript("OnUpdate", nil)
                     self.animComplete = true
                     DFRL.activeScripts["GUI DonateScript"] = false
@@ -197,23 +192,16 @@ DFRL:NewMod("GUI-Dragonflight", 4, function()
 
     function Setup:MinMaxClose()
         local function Toggle()
-            debugprint("Toggle - Called")
-            debugprint("Toggle - MainFrame IsShown: " .. tostring(Base.mainFrame:IsShown()) .. " Alpha: " .. tostring(Base.mainFrame:GetAlpha()))
-            debugprint("Toggle - TitleFrame IsShown: " .. tostring(Base.titleFrame:IsShown()) .. " Alpha: " .. tostring(Base.titleFrame:GetAlpha()))
             if Base.mainFrame:IsShown() and Base.mainFrame:GetAlpha() > 0 and Base.titleFrame:IsShown() and Base.titleFrame:GetAlpha() > 0 then
-                debugprint("Toggle - Both frames shown, fading out both")
                 UIFrameFadeOut(Base.mainFrame, 0.3, 1, 0)
                 UIFrameFadeOut(Base.titleFrame, 0.3, 1, 0)
                 Base.mainFrame.fadeInfo.finishedFunc = Base.mainFrame.Hide
                 Base.mainFrame.fadeInfo.finishedArg1 = Base.mainFrame
                 Base.titleFrame.fadeInfo.finishedFunc = function() Base.titleFrame:Hide() end
-                debugprint("Toggle - Fade out started with hide callback")
             elseif Base.titleFrame:IsShown() and Base.titleFrame:GetAlpha() > 0 and (not Base.mainFrame:IsShown() or Base.mainFrame:GetAlpha() == 0) then
-                debugprint("Toggle - Only titleFrame shown, fading out titleFrame only")
                 UIFrameFadeOut(Base.titleFrame, 0.3, 1, 0)
                 Base.titleFrame.fadeInfo.finishedFunc = function() Base.titleFrame:Hide() end
             else
-                debugprint("Toggle - Both hidden, showing and fading in both")
                 Base.mainFrame.fadeInfo = nil
                 Base.titleFrame.fadeInfo = nil
                 Base.mainFrame:SetAlpha(0)
@@ -225,42 +213,32 @@ DFRL:NewMod("GUI-Dragonflight", 4, function()
                 Base.mainFrame:SetPoint("CENTER", UIParent, "CENTER", 40, 50)
                 UIFrameFadeIn(Base.mainFrame, 0.3, 0, 1)
                 UIFrameFadeIn(Base.titleFrame, 0.3, 0, 1)
-                debugprint("Toggle - Show and fade in started")
             end
         end
 
         local function MinMax()
-            debugprint("MinMax - Called")
             if Base.mainFrame:IsShown() then
-                debugprint("MinMax - MainFrame is shown, fading out")
                 UIFrameFadeOut(Base.mainFrame, 0.3, 1, 0)
                 Base.mainFrame.fadeInfo.finishedFunc = Base.mainFrame.Hide
                 Base.mainFrame.fadeInfo.finishedArg1 = Base.mainFrame
-                debugprint("MinMax - Fade out started with hide callback")
             else
-                debugprint("MinMax - MainFrame is hidden, showing and fading in")
                 Base.mainFrame:Show()
                 UIFrameFadeIn(Base.mainFrame, 0.3, 0, 1)
-                debugprint("MinMax - Show and fade in started (no titleFrame)")
             end
         end
 
         if not self.closeBtn then
-            debugprint("MinMaxClose - Creating close button")
             self.closeBtn = DFRL.tools.CreateButton(Base.titleFrame, "close", 50, 20, true, {1,0,0})
             self.closeBtn:SetPoint("TOPRIGHT", Base.mainFrame, "TOPRIGHT", -115, 28)
             self.closeBtn:SetScript("OnClick", function()
-                debugprint("CloseBtn - Clicked")
                 Toggle()
             end)
         end
 
         if not self.minBtn then
-            debugprint("MinMaxClose - Creating min button")
             self.minBtn = DFRL.tools.CreateButton(Base.titleFrame, "min", 50, 20, true, {1,0,0})
             self.minBtn:SetPoint("RIGHT", self.closeBtn, "LEFT", 2, 0)
             self.minBtn:SetScript("OnClick", function()
-                debugprint("MinBtn - Clicked")
                 MinMax()
             end)
         end
@@ -309,6 +287,7 @@ DFRL:NewMod("GUI-Dragonflight", 4, function()
     DFRL.activeScripts["GUI DonateScript"] = false
     DFRL.activeScripts["GUI NoDonateScript"] = false
     DFRL.activeScripts["GUI TimeScript"] = false
+
     -- callbacks
     local callbacks = {}
 
@@ -332,7 +311,6 @@ DFRL:NewMod("GUI-Dragonflight", 4, function()
     end
 
     callbacks.smallerFrame = function (value)
-        -- attempt to counter vanilla frame scale bouncing
         local x, y = Base.mainFrame:GetLeft(), Base.mainFrame:GetTop()
         local oldScale = Base.mainFrame:GetScale()
 
@@ -355,7 +333,6 @@ DFRL:NewMod("GUI-Dragonflight", 4, function()
     end
 
     callbacks.sideView = function (value)
-        debugprint("CALLED ")
         if Base.selectedTab > 4 then
             Base.rightTex:SetAlpha(value)
         end

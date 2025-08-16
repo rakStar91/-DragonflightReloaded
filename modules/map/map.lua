@@ -50,7 +50,6 @@ DFRL:NewDefaults("Map", {
 })
 
 DFRL:NewMod("Map", 1, function()
-    debugprint("BOOTING")
     local f = CreateFrame("Frame")
     f:RegisterEvent("PLAYER_ENTERING_WORLD")
     f:SetScript("OnEvent", function()

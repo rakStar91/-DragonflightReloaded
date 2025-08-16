@@ -11,8 +11,6 @@ DFRL:NewDefaults("Chat", {
 })
 
 DFRL:NewMod("Chat", 1, function()
-    debugprint(">> BOOTING")
-
     --=================
     -- SETUP
     --=================

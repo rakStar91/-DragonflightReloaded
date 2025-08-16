@@ -581,7 +581,6 @@ function DFRL.tools.CreateCheckbox(parent, name, moduleName, key, noCall)
 end
 
 function DFRL.tools.CreateShaguCheckbox(parent, name, key)
-    debugprint("CreateShaguCheckbox - checkbox for "..key)
     local checkbox = CreateFrame("CheckButton", name, parent, "UICheckButtonTemplate")
     checkbox:SetWidth(20)
     checkbox:SetHeight(20)
@@ -595,26 +594,20 @@ function DFRL.tools.CreateShaguCheckbox(parent, name, key)
 
     local initial = (ShaguTweaks_config and ShaguTweaks_config[key] == 1)
     checkbox:SetChecked(initial)
-    debugprint("Initial state for "..key..": "..tostring(initial))
 
     checkbox:SetScript("OnClick", function()
         local checked = checkbox:GetChecked() and true or false
-        debugprint(key.." clicked, checked="..tostring(checked))
 
         if checked then
             ShaguTweaks_config[key] = 1
-            debugprint("ShaguTweaks_config["..key.."] = 1")
             local mod = ShaguTweaks.mods[key]
             if mod and mod.enable then
-                debugprint("Enabling module "..key)
                 mod:enable()
             end
         else
             ShaguTweaks_config[key] = 0
-            debugprint("ShaguTweaks_config["..key.."] = 0")
             local mod = ShaguTweaks.mods[key]
             if mod and mod.disable then
-                debugprint("Disabling module "..key)
                 mod:disable()
             end
         end
@@ -669,7 +662,6 @@ function DFRL.tools.CreateSlider(parent, name, moduleName, key, minVal, maxVal, 
         else
             DFRL:SetTempDB(this.moduleName, this.configKey, roundedValue)
         end
-        debugprint("Slider value changed:".. roundedValue)
     end)
 
     slider:EnableMouseWheel(true)
@@ -868,16 +860,13 @@ function DFRL.tools.CreateDropDown(parent, name, moduleName, key, items, noCall,
         popup.isHovered = false
 
         if items then
-            debugprint("Creating buttons for " .. table.getn(items) .. " items")
             for i = 1, table.getn(items) do
                 local itemBtn = DFRL.tools.CreateButton(popup, items[i], popup:GetWidth() - 5, BUTTON_HEIGHT, true)
                 itemBtn:SetFrameLevel(popup:GetFrameLevel() + 1)
                 itemBtn:SetPoint("TOP", popup, "TOP", 0, -(i - 1) * Y_SPACING - 5)
                 itemBtn.itemText = items[i]
-                debugprint("Button " .. i .. " created: " .. items[i])
 
                 itemBtn:SetScript("OnClick", function()
-                    debugprint(this.itemText)
                     btn.text:SetText(this.itemText)
                     if noCall then
                         DFRL:SetTempDBNoCallback(moduleName, key, this.itemText)
@@ -893,8 +882,6 @@ function DFRL.tools.CreateDropDown(parent, name, moduleName, key, items, noCall,
                     popup.isHovered = false
                 end)
             end
-        else
-            debugprint("No items provided")
         end
 
         popup:SetScript("OnEnter", function()

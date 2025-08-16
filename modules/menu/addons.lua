@@ -3,8 +3,6 @@ DFRL:NewDefaults("Addons", {
 })
 
 DFRL:NewMod("Addons", 1, function()
-    debugprint(">> BOOTING")
-
     --=================
     -- SETUP
     --=================

@@ -7,8 +7,6 @@
 -- })
 
 -- DFRL:NewMod("TEMPLATE", 1, function()
---     debugprint(">> BOOTING")
-
 --     =================
 --     SETUP
 --     =================

@@ -4,8 +4,6 @@ DFRL:NewDefaults("Gui-home", {
 })
 
 DFRL:NewMod("Gui-home", 3, function()
-    debugprint(">> BOOTING")
-
     --=================
     -- SETUP
     --=================

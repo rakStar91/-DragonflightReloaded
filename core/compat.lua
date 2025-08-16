@@ -1,5 +1,4 @@
 setfenv(1, DFRL:GetEnv())
-debugprint("BOOTING")
 
 --=================
 -- SETUP
@@ -128,8 +127,6 @@ function Setup:ShaguMetaData()
 end
 
 function Setup:ApplyShagu()
-    debugprint("ApplyShagu - addon1: " .. tostring(DFRL.addon1 and "true" or "false"))
-    debugprint("ApplyShagu - ShaguTweaks_config: " .. tostring(ShaguTweaks_config and "exists" or "nil"))
     if not DFRL.addon1 then return end
 
     if not self.fixed.shaguCore then
@@ -137,47 +134,39 @@ function Setup:ApplyShagu()
         self:ShaguBagBorders()
         self:ShaguGUI()
         self.fixed.shaguCore = true
-        debugprint("ApplyShagu - Core fixes applied")
     end
 
     if DFRL.addon2 and not self.fixed.shaguExtras then
         self:ShaguExtras()
         self.fixed.shaguExtras = true
-        debugprint("ApplyShagu - Extras fixes applied")
     end
 
     if ShaguTweaks_config then
         if not DFRL.gui.shaguCore then
             DFRL.gui.shaguCoreData = self:ShaguMetaData().core
             DFRL.gui.shaguCore = true
-            debugprint("ApplyShagu - Core GUI flag set")
         end
 
         if DFRL.addon2 and not DFRL.gui.shaguExtras then
             DFRL.gui.shaguExtrasData = self:ShaguMetaData().extras
             DFRL.gui.shaguExtras = true
-            debugprint("ApplyShagu - Extras GUI flag set")
         end
     else
-        debugprint("ApplyShagu - Config not ready, waiting for GUI flags...")
         local waitFrame = CreateFrame("Frame")
         waitFrame.elapsed = 0
         waitFrame:SetScript("OnUpdate", function()
             this.elapsed = this.elapsed + arg1
             if ShaguTweaks_config or this.elapsed > 2 then
-                debugprint("ApplyShagu - Config ready or timeout for GUI")
                 this:SetScript("OnUpdate", nil)
                 if ShaguTweaks_config then
                     if not DFRL.gui.shaguCore then
                         DFRL.gui.shaguCoreData = Setup:ShaguMetaData().core
                         DFRL.gui.shaguCore = true
-                        debugprint("ApplyShagu - Core GUI flag set (delayed)")
                     end
 
                     if DFRL.addon2 and not DFRL.gui.shaguExtras then
                         DFRL.gui.shaguExtrasData = Setup:ShaguMetaData().extras
                         DFRL.gui.shaguExtras = true
-                        debugprint("ApplyShagu - Extras GUI flag set (delayed)")
                     end
                 end
             end
@@ -194,16 +183,12 @@ end
 --=================
 
 function Setup:HandleAddon(name)
-    debugprint("HandleAddon called for: " .. name)
-
     if name == "ShaguTweaks" and not (ShaguTweaks and ShaguTweaks.T and ShaguTweaks.mods) then
-        debugprint("HandleAddon: " .. name .. " not ready yet")
         return
     end
 
     local addonType = self.addons[name]
     if addonType == "shagu" then
-        debugprint("HandleAddon: applying " .. addonType .. " fixes")
         self:ApplyShagu()
     end
 
@@ -217,30 +202,24 @@ function Setup:CheckComplete(f)
         end
     end
     f:UnregisterEvent("ADDON_LOADED")
-    debugprint("Init: all addons processed, unregistered ADDON_LOADED")
     return true
 end
 
 function Setup:Init()
-    debugprint("Setup:Init starting")
 
     local f = CreateFrame("Frame")
     f:RegisterEvent("ADDON_LOADED")
     f:SetScript("OnEvent", function()
         if event == "ADDON_LOADED" and self.addons[arg1] then
-            debugprint("Init: ADDON_LOADED event for " .. arg1)
             self:HandleAddon(arg1)
             self:CheckComplete(f)
         end
     end)
 
     if DFRL.addon1 and ShaguTweaks then
-        debugprint("Init: applying immediate fix for " .. self.addons["ShaguTweaks"])
         self:ApplyShagu()
         self.processed["ShaguTweaks"] = true
         self:CheckComplete(f)
-    else
-        debugprint("Init: no immediate fix needed")
     end
 end
 

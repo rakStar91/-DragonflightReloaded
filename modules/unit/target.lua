@@ -30,8 +30,6 @@ DFRL:NewDefaults("Target", {
 })
 
 DFRL:NewMod("Target", 1, function()
-    debugprint("BOOTING")
-
     local configCache = {
         noPercent = nil,
         textColoring = nil,

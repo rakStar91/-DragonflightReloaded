@@ -8,8 +8,6 @@ DFRL:NewDefaults("Tooltip", {
 })
 
 DFRL:NewMod("Tooltip", 1, function()
-    debugprint("BOOTING")
-
     local Setup = {
         xOffset = 0,
         yOffset = 0

@@ -42,8 +42,6 @@ DFRL:NewDefaults("Player", {
 })
 
 DFRL:NewMod("Player", 1, function()
-    debugprint("BOOTING")
-
     --=================
     -- SETUP
     --=================
@@ -618,9 +616,9 @@ DFRL:NewMod("Player", 1, function()
 
         if value then
             Setup.combatOverlay:SetScript("OnUpdate", function()
-                if (this.tick or 0) > GetTime() then 
+                if (this.tick or 0) > GetTime() then
                     DFRL.activeScripts["CombatGlowScript"] = false
-                    return 
+                    return
                 end
                 this.tick = GetTime() + 0.01
 
@@ -679,9 +677,9 @@ DFRL:NewMod("Player", 1, function()
 
         if value then
             Setup.restingOverlay:SetScript("OnUpdate", function()
-                if (this.tick or 0) > GetTime() then 
+                if (this.tick or 0) > GetTime() then
                     DFRL.activeScripts["RestingGlowScript"] = false
-                    return 
+                    return
                 end
                 this.tick = GetTime() + 0.01
 

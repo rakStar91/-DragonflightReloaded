@@ -27,8 +27,6 @@ DFRL:NewDefaults("Mini", {
 })
 
 DFRL:NewMod("Mini", 1, function()
-    debugprint("BOOTING")
-
     local configCache = {
         noPercent = nil,
         lastUpdate = 0

@@ -4,7 +4,6 @@ DFRL:NewDefaults("Gui-elem", {
 })
 
 DFRL:NewMod("Gui-elem", 3, function()
-    debugprint(">> BOOTING")
 
     --=================
     -- SETUP THE BEAST
@@ -14,7 +13,6 @@ DFRL:NewMod("Gui-elem", 3, function()
     local table = table
     local string = string
     local type = type
-    local tostring = tostring
     local tonumber = tonumber
 
     local Base = DFRL.gui.Base
@@ -88,7 +86,6 @@ DFRL:NewMod("Gui-elem", 3, function()
     }
 
     function Setup:MetaData()
-        debugprint("MetaData - Preparing element metadata")
 
         for moduleName, defaults in pairs(DFRL.defaults) do
             for elementName, valueTable in pairs(defaults) do
@@ -126,22 +123,10 @@ DFRL:NewMod("Gui-elem", 3, function()
             count = count + 1
         end
 
-        debugprint("MetaData - Prepared metadata for " .. count .. " elements")
 
-        -- debug output
-        for metaKey, data in pairs(self.metadata) do
-            local typeMetaStr = tostring(data.elementTypeMeta)
-            if data.elementType == "slider" and data.elementTypeMeta then
-                typeMetaStr = "min:" .. tostring(data.elementTypeMeta.min) .. ",max:" .. tostring(data.elementTypeMeta.max) .. ",step:" .. tostring(data.elementTypeMeta.step)
-            elseif data.elementType == "dropdown" and data.elementTypeMeta then
-                typeMetaStr = "items:" .. table.concat(data.elementTypeMeta.items, ",")
-            end
-            debugprint("MetaData: " .. metaKey .. " | Type: " .. tostring(data.elementType) .. " | TypeMeta: " .. typeMetaStr .. " | Dependency: " .. tostring(data.dependency) .. " | Category: " .. tostring(data.category) .. " | Index: " .. tostring(data.categoryIndex) .. " | Desc: " .. tostring(data.description) .. " | Extra: " .. tostring(data.extraDescription) .. " | Status: " .. tostring(data.status))
-        end
     end
 
     function Setup:Elements()
-        debugprint("HeadersAndElements - Setting up headers and elements")
 
         -- group elements by module and category
         local moduleElements = {}
@@ -217,7 +202,7 @@ DFRL:NewMod("Gui-elem", 3, function()
             local tabIndex = self.moduleMapping[moduleName][1]
             local scrollChild = Base.scrollChildren[tabIndex]
 
-            debugprint("HeadersAndElements - Processing module: " .. moduleName .. " in tab " .. tabIndex)
+
 
             if not self.tabPositions[tabIndex] then
                 self.tabPositions[tabIndex] = -self.HEADER_TOP_SPACING
@@ -250,7 +235,6 @@ DFRL:NewMod("Gui-elem", 3, function()
                 end
 
                 local yOffset = self.tabPositions[tabIndex]
-                debugprint("HeadersAndElements - Creating header for category: " .. categoryData.category .. " in tab " .. tabIndex .. " at yOffset " .. yOffset)
 
                 if not self.headers[categoryKey] then
                     local header = DFRL.tools.CreateCategoryHeader(scrollChild, categoryData.category)
@@ -272,15 +256,12 @@ DFRL:NewMod("Gui-elem", 3, function()
                     local data = element.data
                     local elementModule = element.module
 
-                    debugprint("HeadersAndElements - Processing element: " .. elementName .. " (" .. data.elementType .. ") in category " .. categoryKey)
-
                     local currentValue = self:GetCache(elementModule, elementName)
                     local dependencyEnabled = true
 
                     if data.dependency then
                         local depValue = self:GetCache(elementModule, data.dependency)
                         dependencyEnabled = depValue == true
-                        debugprint("HeadersAndElements - Dependency check: " .. elementName .. " depends on " .. data.dependency .. " = " .. tostring(depValue))
                     end
 
                     local topSpacing = self.CHECKBOX_TOP_SPACING
@@ -299,8 +280,6 @@ DFRL:NewMod("Gui-elem", 3, function()
                     local spacing = topSpacing + rowSpacing
                     self.tabPositions[tabIndex] = self.tabPositions[tabIndex] - spacing
                     local currentY = self.tabPositions[tabIndex]
-
-                    debugprint("HeadersAndElements - Creating " .. data.elementType .. " " .. elementName .. " in tab " .. tabIndex .. " at yOffset " .. currentY)
 
                     if data.elementType == "checkbox" then
                         local elementKey = elementModule .. "." .. elementName
@@ -602,11 +581,10 @@ DFRL:NewMod("Gui-elem", 3, function()
             end
         end
 
-        debugprint("HeadersAndElements - Finished creating all headers and elements")
+
     end
 
     function Setup:DependencyHandler()
-        debugprint("DependencyHandler - Checking dependencies")
 
         if not self.dependenciesSetup then
             for moduleName, defaults in pairs(DFRL.defaults) do
@@ -617,18 +595,13 @@ DFRL:NewMod("Gui-elem", 3, function()
                             local data = self.metadata[metaKey]
 
                             if data and data.dependency then
-                                debugprint("DependencyHandler - Found dependency: " .. elementName .. " depends on " .. data.dependency)
-                                debugprint("DependencyHandler - Element module: " .. moduleName)
 
                                 local elementKey = moduleName .. "." .. elementName
                                 local depKey = moduleName .. "." .. data.dependency
                                 local dep = self.checkboxes[elementKey] or self.sliders[elementKey] or self.dropdowns[elementKey] or self.colours[elementKey]
                                 local ctrl = self.checkboxes[depKey] or self.sliders[depKey] or self.dropdowns[depKey] or self.colours[depKey]
 
-                                debugprint("DependencyHandler - Looking for elements: " .. elementName .. " = " .. tostring(dep) .. ", " .. data.dependency .. " = " .. tostring(ctrl))
-
                                 if ctrl and dep then
-                                    debugprint("DependencyHandler - Setting up dependency handler for " .. elementName .. " -> " .. data.dependency)
 
                                     local click = ctrl:GetScript("OnClick")
                                     local capDep = dep
@@ -640,22 +613,17 @@ DFRL:NewMod("Gui-elem", 3, function()
                                     local capExtraDesc = self.extraDescriptionLabels[elementKey]
 
                                     capCtrl:SetScript("OnClick", function()
-                                        debugprint("DependencyHandler - Dependency element clicked: " .. capCtrlName)
 
                                 if click then
                                     click()
                                 end
 
                                 local enabled = capCtrl:GetChecked()
-                                debugprint("DependencyHandler - Dependency element state: " .. tostring(enabled))
 
                                 if not enabled then
-                                    debugprint("DependencyHandler - Disabling dependent element: " .. capName)
                                     if capDep.SetChecked then
                                         capDep.originalChecked = capDep:GetChecked()
-                                        debugprint("DependencyHandler - Checkbox " .. capName .. " original state: " .. tostring(capDep.originalChecked))
                                         capDep:SetChecked(false)
-                                        debugprint("DependencyHandler - Checkbox " .. capName .. " disabled, set to false")
                                         DFRL:SetTempDB(capMod, capName, false)
                                     elseif capDep.SetValue and not self.colours[capMod .. "." .. capName] then
                                         local def = DFRL.defaults[capMod][capName][1]
@@ -700,14 +668,11 @@ DFRL:NewMod("Gui-elem", 3, function()
                                         capExtraDesc:SetTextColor(0.5, 0.5, 0.5)
                                     end
                                 else
-                                    debugprint("DependencyHandler - Enabling dependent element: " .. capName)
                                     if capDep.Enable then
                                         capDep:Enable()
                                         if capDep.SetChecked and capDep.originalChecked then
-                                            debugprint("DependencyHandler - Restoring checkbox " .. capName .. " to: " .. tostring(capDep.originalChecked))
                                             capDep:SetChecked(capDep.originalChecked)
                                             DFRL:SetTempDB(capMod, capName, capDep.originalChecked)
-                                            debugprint("DependencyHandler - Checkbox " .. capName .. " restored and saved to tempDB")
                                         end
                                     elseif capDep.SetScript then
                                         capDep.isDisabled = false
@@ -739,8 +704,6 @@ DFRL:NewMod("Gui-elem", 3, function()
                                     end
                                 end
                             end)
-                                else
-                                    debugprint("DependencyHandler - Could not find one or both checkboxes for dependency")
                                 end
                             end
                         end
@@ -748,14 +711,10 @@ DFRL:NewMod("Gui-elem", 3, function()
                 end
             end
             self.dependenciesSetup = true
-            debugprint("DependencyHandler - Finished setting up dependencies")
-        else
-            debugprint("DependencyHandler - Dependencies already setup, skipping")
         end
     end
 
     function Setup:UpdateHandler()
-        debugprint("UpdateHandler - Updating all element states from tempDB")
         self.configCache = {}
 
         local all = {}
@@ -850,12 +809,11 @@ DFRL:NewMod("Gui-elem", 3, function()
                         element:GetThumbTexture():SetVertexColor(0.5, 0.5, 0.5)
                     end
                 end
-                debugprint("UpdateHandler - Updated " .. elementKey .. " | Value: " .. tostring(value) .. " | Enabled: " .. tostring(enabled))
+
             end
         end
 
         DFRL:TriggerAllCallbacks()
-        debugprint("UpdateHandler - Finished updating all elements")
     end
 
     function Setup:GetCache(moduleName, key)
@@ -878,7 +836,6 @@ DFRL:NewMod("Gui-elem", 3, function()
     -- INIT THE BEAST
     --=================
     function Setup:Run()
-        debugprint("Run - Initializing GUI-elem")
         Setup:MetaData()
         Setup:Elements()
         Setup:DependencyHandler()

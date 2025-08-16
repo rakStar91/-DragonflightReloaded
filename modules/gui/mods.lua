@@ -4,8 +4,6 @@ DFRL:NewDefaults("Gui-mods", {
 })
 
 DFRL:NewMod("Gui-mods", 3, function()
-    debugprint(">> BOOTING")
-
     --=================
     -- SETUP
     --=================

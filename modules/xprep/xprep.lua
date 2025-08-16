@@ -38,7 +38,6 @@ DFRL:NewDefaults("Xprep", {
 })
 
 DFRL:NewMod("Xprep", 1, function()
-    debugprint(">> BOOTING")
     local f2 = CreateFrame("Frame")
     f2:RegisterEvent("PLAYER_ENTERING_WORLD")
     f2:SetScript("OnEvent", function()
@@ -129,16 +128,10 @@ DFRL:NewMod("Xprep", 1, function()
             self.xpBar:SetMinMaxValues(0, maxXP)
             self.xpBar:SetValue(currXP)
 
-            debugprint("Rested XP: " .. tostring(restXP))
-
             if restXP and restXP > 0 then
                 self.xpBar:SetStatusBarColor(0.2, 0.5, 0.9)
-
-
-                debugprint("Setting XP bar to blue (rested)")
             else
                 self.xpBar:SetStatusBarColor(0.85, 0.4, 0.85)
-                debugprint("Setting XP bar to purple (normal)")
             end
 
             if self.xpBarText then
@@ -515,24 +508,16 @@ DFRL:NewMod("Xprep", 1, function()
                 Setup.repBarTrackingFrame:RegisterEvent("CHAT_MSG_COMBAT_FACTION_CHANGE")
                 Setup.repBarTrackingFrame:SetScript("OnEvent", function()
                     if not Setup.repAutoTrack then return end
-
-                    debugprint("Faction message: " .. tostring(arg1))
-
-                    -- extract faction name
                     local startPos, endPos = string.find(arg1, "Your ", 1, true)
                     if startPos then
                         local restStart = string.find(arg1, " reputation has increased", endPos + 1, true)
                         if restStart then
                             local factionName = string.sub(arg1, endPos + 1, restStart - 1)
-                            debugprint("Found faction: " .. factionName)
 
-                            -- find the faction
                             for i = 1, GetNumFactions() do
                                 local name = GetFactionInfo(i)
                                 if name == factionName then
-                                    debugprint("Setting watched faction to: " .. name)
                                     SetWatchedFactionIndex(i)
-                                    -- update
                                     Setup:UpdateRepBar()
                                     break
                                 end
@@ -601,7 +586,7 @@ DFRL:NewMod("Xprep", 1, function()
         end)
         Setup:UpdateXPBar()
         DFRL:NewCallbacks("Xprep", callbacks)
-        
+
         -- -- Apply hover setting after everything is initialized
         -- if DFRL:GetTempDB("Xprep", "hoverXP") then
         --     callbacks.hoverXP(true)

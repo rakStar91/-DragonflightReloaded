@@ -4,8 +4,6 @@ DFRL:NewDefaults("Cut-Out", {
 })
 
 DFRL:NewMod("Cut-Out", 1, function()
-    debugprint("BOOTING")
-
     --=================
     -- SETUP
     --=================
@@ -122,6 +120,19 @@ DFRL:NewMod("Cut-Out", 1, function()
         end
     end
 
+    function Setup:ClearTargetCutouts()
+        local i = 1
+        while i <= table.getn(self.fadingFrames) do
+            local frame = self.fadingFrames[i]
+            if frame.unit == 'target' then
+                frame.texture:Hide()
+                table.remove(self.fadingFrames, i)
+            else
+                i = i + 1
+            end
+        end
+    end
+
     function Setup:InitializeCutouts()
         for i = 1, table.getn(self.unitFrames) do
             local frameData = self.unitFrames[i]
@@ -135,16 +146,27 @@ DFRL:NewMod("Cut-Out", 1, function()
     f:SetScript("OnEvent", function()
         if event == "PLAYER_ENTERING_WORLD" then
             Setup:InitializeCutouts()
-            f:UnregisterEvent("PLAYER_ENTERING_WORLD")
             f:SetScript("OnUpdate", function()
                 Setup:ProcessFadeAnimations()
             end)
+            f:UnregisterEvent("PLAYER_ENTERING_WORLD")
         elseif event == "PLAYER_TARGET_CHANGED" then
+            Setup:ClearTargetCutouts()
             if TargetFrameHealthBar and TargetFrameHealthBar.cutoutFrame then
                 TargetFrameHealthBar.cutoutFrame.initialized = false
+                TargetFrameHealthBar.cutoutFrame.lastValue = nil
             end
             if TargetFrameManaBar and TargetFrameManaBar.cutoutFrame then
                 TargetFrameManaBar.cutoutFrame.initialized = false
+                TargetFrameManaBar.cutoutFrame.lastValue = nil
+            end
+            if TargetofTargetHealthBar and TargetofTargetHealthBar.cutoutFrame then
+                TargetofTargetHealthBar.cutoutFrame.initialized = false
+                TargetofTargetHealthBar.cutoutFrame.lastValue = nil
+            end
+            if TargetofTargetManaBar and TargetofTargetManaBar.cutoutFrame then
+                TargetofTargetManaBar.cutoutFrame.initialized = false
+                TargetofTargetManaBar.cutoutFrame.lastValue = nil
             end
         end
     end)

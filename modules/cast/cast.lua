@@ -32,8 +32,6 @@ DFRL:NewDefaults("Cast", {
 })
 
 DFRL:NewMod("Cast", 1, function()
-    debugprint(">> BOOTING")
-
     -- locals
     local string = string
     local FAILED = FAILED
@@ -631,7 +629,7 @@ DFRL:NewMod("Cast", 1, function()
         tile = true, tileSize = 8, edgeSize = 12,
         insets = { left = 3, right = 3, top = 3, bottom = 3 }
     })
-    
+
     Setup.targetIcon.texture = Setup.targetIcon:CreateTexture(nil, "BACKGROUND")
     Setup.targetIcon.texture:SetPoint("CENTER", 0, 0)
     Setup.targetIcon.texture:SetWidth(16)
@@ -639,7 +637,7 @@ DFRL:NewMod("Cast", 1, function()
     Setup.targetIcon:Hide()
 
     local targetUpdateFrame
-    
+
     callbacks.showIcon = function(value)
         if value then
             if not targetUpdateFrame then
@@ -650,7 +648,7 @@ DFRL:NewMod("Cast", 1, function()
                         if not cast then
                             cast, nameSubtext, text, texture = UnitChannelInfo("player")
                         end
-                        
+
                         if cast and texture and Setup.frame:IsShown() then
                             Setup.targetIcon.texture:SetTexture(texture)
                             Setup.targetIcon:Show()

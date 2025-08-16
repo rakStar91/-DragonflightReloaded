@@ -3,7 +3,6 @@ DFRL:NewDefaults("Gui-base", {
 })
 
 DFRL:NewMod("Gui-base", 2, function()
-    debugprint(">> BOOTING")
 
     --=================
     -- SETUP
@@ -130,7 +129,6 @@ DFRL:NewMod("Gui-base", 2, function()
     end
 
     function Setup:TabFrame()
-        debugprint("TabFrame - Creating tab sidebar")
         if not self.tabFrame then
             self.tabFrame = CreateFrame("Frame", "DFRLTabFrame", self.mainFrame)
             self.tabFrame:SetPoint("RIGHT", self.mainFrame, "LEFT", 0, 0)
@@ -213,7 +211,6 @@ DFRL:NewMod("Gui-base", 2, function()
     end
 
     function Setup:SubFrame()
-        debugprint("SubFrame - Creating bottom info bar")
         if not self.subFrame then
             self.subFrame = CreateFrame("Frame", "DFRLSubFrame", self.mainFrame)
             self.subFrame:SetPoint("TOPRIGHT", self.mainFrame, "BOTTOMRIGHT", -self.CONSTANTS.SUB_FRAME_OFFSET, -2)
@@ -259,9 +256,7 @@ DFRL:NewMod("Gui-base", 2, function()
 
     function Setup:TabButtons()
         if not self.tabsCreated then
-            debugprint("TabButtons - Creating " .. table.getn(Setup.tabs) .. " navigation tabs")
             for i = 1, table.getn(Setup.tabs) do
-                debugprint("TabButtons - Creating tab " .. i .. ": " .. Setup.tabs[i])
                 local tab = CreateFrame("Button", "DFRLTab" .. i, self.tabFrame)
                 tab:SetHeight(self.CONSTANTS.TAB_BUTTON_HEIGHT)
                 tab:SetWidth(self.CONSTANTS.TAB_BUTTON_WIDTH)
@@ -312,19 +307,15 @@ DFRL:NewMod("Gui-base", 2, function()
     end
 
     function Setup:SelectTab(tabIndex)
-
-        debugprint("SelectTab - Switching to tab " .. tabIndex .. ": " .. self.tabs[tabIndex])
-
-        debugprint("SelectTab - Hiding all tab highlights")
         for i = 1, table.getn(self.tabs) do
             self.tabButtons[i].highlight:Hide()
         end
 
-        debugprint("SelectTab - Showing highlight for tab " .. tabIndex)
+
         self.tabButtons[tabIndex].highlight:Show()
         self.selectedTab = tabIndex
 
-        debugprint("SelectTab - Setting scroll child for tab " .. tabIndex)
+
 
         -- instant so it shows up in gui
         DFRL.activeScripts["GUI SmoothScroll"] = false
@@ -334,15 +325,14 @@ DFRL:NewMod("Gui-base", 2, function()
             DFRL.activeScripts["GUI SmoothScroll"] = false
         end
 
-        debugprint("SelectTab - Hiding all scroll children")
+
         for i = 1, table.getn(self.tabs) do
             if self.scrollChildren[i] then
                 self.scrollChildren[i]:Hide()
             end
         end
 
-        debugprint("SelectTab - Setting scrollChild " .. tabIndex .. " as active scroll child")
-        debugprint("SelectTab - ScrollChild name: " .. (self.scrollChildren[tabIndex] and self.scrollChildren[tabIndex]:GetName() or "nil"))
+
         if self.scrollChildren[tabIndex] then
             self.scrollChildren[tabIndex]:Show()
         end
@@ -364,7 +354,7 @@ DFRL:NewMod("Gui-base", 2, function()
         else
             self.panelTitle:SetText("")
         end
-        debugprint("SelectTab - Updated panel title to: " .. self.tabs[tabIndex])
+
         self.scrollRange = self.scrollFrame:GetVerticalScrollRange()
         if tabIndex == 5 then
             if not self.reloadFrame then
@@ -400,7 +390,6 @@ DFRL:NewMod("Gui-base", 2, function()
     function Setup:Panels()
 
         if not self.panelsCreated then
-            debugprint("Panels - Creating single reusable scrollframe")
 
             self.scrollFrame = CreateFrame("ScrollFrame", "DFRLScrollFrame", self.mainFrame)
             self.scrollFrame:SetPoint("TOPLEFT", self.mainFrame, "TOPLEFT", 10, -60)
@@ -448,10 +437,7 @@ DFRL:NewMod("Gui-base", 2, function()
                 self.slider:SetValue(this:GetVerticalScroll())
             end)
 
-            debugprint("Panels - Creating " .. table.getn(self.tabs) .. " scroll children")
-            debugprint("Panels - ScrollFrame parent: " .. tostring(self.scrollFrame:GetParent():GetName()))
             for i = 1, table.getn(self.tabs) do
-                debugprint("Panels - Creating scrollchild " .. i .. " for tab: " .. self.tabs[i])
                 local scrollChild = CreateFrame("Frame", "DFRLScrollChild" .. i, self.scrollFrame)
                 scrollChild:SetWidth(800)
 
@@ -466,8 +452,7 @@ DFRL:NewMod("Gui-base", 2, function()
                 scrollChild:EnableMouse(true)
                 scrollChild:SetScript("OnMouseDown", function() self.mainFrame:StartMoving() end)
                 scrollChild:SetScript("OnMouseUp", function() self.mainFrame:StopMovingOrSizing() end)
-                debugprint("Panels - ScrollChild " .. i .. " created with name: " .. scrollChild:GetName())
-                debugprint("Panels - ScrollChild " .. i .. " parent: " .. tostring(scrollChild:GetParent():GetName()))
+
                 self.scrollChildren[i] = scrollChild
             end
 
@@ -486,12 +471,11 @@ DFRL:NewMod("Gui-base", 2, function()
 
     function Setup:PanelTitles()
         if not self.panelTitle then
-            debugprint("PanelTitles - Creating panel title fontstring")
             self.panelTitle = self.mainFrame:CreateFontString(nil, "OVERLAY")
             self.panelTitle:SetFont(self.font.. "BigNoodleTitling.ttf", 18, "OUTLINE")
             self.panelTitle:SetTextColor(1, .82, 0, 1)
             self.panelTitle:SetPoint("TOP", self.scrollFrame, "TOP", -20, 25)
-            debugprint("PanelTitles - Created title -> used in SelectTab()")
+
         end
     end
 
@@ -501,7 +485,6 @@ DFRL:NewMod("Gui-base", 2, function()
                 local tab = self.tabButtons[i]
                 local text = tab:GetFontString()
                 if DFRL.addon1 then
-                    debugprint("UpdateShaguTweaksButton - ShaguTweaks enabled - addon found")
                     text:SetTextColor(.7, .7, .7, 1)
                     tab:Enable()
                     tab:SetScript("OnClick", function()
@@ -518,7 +501,6 @@ DFRL:NewMod("Gui-base", 2, function()
                         end
                     end)
                 else
-                    debugprint("UpdateShaguTweaksButton - ShaguTweaks still disabled - addon not found")
                     text:SetTextColor(.2, .2, .2, 1)
                     tab:Disable()
                 end
@@ -567,7 +549,6 @@ DFRL:NewMod("Gui-base", 2, function()
     end
 
     function Setup:Run()
-        debugprint("Run - Initializing GUI-base")
 
         Setup:MainFrame()
         Setup:TabFrame()

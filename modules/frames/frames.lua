@@ -3,8 +3,6 @@ DFRL:NewDefaults("Frames", {
 })
 
 DFRL:NewMod("Frames", 2, function()
-    -- debugprint("BOOTING")
-
     local hookEvent = CreateFrame("Frame")
     hookEvent:RegisterEvent("PLAYER_ENTERING_WORLD")
     hookEvent:SetScript("OnEvent", function()

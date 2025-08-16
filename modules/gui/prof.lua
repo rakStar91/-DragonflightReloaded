@@ -4,7 +4,6 @@ DFRL:NewDefaults("Gui-prof", {
 })
 
 DFRL:NewMod("Gui-prof", 4, function()
-    debugprint(">> BOOTING")
 
     --=================
     -- SETUP
@@ -52,10 +51,7 @@ DFRL:NewMod("Gui-prof", 4, function()
 
 
     function Setup:ListFrame()
-        debugprint("ListFrame - Starting profile UI creation")
-
         if not self.headers then
-            debugprint("ListFrame - Creating header")
             self.grid:AddElement(2, 1, DFRL.tools.CreateCategoryHeader(nil, "Manage"))
             self.headers = true
         end
@@ -65,7 +61,6 @@ DFRL:NewMod("Gui-prof", 4, function()
             self.grid:AddElement(5, 4, self.ui.usageText)
         end
         if not self.ui.frame then
-            debugprint("ListFrame - Creating main frame")
             self.ui.frame = CreateFrame("Frame", nil, panel)
             self.ui.frame:SetWidth(300)
             self.ui.frame:SetHeight(400)
@@ -77,16 +72,12 @@ DFRL:NewMod("Gui-prof", 4, function()
 
         local char = UnitName("player")
         local curProf = self.curProf[char] or "Default"
-        debugprint("ListFrame - Current profile for " .. char .. ": " .. curProf)
         if not self.ui.curText then
-            debugprint("ListFrame - Creating current profile text")
             self.ui.curText = self.ui.frame:CreateFontString(nil, "OVERLAY")
             self.ui.curText:SetFont(self.font .. "BigNoodleTitling.ttf", self.TEXT_SIZE, "OUTLINE")
             self.ui.curText:SetPoint("TOPLEFT", self.ui.frame, "TOPLEFT", 10, -10)
         end
         self.ui.curText:SetText("Current:   |cff80ff80" .. curProf .. "|r")
-
-        debugprint("ListFrame - Clearing existing elements")
         for _, text in pairs(self.ui.texts) do
             text:Hide()
         end
@@ -106,7 +97,6 @@ DFRL:NewMod("Gui-prof", 4, function()
         self.ui.switchBtns = {}
         local yOffset = -50
         local profCount = 0
-        debugprint("ListFrame - Creating profile list")
         local sortedProfiles = {}
         for name in pairs(self.allProf) do
             if name ~= "Default" then
@@ -120,7 +110,6 @@ DFRL:NewMod("Gui-prof", 4, function()
 
         for _, name in ipairs(sortedProfiles) do
             profCount = profCount + 1
-            debugprint("ListFrame - Adding profile: " .. name .. " at offset " .. yOffset)
 
             local text = self.ui.frame:CreateFontString(nil, "OVERLAY")
             text:SetFont(self.font .. "BigNoodleTitling.ttf", self.TEXT_SIZE, "OUTLINE")
@@ -128,14 +117,12 @@ DFRL:NewMod("Gui-prof", 4, function()
             text:SetText(name)
             table.insert(self.ui.texts, text)
             if name ~= "Default" then
-                debugprint("ListFrame - Adding buttons for profile: " .. name)
                 local profName = name
                 local switchBtn = DFRL.tools.CreateButton(self.ui.frame, "Switch", 50, 20, true, {0.5, 1, 0.5})
                 switchBtn:SetPoint("TOPLEFT", self.ui.frame, "TOPLEFT", 125, yOffset)
                 switchBtn.profName = profName
                 switchBtn:SetScript("OnClick", function()
                     local clickedName = this.profName
-                    debugprint("Switch button clicked for profile: " .. clickedName)
                     DFRL:SwitchProfile(clickedName)
                     Setup:Update()
                     if DFRL.gui.Base.UpdateHandler then
@@ -156,11 +143,9 @@ DFRL:NewMod("Gui-prof", 4, function()
                 copyBtn.profName = profName
                 copyBtn:SetScript("OnClick", function()
                     local clickedName = this.profName
-                    debugprint("Copy button clicked for profile: " .. clickedName)
                     DFRL:LoadProfile(clickedName)
                     Setup:Update()
                     if DFRL.gui.Base.UpdateHandler then
-                        debugprint("Updating all GUI elements after profile copy")
                         DFRL.gui.Base:UpdateHandler()
                     end
                     if not Setup.ui.warner then
@@ -178,7 +163,6 @@ DFRL:NewMod("Gui-prof", 4, function()
                 delBtn.profName = profName
                 delBtn:SetScript("OnClick", function()
                     local clickedName = this.profName
-                    debugprint("Delete button clicked for profile: " .. clickedName)
                     DFRL:DeleteProfile(clickedName)
                     DFRL:SwitchProfile("Default")
                     DFRL.gui.Base:UpdateHandler()
@@ -193,14 +177,12 @@ DFRL:NewMod("Gui-prof", 4, function()
                     Setup:RestartWarnerPulse()
                 end)
                 table.insert(self.ui.delBtns, delBtn)
-            else
-                debugprint("ListFrame - Skipping buttons for Default profile")
             end
 
             yOffset = yOffset - 20
         end
 
-        debugprint("ListFrame - Created " .. profCount .. " profile entries")
+
     end
 
     function Setup:RestartWarnerPulse()
@@ -234,18 +216,14 @@ DFRL:NewMod("Gui-prof", 4, function()
     end
 
     function Setup:Update()
-        debugprint("Update - Updating profile UI")
         Setup:ListFrame()
-        debugprint("Update - Profile UI updated")
     end
 
     function Setup:ExtraButtons()
-        debugprint("ExtraButtons - Setting up extra buttons")
         if not self.ui.newProfileBtn then
             self.ui.newProfileBtn = DFRL.tools.CreateButton(panel, "New Profile", 100, 30, true)
             self.ui.newProfileBtn:SetPoint("TOPLEFT", self.ui.frame, "TOPRIGHT", 20, -25)
             self.ui.newProfileBtn:SetScript("OnClick", function()
-                debugprint("ExtraButtons - New profile button clicked")
                 local count = 0
                 for _ in pairs(self.allProf) do
                     count = count + 1
@@ -269,13 +247,11 @@ DFRL:NewMod("Gui-prof", 4, function()
                     self.ui.editBox:SetScript("OnEnterPressed", function()
                         local profileName = self.ui.editBox:GetText()
                         if profileName and profileName ~= "" then
-                            debugprint("Creating and switching to profile: " .. profileName)
                             DFRL:CreateProfile(profileName)
                             DFRL:SwitchProfile(profileName)
                             DFRL:SetTempDBNoCallback("Generic", "firstRun", true)
                             Setup:Update()
                             if DFRL.gui.Base.UpdateHandler then
-                                debugprint("Updating all GUI elements after profile switch")
                                 DFRL.gui.Base:UpdateHandler()
                             end
 
@@ -300,11 +276,9 @@ DFRL:NewMod("Gui-prof", 4, function()
 
         end
         if not self.ui.resetBtn then
-            debugprint("ExtraButtons - Creating reset button")
             self.ui.resetBtn = DFRL.tools.CreateButton(panel, "Reset", 100, 30, true, {1, 0.5, 0.5})
             self.ui.resetBtn:SetPoint("TOPLEFT", self.ui.newProfileBtn, "BOTTOMLEFT", 0, -10)
             self.ui.resetBtn:SetScript("OnClick", function()
-                debugprint("ExtraButtons - Reset button clicked")
                 local success, _ = pcall(function()
                     DFRL:CopyProfile(nil, Setup.default["Default"])
                     DFRL.gui.Base:UpdateHandler()
@@ -337,15 +311,10 @@ DFRL:NewMod("Gui-prof", 4, function()
     -- INIT
     --=================
     function Setup:Run()
-        debugprint("Run - Initializing profile UI")
         Setup.grid:Init()
-        debugprint("Run - Grid initialized")
         self:ListFrame()
-        debugprint("Run - Profile UI setup complete")
         self:ExtraButtons()
-        debugprint("Run - New profile button created")
         self:Update()
-        debugprint("Run - Profile UI updated")
     end
 
     Setup:Run()

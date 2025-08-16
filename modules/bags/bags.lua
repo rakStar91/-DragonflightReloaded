@@ -14,8 +14,6 @@ DFRL:NewDefaults("Bags", {
 })
 
 DFRL:NewMod("Bags", 1, function()
-    debugprint(">> BOOTING")
-
     local f = CreateFrame("Frame")
     f:RegisterEvent("PLAYER_ENTERING_WORLD")
     f:SetScript("OnEvent", function()
@@ -234,7 +232,6 @@ DFRL:NewMod("Bags", 1, function()
                     iconTexture:Hide()
                 end
             end
-            -- Setup:UpdateKeyRingButtonVisibility()
         end
 
         function Setup:UpdateKeyRingButtonVisibility()
@@ -588,7 +585,7 @@ DFRL:NewMod("Bags", 1, function()
 
         --=================
         -- EVENT
-        --=================        
+        --=================
         local f2 = CreateFrame("Frame")
         f2:RegisterEvent("BAG_UPDATE")
         f2:SetScript("OnEvent", function()

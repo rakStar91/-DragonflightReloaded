@@ -13,8 +13,6 @@ DFRL:NewDefaults("Ui", {
 })
 
 DFRL:NewMod("Ui", 5, function()
-    debugprint("BOOTING")
-
     -- locals
     local UnitHealth = UnitHealth
     local UnitHealthMax = UnitHealthMax
@@ -267,20 +265,20 @@ DFRL:NewMod("Ui", 5, function()
 
             UIOptionsFrame:ClearAllPoints()
             UIOptionsFrame:SetPoint("CENTER", 0, 0)
-            
+
             -- Fix frame levels - set higher than main frame
             UIOptionsFrameTab1:SetFrameLevel(10)
             UIOptionsFrameTab2:SetFrameLevel(10)
             UIOptionsFrameDefaults:SetFrameLevel(10)
             UIOptionsFrameCancel:SetFrameLevel(10)
             UIOptionsFrameOkay:SetFrameLevel(10)
-            
+
             -- Fix hit detection
             UIOptionsFrame:SetHitRectInsets(0,0,0,50)
         end)
 
     end
-    
+
     -- callbacks
     local callbacks = {}
 
@@ -514,9 +512,9 @@ DFRL:NewMod("Ui", 5, function()
 
             local healthCheckFrame = CreateFrame("Frame")
             local updateFunc = function()
-                if (this.tick or 0) > GetTime() then 
+                if (this.tick or 0) > GetTime() then
                     DFRL.activeScripts["LowHpWarnScript"] = false
-                    return 
+                    return
                 end
                 this.tick = GetTime() + 0.01
 
@@ -607,7 +605,7 @@ DFRL:NewMod("Ui", 5, function()
             end)
             DFRL.nameplateFrame = f
         end
-        
+
         if value then
             DFRL.nameplateFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
             DFRL.nameplateFrame:RegisterEvent("PLAYER_REGEN_DISABLED")

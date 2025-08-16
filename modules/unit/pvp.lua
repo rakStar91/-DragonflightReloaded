@@ -4,8 +4,6 @@ DFRL:NewDefaults("PVPIcon", {
 })
 
 DFRL:NewMod("PVPIcon", 1, function()
-    debugprint(">> BOOTING")
-
     -- =================
     -- SETUP
     -- =================
@@ -32,7 +30,7 @@ DFRL:NewMod("PVPIcon", 1, function()
     -- CALLBACKS
     -- =================
     local callbacks = {}
-    
+
     callbacks.pvpDark = function(value)
         local frames = {"Player", "Target"}
         for _, frame in ipairs(frames) do
@@ -72,6 +70,6 @@ DFRL:NewMod("PVPIcon", 1, function()
             end
         end
     end)
-    
+
     DFRL:NewCallbacks("PVPIcon", callbacks)
 end)
