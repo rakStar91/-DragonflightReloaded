@@ -46,6 +46,7 @@ DFRL:NewMod("Frames", 2, function()
             BuffButton8,
             TempEnchant1,
             BuffButton16,
+            BuffButton32,
 
             -- PWB
             DFRL.PWB_Panel,
