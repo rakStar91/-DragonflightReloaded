@@ -547,13 +547,13 @@ DFRL:NewMod("Ui", 5, function()
                     -- update
                     for i = 1, 4 do
                         local texture = DFRL.lowHpWarnFrame.textures[i]
-                        if i == 1 then -- top
+                        if i == 1 then
                             texture:SetGradientAlpha("VERTICAL", 1, 0, 0, 0, 1, 0, 0, 0.7 * finalAlpha)
-                        elseif i == 2 then -- bottom
+                        elseif i == 2 then
                             texture:SetGradientAlpha("VERTICAL", 1, 0, 0, 0.7 * finalAlpha, 1, 0, 0, 0)
-                        elseif i == 3 then -- left
+                        elseif i == 3 then
                             texture:SetGradientAlpha("HORIZONTAL", 1, 0, 0, 0.7 * finalAlpha, 1, 0, 0, 0)
-                        else -- right
+                        else
                             texture:SetGradientAlpha("HORIZONTAL", 1, 0, 0, 0, 1, 0, 0, 0.7 * finalAlpha)
                         end
                     end

@@ -1,7 +1,7 @@
 ## Interface: 11200
 ## Title: Dragonflight: |cFFFFFFFFReloaded
 ## Notes: A World of Warcraft UI replacement.
-## Version: 2.0.16
+## Version: 2.1.0
 ## Author: Guzruul
 ## SavedVariables: DFRL_PROFILES, DFRL_DB_SETUP
 ## SavedVariablesPerCharacter: DFRL_CUR_PROFILE, DFRL_FRAMEPOS
@@ -38,6 +38,7 @@ modules\frames\frames.lua
 
 modules\ui\ui.lua
 modules\ui\tooltip.lua
+modules\ui\talents.lua
 
 modules\unit\player.lua
 modules\unit\target.lua
@@ -49,7 +50,7 @@ modules\xprep\xprep.lua
 
 modules\track\track.lua
 
-modules\test.lua
+# modules\test.lua
 
 # GUI
 modules\gui\tools.lua

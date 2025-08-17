@@ -3,10 +3,6 @@ DFRL:NewDefaults("Gui-base", {
 })
 
 DFRL:NewMod("Gui-base", 2, function()
-
-    --=================
-    -- SETUP
-    --=================
     local GetTime = GetTime
     local GetFramerate = GetFramerate
 

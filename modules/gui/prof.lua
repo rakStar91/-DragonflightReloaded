@@ -4,7 +4,6 @@ DFRL:NewDefaults("Gui-prof", {
 })
 
 DFRL:NewMod("Gui-prof", 4, function()
-
     --=================
     -- SETUP
     --=================

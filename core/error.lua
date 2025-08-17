@@ -1,58 +1,48 @@
---=================
--- SETUP
---=================
-local Setup = {
-    error_counts = {},
-    max_errors = 2
-}
+local error_counts = {}
+local max_errors = 2
 
-function Setup:GetAddonName(msg)
-    if string.find(msg, "AddOns\\") then
-        local start = string.find(msg, "AddOns\\")
+local function GetAddonName(msg)
+    local start = string.find(msg, 'AddOns\\')
+    if start then
         local path = string.sub(msg, start + 7)
-        local end_pos = string.find(path, "\\")
+        local end_pos = string.find(path, '\\')
         if end_pos then
             return string.sub(path, 1, end_pos - 1)
         end
     end
-    return "UNKNOWN"
+    return 'UNKNOWN'
 end
 
-function Setup:FormatErrorMessage(addon, msg, throttled)
+local function FormatErrorMessage(addon, msg, throttled)
     if throttled then
-        return "|cffff0000DFRL: |cffffffff[|cffffffffERROR - ADDON: |cffff0000" .. addon .. "|cffffffff] : [|cffff0000ERROR SPAM THROTTLED|cffffffff]"
+        return '|cffff0000DFRL: |cffffffff[|cffffffffERROR - ADDON: |cffff0000' .. addon .. '|cffffffff] : [|cffff0000ERROR SPAM THROTTLED|cffffffff]'
     else
-        return "|cffff0000DFRL: |cffffffff[|cffffffffERROR - ADDON: |cffff0000" .. addon .. "|cffffffff] : |cffffffff" .. (msg or "nil")
+        return '|cffff0000DFRL: |cffffffff[|cffffffffERROR - ADDON: |cffff0000' .. addon .. '|cffffffff] : |cffffffff' .. (msg or 'nil')
     end
 end
 
-function Setup:ErrorHandler(msg)
-    local addon = self:GetAddonName(msg)
+local function ErrorHandler(msg)
+    local addon = GetAddonName(msg)
 
-    if not self.error_counts[msg] then
-        self.error_counts[msg] = 1
-        DEFAULT_CHAT_FRAME:AddMessage(self:FormatErrorMessage(addon, msg, false))
+    if not error_counts[msg] then
+        error_counts[msg] = 1
+        DEFAULT_CHAT_FRAME:AddMessage(FormatErrorMessage(addon, msg, false))
     else
-        self.error_counts[msg] = self.error_counts[msg] + 1
-        if self.error_counts[msg] <= self.max_errors then
-            DEFAULT_CHAT_FRAME:AddMessage(self:FormatErrorMessage(addon, msg, false))
-        elseif self.error_counts[msg] == self.max_errors + 1 then
-            DEFAULT_CHAT_FRAME:AddMessage(self:FormatErrorMessage(addon, msg, true))
+        error_counts[msg] = error_counts[msg] + 1
+        if error_counts[msg] <= max_errors then
+            DEFAULT_CHAT_FRAME:AddMessage(FormatErrorMessage(addon, msg, false))
+        elseif error_counts[msg] == max_errors + 1 then
+            DEFAULT_CHAT_FRAME:AddMessage(FormatErrorMessage(addon, msg, true))
         end
     end
 end
 
---=================
--- INIT
---=================
-local f = CreateFrame("Frame")
-f:RegisterEvent("ADDON_LOADED")
-f:RegisterEvent("PLAYER_ENTERING_WORLD")
-f:SetScript("OnEvent", function()
-    seterrorhandler(function(err) Setup:ErrorHandler(err) end)
-    if event == "PLAYER_ENTERING_WORLD" then
+local f = CreateFrame('Frame')
+f:RegisterEvent('ADDON_LOADED')
+f:RegisterEvent('PLAYER_ENTERING_WORLD')
+f:SetScript('OnEvent', function(event)
+    seterrorhandler(function(err) ErrorHandler(err) end)
+    if event == 'PLAYER_ENTERING_WORLD' then
         f:UnregisterAllEvents()
     end
 end)
-
-seterrorhandler(function(err) Setup:ErrorHandler(err) end)

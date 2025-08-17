@@ -1,34 +1,12 @@
---=========================================================================
--- DRAGONFLIGHT: RELOADED DOCUMENTATION
---=========================================================================
-----> Workflow:
--- 1. ADDON_LOADED: VersionCheckDB() checks/wipes DB versions → InitTempDB()
---    detects character → creates/gets profile mapping → loads profile data
---    into tempDB → applies missing defaults from NewDefaults() → RunMods()
--- 2. Runtime: RegisterCallback() sets up listeners, SetTempDB() triggers
---    TriggerCallback() for module reactions, modules execute in sandboxed
---    environment with shortcuts and track exec time, mem used, and scripts
--- 3. PLAYER_LOGOUT: SaveTempDB() writes tempDB back to character's profile,
---    preserving character-to-profile mapping
---=========================================================================
-
---=================
--- DFRL MAINFRAME
---=================
+-- mainframe
 DFRL = CreateFrame("Frame", nil, UIParent)
 
---=================
--- TABLES
---=================
--- global
+-- tables
 DFRL_PROFILES = {}
 DFRL_DB_SETUP = {}
-
--- character
 DFRL_CUR_PROFILE = {}
 DFRL_FRAMEPOS = {}
 
--- internal
 DFRL.env = {}
 DFRL.tools = {}
 DFRL.hooks = {}
@@ -41,18 +19,13 @@ DFRL.performance = {}
 DFRL.activeScripts = {}
 DFRL.gui = {}
 
--- DB VERSION
+-- db version
 DFRL.DBversion = "1.0"
 
---=================
--- LOCALS
---=================
 -- boot flag
 local boot = false
 
---=================
--- UTILITY
---=================
+-- utility
 function DFRL:GetInfoOrCons(type)
     local name = "-DragonflightReloaded"
     if type == "name" then
@@ -94,9 +67,7 @@ function print(msg)
     DEFAULT_CHAT_FRAME:AddMessage("|cffffd100DFRL: |r".. tostring(msg))
 end
 
---=================
--- ENVIRONMENT
---=================
+-- environment
 function DFRL:GetEnv()
     self.env._G = getfenv(0)
     self.env.T = self.tools
@@ -105,11 +76,8 @@ end
 
 setmetatable(DFRL.env, {__index = getfenv(0)})
 
---=================
--- MODULES
---=================
+-- modules
 function DFRL:NewDefaults(mod, defaults)
-
     if not self.defaults[mod] then
         self.defaults[mod] = {}
     end
@@ -122,9 +90,7 @@ function DFRL:NewDefaults(mod, defaults)
 end
 
 function DFRL:NewMod(name, prio, func)
-    if self.modules[name] then
-        return
-    end
+    if self.modules[name] then return end
     self.modules[name] = {func = func, priority = prio}
 end
 
@@ -158,9 +124,7 @@ function DFRL:RunMods()
 	end
 end
 
---=================
--- DATABASE
---=================
+-- database
 function DFRL:InitTempDB()
     self:VersionCheckDB()
 
@@ -263,9 +227,7 @@ function DFRL:ResetDB()
     ReloadUI()
 end
 
---=================
--- PROFILES
---=================
+-- profiles
 function DFRL:CreateProfile(name)
     DFRL_PROFILES[name] = {}
     for mod, def in pairs(self.defaults) do
@@ -286,13 +248,10 @@ end
 
 function DFRL:CopyProfile(from, tbl)
     local src
-    local name
     if tbl then
         src = tbl
-        name = "static table"
     else
         src = DFRL_PROFILES[from]
-        name = from
     end
     self.tempDB = {}
     for mod, data in pairs(src) do
@@ -317,9 +276,7 @@ function DFRL:DeleteProfile(name)
     DFRL_PROFILES[name] = nil
 end
 
---=================
--- CALLBACKS
---=================
+-- callbacks
 function DFRL:NewCallbacks(mod, callbacks)
     local count = 0
     for key, func in pairs(callbacks) do
@@ -354,32 +311,20 @@ function DFRL:TriggerAllCallbacks()
     end
 end
 
---=================
--- EVENT HANDLER
---=================
+-- init handler
 DFRL:RegisterEvent("ADDON_LOADED")
 DFRL:RegisterEvent("PLAYER_LOGOUT")
 DFRL:SetScript("OnEvent", function()
-
-    -- check on every addon load
     if event == "ADDON_LOADED" then
         DFRL:CheckAddon(arg1)
     end
-
-    -- init DRAGONFLIGHT:RELOADED
     if event == "ADDON_LOADED" and arg1 == "-DragonflightReloaded" then
-        if boot then
-            return
-        end
-
+        if boot then return end
         DFRL:InitTempDB()
         DFRL:RunMods()
-
         print("Welcome to |cffffd200Dragonflight:|r Reloaded.")
         print("Open menu via |cffddddddESC|r or |cffddddddSLASH DFRL|r.")
     end
-
-    -- save tempDB to globalDB on logout
     if event == "PLAYER_LOGOUT" then
         DFRL:SaveTempDB()
     end

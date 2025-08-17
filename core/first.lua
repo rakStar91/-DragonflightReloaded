@@ -1,8 +1,5 @@
 setfenv(1, DFRL:GetEnv())
 
---=================
--- SETUP
---=================
 local Setup = {
     welcomeConfig = {
         width = 450,

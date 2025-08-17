@@ -19,13 +19,13 @@ DFRL:NewMod("Menu", 1, function()
     function Setup:KillBlizz()
         KillFrame(GameMenuFrame)
 
-        local origUpdateMicroButtons = UpdateMicroButtons
-        _G.UpdateMicroButtons = function()
-            origUpdateMicroButtons()
-            if Setup.menuframe and Setup.menuframe:IsVisible() then
-                MainMenuMicroButton:SetButtonState("PUSHED", 1)
-            end
-        end
+        -- local origUpdateMicroButtons = UpdateMicroButtons
+        -- _G.UpdateMicroButtons = function()
+        --     origUpdateMicroButtons()
+        --     if Setup.menuframe and Setup.menuframe:IsVisible() then
+        --         MainMenuMicroButton:SetButtonState("PUSHED", 1)
+        --     end
+        -- end
 
         _G.ToggleGameMenu = function()
             if StaticPopup_EscapePressed() then
@@ -204,14 +204,6 @@ DFRL:NewMod("Menu", 1, function()
 
     Setup:Run()
 
-    --=================
-    -- CALLBACKS
-    --=================
-    local callbacks = {}
-
-    --=================
-    -- EVENT
-    --=================
-
-    DFRL:NewCallbacks("Menu", callbacks)
+    -- expose
+    DFRL.menuframe = Setup.menuframe
 end)

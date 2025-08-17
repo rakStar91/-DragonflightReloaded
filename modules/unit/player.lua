@@ -3,7 +3,6 @@ DFRL:NewDefaults("Player", {
 
     playerDarkMode = {0, "slider", {0, 1}, nil, "appearance", 1, "Adjust dark mode intensity", nil, nil},
     eliteBorder = {"standard", "dropdown", {"standard", "rare", "elite", "rare-elite", "boss", "dfrl evolved", "dfrl nebula"}, nil, "appearance", 2, "Changes the texture of the playerframe", nil, nil},
-
     textShow = {true, "checkbox", nil, nil, "text settings", 3, "Show health and mana text", nil, nil},
     noPercent = {true, "checkbox", nil, nil, "text settings", 4, "Show only current values without percentages", nil, nil},
     textColoring = {false, "checkbox", nil, nil, "text settings", 5, "Color text based on health/mana percentage from white to red", nil, nil},
@@ -25,20 +24,16 @@ DFRL:NewDefaults("Player", {
     }, nil, "text settings", 8, "Change the font used for the playerframe", nil, nil},
 
     classColor = {false, "checkbox", nil, nil, "bar color", 9, "Color health bar based on class", nil, nil},
-
     classPortrait = {false, "checkbox", nil, nil, "tweaks", 10, "Activate 2D class portrait icons", nil, nil},
     frameHide = {false, "checkbox", nil, nil, "tweaks", 11, "Hide frame at full HP when not in combat", nil, nil},
     frameScale = {1, "slider", {0.7, 1.3}, nil, "tweaks", 12, "Adjust frame size", nil, nil},
-
     combatGlow = {true, "checkbox", nil, nil, "effects", 13, "Enable combat pulse animation", nil, nil},
     glowSpeed = {1, "slider", {0.4, 5}, nil, "effects", 14, "Adjust the speed of the combat pulsing", nil, nil},
     glowAlpha = {1, "slider", {0.1, 1}, nil, "effects", 15, "Adjust the maximum alpha of the combat pulsing", nil, nil},
-
     restingGlow = {true, "checkbox", nil, nil, "effects", 16, "Enable resting glow animation", nil, nil},
     restingSpeed = {1, "slider", {0.4, 5}, nil, "effects", 17, "Adjust the speed of the resting pulsing", nil, nil},
     restingAlpha = {1, "slider", {0.1, 1}, nil, "effects", 18, "Adjust the maximum alpha of the resting pulsing", nil, nil},
     restingColor = {{0, 1, 1}, "colour", nil, nil, "effects", 19, "Changes the colour of the resting glow animation", nil, nil},
-
 })
 
 DFRL:NewMod("Player", 1, function()
@@ -51,9 +46,7 @@ DFRL:NewMod("Player", 1, function()
         fontpath = "Interface\\AddOns\\-DragonflightReloaded\\media\\fnt\\",
 
         hideFrame = nil,
-
         restingAnimation = nil,
-
         combatOverlay = nil,
         combatOverlayTex = nil,
         combatGlow = {
@@ -103,18 +96,14 @@ DFRL:NewMod("Player", 1, function()
     function Setup:HealthBarText()
         PlayerFrameHealthBarText:ClearAllPoints()
         PlayerFrameHealthBarText:SetText("")
-
         local cfg = self.texts.config
-
         self.texts.healthTextFrame = CreateFrame("Frame", nil, PlayerFrame)
         self.texts.healthTextFrame:SetAllPoints(PlayerFrameHealthBar)
         self.texts.healthTextFrame:SetFrameStrata(PlayerFrame:GetFrameStrata())
         self.texts.healthTextFrame:SetFrameLevel(PlayerFrame:GetFrameLevel() + 2)
-
         self.texts.healthPercent = self.texts.healthTextFrame:CreateFontString(nil)
         self.texts.healthPercent:SetFont(cfg.font, cfg.healthFontSize, "OUTLINE")
         self.texts.healthPercent:SetPoint("LEFT", PlayerFrameHealthBar, "LEFT", 5, 0)
-
         self.texts.healthValue = self.texts.healthTextFrame:CreateFontString(nil)
         self.texts.healthValue:SetFont(cfg.font, cfg.healthFontSize, "OUTLINE")
     end
@@ -123,27 +112,22 @@ DFRL:NewMod("Player", 1, function()
         PlayerFrameManaBar:SetStatusBarTexture(self.texpath .. "UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana-Status.tga")
         PlayerFrameManaBar:SetWidth(130)
         PlayerFrameManaBar:SetHeight(12)
-        PlayerFrameManaBar:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 98, -53)
+        PlayerFrameManaBar:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 100, -53)
     end
 
     function Setup:ManaBarText()
         PlayerFrameManaBarText:SetText("")
         PlayerFrameManaBarText:ClearAllPoints()
-
         local cfg = self.texts.config
-
         self.texts.manaTextFrame = CreateFrame("Frame", nil, PlayerFrame)
         self.texts.manaTextFrame:SetAllPoints(PlayerFrameManaBar)
         self.texts.manaTextFrame:SetFrameStrata(PlayerFrame:GetFrameStrata())
         self.texts.manaTextFrame:SetFrameLevel(PlayerFrame:GetFrameLevel() + 2)
-
         self.texts.manaPercent = self.texts.manaTextFrame:CreateFontString(nil)
         self.texts.manaPercent:SetFont(cfg.font, cfg.manaFontSize, cfg.outline)
-        self.texts.manaPercent:SetPoint("LEFT", PlayerFrameManaBar, "LEFT", 10, 0)
-
+        self.texts.manaPercent:SetPoint("LEFT", PlayerFrameManaBar, "LEFT", 5, 0)
         self.texts.manaValue = self.texts.manaTextFrame:CreateFontString(nil)
         self.texts.manaValue:SetFont(cfg.font, cfg.manaFontSize, cfg.outline)
-        self.texts.manaValue:SetPoint("RIGHT", PlayerFrameManaBar, "RIGHT", -5, 0)
     end
 
     function Setup:FrameTextures()
@@ -152,13 +136,11 @@ DFRL:NewMod("Player", 1, function()
         PlayerFrameTexture:SetHeight(128)
         PlayerFrameTexture:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 0, 0)
         PlayerFrameTexture:SetDrawLayer("BACKGROUND")
-
         PlayerFrameBackground:SetTexture(self.texpath .. "UI-TargetingFrameDF-Background.blp")
         PlayerFrameBackground:SetWidth(256)
         PlayerFrameBackground:SetHeight(128)
         PlayerFrameBackground:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 0, 0)
         PlayerFrameBackground:SetDrawLayer("BACKGROUND")
-
         PlayerStatusTexture:SetTexture("")
     end
 
@@ -187,11 +169,9 @@ DFRL:NewMod("Player", 1, function()
         function _G.PlayerFrame_UpdateStatus() end
         PlayerAttackGlow:SetTexture("")
         PlayerAttackIcon:SetTexture("")
-
         Setup.combatOverlay = CreateFrame("Frame", nil, PlayerFrame)
         Setup.combatOverlay:SetAllPoints(PlayerFrame)
         Setup.combatOverlay:SetFrameStrata("MEDIUM")
-
         Setup.combatOverlayTex = Setup.combatOverlay:CreateTexture(nil, "OVERLAY")
         Setup.combatOverlayTex:SetTexture(Setup.texpath.. "UI-Player-Status.blp")
         Setup.combatOverlayTex:SetPoint("CENTER", PlayerFrame, "CENTER", 45, -21)
@@ -203,11 +183,9 @@ DFRL:NewMod("Player", 1, function()
     function Setup:RestingGlow()
         PlayerRestIcon:SetTexture("")
         PlayerRestGlow:SetTexture("")
-
         Setup.restingOverlay = CreateFrame("Frame", nil, PlayerFrame)
         Setup.restingOverlay:SetAllPoints(PlayerFrame)
         Setup.restingOverlay:SetFrameStrata("MEDIUM")
-
         Setup.restingOverlayTex = Setup.restingOverlay:CreateTexture(nil, "OVERLAY")
         Setup.restingOverlayTex:SetTexture(Setup.texpath.. "UI-Player-Status.blp")
         Setup.restingOverlayTex:SetPoint("CENTER", PlayerFrame, "CENTER", 45, -21)
@@ -221,11 +199,9 @@ DFRL:NewMod("Player", 1, function()
         restingAnimation:SetPoint("CENTER", PlayerFrame, "CENTER", -20, 30)
         restingAnimation:SetWidth(24)
         restingAnimation:SetHeight(24)
-
         local texture = restingAnimation:CreateTexture(nil, "OVERLAY")
         texture:SetTexture(Setup.texpath.. "UIUnitFrameRestingFlipbook")
         texture:SetAllPoints(restingAnimation)
-
         local texCoords = {
             {0/512, 60/512, 0/512, 60/512}, {60/512, 120/512, 0/512, 60/512}, {120/512, 180/512, 0/512, 60/512}, {180/512, 240/512, 0/512, 60/512}, {240/512, 300/512, 0/512, 60/512}, {300/512, 360/512, 0/512, 60/512},
             {0/512, 60/512, 60/512,120/512}, {60/512, 120/512, 60/512, 120/512}, {120/512, 180/512, 60/512, 120/512}, {180/512, 240/512, 60/512, 120/512}, {240/512, 300/512, 60/512, 120/512}, {300/512, 360/512, 60/512, 120/512},
@@ -250,7 +226,6 @@ DFRL:NewMod("Player", 1, function()
                 if currentFrame > totalFrames then
                     currentFrame = 1
                 end
-
                 local coords = texCoords[currentFrame]
                 texture:SetTexCoord(coords[1], coords[2], coords[3], coords[4])
 
@@ -269,10 +244,10 @@ DFRL:NewMod("Player", 1, function()
             end
         end
 
-        local eventFrame = CreateFrame("Frame")
-        eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-        eventFrame:RegisterEvent("PLAYER_UPDATE_RESTING")
-        eventFrame:SetScript("OnEvent", function()
+        local f = CreateFrame("Frame")
+        f:RegisterEvent("PLAYER_ENTERING_WORLD")
+        f:RegisterEvent("PLAYER_UPDATE_RESTING")
+        f:SetScript("OnEvent", function()
             UpdateRestingState()
         end)
 
@@ -347,7 +322,7 @@ DFRL:NewMod("Player", 1, function()
 
             if not Setup.texts.manaPercentShow then
                 Setup.texts.manaValue:ClearAllPoints()
-                Setup.texts.manaValue:SetPoint("CENTER", PlayerFrameManaBar, "CENTER", 0, 0)
+                Setup.texts.manaValue:SetPoint("CENTER", PlayerFrameManaBar, "CENTER", -3, 0)
             else
                 Setup.texts.manaValue:ClearAllPoints()
                 Setup.texts.manaValue:SetPoint("RIGHT", PlayerFrameManaBar, "RIGHT", -5, 0)
