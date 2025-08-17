@@ -2,7 +2,6 @@ DFRL:NewDefaults("Mini", {
     enabled = {true},
 
     miniDarkMode = {0, "slider", {0, 1}, nil, "mini appearance", 1, "Adjust dark mode intensity", nil, nil},
-
     miniTextShow = {true, "checkbox", nil, nil, "mini text settings", 2, "Show pet health and mana text", nil, nil},
     noPercent = {true, "checkbox", nil, nil, "mini text settings", 3, "Hide pet health and mana percent text", nil, nil},
     frameFont = {"BigNoodleTitling", "dropdown", {
@@ -19,11 +18,11 @@ DFRL:NewDefaults("Mini", {
         "Continuum",
         "DieDieDie"
     }, nil, "mini text settings", 4, "Change the font used for all smaller frames", nil, nil},
-
     colorReaction = {true, "checkbox", nil, nil, "mini bar color", 5, "Color health bar based on target reaction", nil, nil},
     colorClass = {false, "checkbox", nil, nil, "mini bar color", 6, "Color health bar based on target class", nil, nil},
-
-
+    partyFrameScale = {1, "slider", {0.7, 1.3}, nil, "mini scaling", 7, "Adjust party frame size", nil, nil},
+    petFrameScale = {1, "slider", {0.7, 1.3}, nil, "mini scaling", 8, "Adjust pet frame size", nil, nil},
+    totFrameScale = {1, "slider", {0.7, 1.3}, nil, "mini scaling", 9, "Adjust target of target frame size", nil, nil},
 })
 
 DFRL:NewMod("Mini", 1, function()
@@ -35,25 +34,20 @@ DFRL:NewMod("Mini", 1, function()
     -- setup
     local Setup = {
         path = "Interface\\AddOns\\-DragonflightReloaded\\media\\tex\\unitframes\\",
-
         healthPercentText = nil,
         healthValueText = nil,
         manaPercentText = nil,
         manaValueText = nil,
-
         partyHealthPercentTexts = {},
         partyCustomBorders = {},
-
         totHealthPercentText = nil,
         totHealthValueText = nil,
         totManaPercentText = nil,
         totManaValueText = nil,
-
         framesState = {
             colorReaction = false,
             colorClass = false,
         },
-
         UpdatePetTexts = nil,
     }
 
@@ -62,7 +56,6 @@ DFRL:NewMod("Mini", 1, function()
         PetFrameHealthBar:SetScript("OnLeave", nil)
         PetFrameManaBar:SetScript("OnEnter", nil)
         PetFrameManaBar:SetScript("OnLeave", nil)
-
         for i = 1, 4 do
             local borderTexture = _G["PartyMemberFrame" .. i .. "Texture"]
             if borderTexture then
@@ -76,17 +69,14 @@ DFRL:NewMod("Mini", 1, function()
         self.healthPercentText:SetFont("Fonts\\FRIZQT__.TTF", 9, "OUTLINE")
         self.healthPercentText:SetPoint("LEFT", 5, 0)
         self.healthPercentText:SetTextColor(1, 1, 1)
-
         self.healthValueText = PetFrameHealthBar:CreateFontString(nil, "OVERLAY")
         self.healthValueText:SetFont("Fonts\\FRIZQT__.TTF", 9, "OUTLINE")
         self.healthValueText:SetPoint("RIGHT", -5, 0)
         self.healthValueText:SetTextColor(1, 1, 1)
-
         self.manaPercentText = PetFrameManaBar:CreateFontString(nil, "OVERLAY")
         self.manaPercentText:SetFont("Fonts\\FRIZQT__.TTF", 8, "OUTLINE")
         self.manaPercentText:SetPoint("LEFT", 5, 0)
         self.manaPercentText:SetTextColor(1, 1, 1)
-
         self.manaValueText = PetFrameManaBar:CreateFontString(nil, "OVERLAY")
         self.manaValueText:SetFont("Fonts\\FRIZQT__.TTF", 8, "OUTLINE")
         self.manaValueText:SetPoint("RIGHT", -5, 0)
@@ -99,28 +89,22 @@ DFRL:NewMod("Mini", 1, function()
             new_PetFrame_Update()
             PetFrameTexture:SetTexture(Setup.path .. "pet")
             PetFrameHealthBar:SetStatusBarTexture(Setup.path .. "UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Health")
-
             PetFrameTexture:SetDrawLayer("BACKGROUND")
             PetFrame:ClearAllPoints()
             PetFrame:SetPoint("BOTTOM", PlayerFrame, -10, -30)
-
             PetFrameHealthBar:SetHeight(13)
             PetFrameHealthBar:ClearAllPoints()
             PetFrameHealthBar:SetPoint("CENTER", PetFrame, "CENTER", 15, 3)
-
             local class = UnitClass("player")
             if class == "Hunter" then
                 PetFrameManaBar:SetStatusBarTexture(Setup.path .. "UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Focus")
             else
                 PetFrameManaBar:SetStatusBarTexture(Setup.path .. "UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Mana")
             end
-
             PetFrameManaBar:ClearAllPoints()
             PetFrameManaBar:SetPoint("CENTER", PetFrame, "CENTER", 15, -7)
-
             PetName:ClearAllPoints()
             PetName:SetPoint("CENTER", PetFrame, "CENTER", 5, 16)
-
             Setup.UpdatePetTexts()
         end
     end
@@ -149,37 +133,29 @@ DFRL:NewMod("Mini", 1, function()
             if UnitExists("targettarget") then
                 TargetofTargetFrame.name:SetText(AbbreviateName(UnitName("targettarget")))
             end
-
             Setup:UpdateTargetOfTargetTexts()
         end)
 
         TargetofTargetTexture:SetTexCoord(0, 1, 0, 1)
         TargetofTargetTexture:SetPoint("TOPLEFT", -0, 0)
         TargetofTargetTexture:SetPoint("BOTTOMRIGHT", 20, -15)
-
         TargetofTargetFrame:ClearAllPoints()
         TargetofTargetFrame:SetPoint("TOPLEFT", TargetFrame, "BOTTOM", 0, 20)
-
         TargetofTargetPortrait:SetHeight(32)
         TargetofTargetPortrait:SetWidth(32)
-
         TargetofTargetFrameDebuff1:ClearAllPoints()
         TargetofTargetFrameDebuff1:SetPoint("TOPLEFT", TargetofTargetFrame, "BOTTOMLEFT", 40, 5)
-
         TargetofTargetBackground:ClearAllPoints()
         TargetofTargetBackground:SetWidth(60)
         TargetofTargetBackground:SetPoint("LEFT", TargetofTargetFrame, "LEFT", 40, -2)
-
         TargetofTargetHealthBar:SetWidth(60)
         TargetofTargetHealthBar:SetHeight(11)
         TargetofTargetHealthBar:ClearAllPoints()
         TargetofTargetHealthBar:SetPoint("LEFT", TargetofTargetFrame, "LEFT", 40, 1)
-
         TargetofTargetManaBar:SetWidth(60)
         TargetofTargetManaBar:SetHeight(5)
         TargetofTargetManaBar:ClearAllPoints()
         TargetofTargetManaBar:SetPoint("TOPLEFT", TargetofTargetHealthBar, "BOTTOMLEFT", 0, 0)
-
         TargetofTargetFrame.name:SetPoint("TOPLEFT", TargetofTargetFrame, "TOPLEFT", 40, 25)
     end
 
@@ -188,17 +164,14 @@ DFRL:NewMod("Mini", 1, function()
         self.totHealthPercentText:SetFont("Fonts\\FRIZQT__.TTF", 9, "OUTLINE")
         self.totHealthPercentText:SetPoint("LEFT", 5, 0)
         self.totHealthPercentText:SetTextColor(1, 1, 1)
-
         self.totHealthValueText = TargetofTargetHealthBar:CreateFontString(nil, "OVERLAY")
         self.totHealthValueText:SetFont("Fonts\\FRIZQT__.TTF", 9, "OUTLINE")
         self.totHealthValueText:SetPoint("RIGHT", -5, 0)
         self.totHealthValueText:SetTextColor(1, 1, 1)
-
         self.totManaPercentText = TargetofTargetManaBar:CreateFontString(nil, "OVERLAY")
         self.totManaPercentText:SetFont("Fonts\\FRIZQT__.TTF", 8, "OUTLINE")
         self.totManaPercentText:SetPoint("LEFT", 5, 0)
         self.totManaPercentText:SetTextColor(1, 1, 1)
-
         self.totManaValueText = TargetofTargetManaBar:CreateFontString(nil, "OVERLAY")
         self.totManaValueText:SetFont("Fonts\\FRIZQT__.TTF", 8, "OUTLINE")
         self.totManaValueText:SetPoint("RIGHT", -5, 0)
@@ -208,13 +181,11 @@ DFRL:NewMod("Mini", 1, function()
     function Setup:PartyFramesSetup()
         PartyMemberFrame1:ClearAllPoints()
         PartyMemberFrame1:SetPoint("LEFT", UIParent, "LEFT", 10, 220)
-
         for i = 1, 4 do
             local frame = _G["PartyMemberFrame" .. i]
             local name = _G["PartyMemberFrame" .. i .. "Name"]
             local healthBar = _G["PartyMemberFrame" .. i .. "HealthBar"]
             local manaBar = _G["PartyMemberFrame" .. i .. "ManaBar"]
-
             local partyHealthText = healthBar:CreateFontString(nil, "OVERLAY")
             partyHealthText:SetFont("Fonts\\FRIZQT__.TTF", 9, "OUTLINE")
             partyHealthText:SetPoint("CENTER", 0, 0)
@@ -248,10 +219,25 @@ DFRL:NewMod("Mini", 1, function()
                 healthBar:SetStatusBarTexture(self.path .. "UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Health")
                 manaBar:SetStatusBarTexture(self.path .. "UI-HUD-UnitFrame-Target-MinusMob-PortraitOn-Bar-Health-Status.tga")
 
+                local healthBarBG = _G["PartyMemberFrame" .. i .. "HealthBarBG"]
+                if not healthBarBG then
+                    healthBarBG = healthBar:CreateTexture(nil, "BACKGROUND")
+                    healthBarBG:SetTexture(self.path .. "UI-HUD-UnitFrame-TargetofTarget-PortraitOn-Bar-Health")
+                    healthBarBG:SetVertexColor(0.3, 0.3, 0.3, .5)
+                    healthBarBG:SetAllPoints(healthBar)
+                end
+
+                local manaBarBG = _G["PartyMemberFrame" .. i .. "ManaBarBG"]
+                if not manaBarBG then
+                    manaBarBG = manaBar:CreateTexture(nil, "BACKGROUND")
+                    manaBarBG:SetTexture(self.path .. "UI-HUD-UnitFrame-Target-MinusMob-PortraitOn-Bar-Health-Status.tga")
+                    manaBarBG:SetVertexColor(0.3, 0.3, 0.3, .5)
+                    manaBarBG:SetAllPoints(manaBar)
+                end
+
                 healthBar:SetHeight(11)
                 healthBar:ClearAllPoints()
                 healthBar:SetPoint("CENTER", frame, "CENTER", 15, 10)
-
                 manaBar:SetHeight(5)
                 manaBar:ClearAllPoints()
                 manaBar:SetPoint("CENTER", frame, "CENTER", 15, 0.5)
@@ -320,24 +306,19 @@ DFRL:NewMod("Mini", 1, function()
             self.totManaValueText:SetText("")
             return
         end
-
         local health = UnitHealth("targettarget")
         local maxHealth = UnitHealthMax("targettarget")
         local healthPercent = maxHealth > 0 and math.floor((health / maxHealth) * 100) or 0
-
         local mana = UnitMana("targettarget")
         local maxMana = UnitManaMax("targettarget")
         local manaPercent = maxMana > 0 and math.floor((mana / maxMana) * 100) or 0
-
         local now = GetTime()
         if not configCache.noPercent or (now - configCache.lastUpdate > 0.5) then
             configCache.noPercent = DFRL:GetTempDB("Mini", "noPercent")
             configCache.lastUpdate = now
         end
-
         local noPercentEnabled = configCache.noPercent
         local isDead = UnitIsDead("targettarget") or UnitIsGhost("targettarget")
-
         if isDead then
             self.totHealthPercentText:SetText("")
             self.totHealthValueText:SetText("")
@@ -345,7 +326,6 @@ DFRL:NewMod("Mini", 1, function()
             self.totManaValueText:SetText("")
             return
         end
-
         if noPercentEnabled then
             self.totHealthPercentText:SetText("")
             self.totHealthValueText:SetText(health)
@@ -385,18 +365,15 @@ DFRL:NewMod("Mini", 1, function()
             end
             return UnitIsTapped("targettarget") and not UnitIsTappedByPlayer("targettarget")
         end
-
         self.framesState.updateToTColor = function(self)
             if not UnitExists("targettarget") then
                 TargetofTargetHealthBar:SetStatusBarColor(0, 1, 0)
                 return
             end
-
             if IsTargetOfTargetTaggedByOther() then
                 TargetofTargetHealthBar:SetStatusBarColor(0.5, 0.5, 0.5)
                 return
             end
-
             if self.colorClass and UnitIsPlayer("targettarget") then
                 local _, class = UnitClass("targettarget")
                 if class and RAID_CLASS_COLORS[class] then
@@ -422,7 +399,6 @@ DFRL:NewMod("Mini", 1, function()
                     return
                 end
             end
-
             TargetofTargetHealthBar:SetStatusBarColor(0, 1, 0)
         end
 
@@ -445,7 +421,6 @@ DFRL:NewMod("Mini", 1, function()
                 end
             end
         end
-
         self.framesState.updateAllColors = function(self)
             self:updateToTColor()
             self:updatePartyColors()
@@ -456,7 +431,6 @@ DFRL:NewMod("Mini", 1, function()
         HookScript(TargetofTargetHealthBar, "OnValueChanged", function()
             Setup.framesState:updateToTColor()
         end)
-
         hooksecurefunc("TargetofTarget_Update", function()
             Setup.framesState:updateToTColor()
         end)
@@ -472,12 +446,10 @@ DFRL:NewMod("Mini", 1, function()
         self:UpdateTexts()
         self:StateManagement()
         self:HookEvents()
-
         self.UpdatePetTexts()
         self:UpdateTargetOfTargetTexts()
     end
 
-    -- init setup
     Setup:Run()
 
     -- callbacks
@@ -585,21 +557,17 @@ DFRL:NewMod("Mini", 1, function()
         else
             fontPath = "Fonts\\FRIZQT__.TTF"
         end
-
         Setup.healthPercentText:SetFont(fontPath, 9, "OUTLINE")
         Setup.healthValueText:SetFont(fontPath, 9, "OUTLINE")
         Setup.manaPercentText:SetFont(fontPath, 8, "OUTLINE")
         Setup.manaValueText:SetFont(fontPath, 8, "OUTLINE")
-
         Setup.totHealthPercentText:SetFont(fontPath, 9, "OUTLINE")
         Setup.totHealthValueText:SetFont(fontPath, 9, "OUTLINE")
         Setup.totManaPercentText:SetFont(fontPath, 8, "OUTLINE")
         Setup.totManaValueText:SetFont(fontPath, 8, "OUTLINE")
-
         for i = 1, 4 do
             Setup.partyHealthPercentTexts[i]:SetFont(fontPath, 9, "OUTLINE")
         end
-
         PetName:SetFont(fontPath, 10, "")
         TargetofTargetName:SetFont(fontPath, 9, "")
         for i = 1, 4 do
@@ -610,6 +578,19 @@ DFRL:NewMod("Mini", 1, function()
         end
     end
 
+    callbacks.petFrameScale = function(value)
+        PetFrame:SetScale(value)
+    end
+
+    callbacks.partyFrameScale = function(value)
+        for i = 1, 4 do
+            _G['PartyMemberFrame' .. i]:SetScale(value)
+        end
+    end
+
+    callbacks.totFrameScale = function(value)
+        TargetofTargetFrame:SetScale(value)
+    end
 
     -- event handler
     local f = CreateFrame("Frame")
@@ -632,9 +613,7 @@ DFRL:NewMod("Mini", 1, function()
             (event == "UNIT_FOCUS" and arg1 == "pet") then
             Setup.UpdatePetTexts()
         end
-
         local partyUpdateTimer = nil
-
         if event == "PLAYER_ENTERING_WORLD" or event == "PARTY_MEMBERS_CHANGED" or
             (event == "UNIT_HEALTH" and string.find(arg1, "party")) then
             local now = GetTime()
@@ -642,7 +621,6 @@ DFRL:NewMod("Mini", 1, function()
                 configCache.noPercent = DFRL:GetTempDB("Mini", "noPercent")
                 configCache.lastUpdate = now
             end
-
             local value = configCache.noPercent
             for i = 1, 4 do
                 if UnitExists("party" .. i) then
@@ -659,7 +637,6 @@ DFRL:NewMod("Mini", 1, function()
                     Setup.partyHealthPercentTexts[i]:SetText("")
                 end
             end
-
             if event == "PARTY_MEMBERS_CHANGED" then
                 if partyUpdateTimer then
                     partyUpdateTimer:SetScript("OnUpdate", nil)
@@ -675,14 +652,12 @@ DFRL:NewMod("Mini", 1, function()
                 Setup.framesState:updatePartyColors()
             end
         end
-
         if event == "PLAYER_ENTERING_WORLD" or
         event == "PLAYER_TARGET_CHANGED" or
         (event == "UNIT_TARGET" and arg1 == "target") or
         (event == "UNIT_HEALTH" and arg1 == "targettarget") then
             Setup.framesState:updateToTColor()
         end
-
         if event == "PLAYER_ENTERING_WORLD" then
             f:UnregisterEvent("PLAYER_ENTERING_WORLD")
         end

@@ -2,7 +2,6 @@ DFRL:NewDefaults("Target", {
     enabled = {true},
 
     targetDarkMode = {0, "slider", {0, 1}, nil, "target appearance", 1, "Adjust dark mode intensity", nil, nil},
-
     textShow = {true, "checkbox", nil, nil, "target text settings", 2, "Show health and mana text", nil, nil},
     noPercent = {true, "checkbox", nil, nil, "target text settings", 3, "Show only current values without percentages", nil, nil},
     textColoring = {false, "checkbox", nil, nil, "target text settings", 4, "Color text based on health/mana percentage", nil, nil},
@@ -22,11 +21,9 @@ DFRL:NewDefaults("Target", {
         "Continuum",
         "DieDieDie"
     }, nil, "text settings", 7, "Change the font used for the targetframe", nil, nil},
-
     colorReaction = {true, "checkbox", nil, nil, "target bar color", 8, "Color health bar based on target reaction", nil, nil},
     colorClass = {false, "checkbox", nil, nil, "target bar color", 9, "Color health bar based on target class", nil, nil},
     frameScale = {1, "slider", {0.7, 1.3}, nil, "target tweaks", 10, "Adjust frame size", nil, nil},
-
 })
 
 DFRL:NewMod("Target", 1, function()
