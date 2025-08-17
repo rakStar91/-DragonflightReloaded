@@ -83,6 +83,7 @@ DFRL:NewMod("Talents", 1, function()
         closeButton:SetHighlightTexture('Interface\\AddOns\\-DragonflightReloaded\\media\\tex\\ui\\close_normal.tga')
         closeButton:SetScript('OnClick', function()
             frame:Hide()
+            UpdateMicroButtons()
         end)
 
         local headerText = frame:CreateFontString(nil, 'OVERLAY', 'GameFontNormalLarge')
@@ -553,8 +554,8 @@ DFRL:NewMod("Talents", 1, function()
         Update()
     end)
 
-    _G['SLASH_BLFTALENTS1'] = '/ttest'
-    _G.SlashCmdList['BLFTALENTS'] = ToggleFrame
+    -- _G['SLASH_BLFTALENTS1'] = '/ttest'
+    -- _G.SlashCmdList['BLFTALENTS'] = ToggleFrame
 
     -- keybind hook
     _G.ToggleTalentFrame = function()
