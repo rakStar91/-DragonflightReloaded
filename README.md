@@ -20,15 +20,13 @@ A modern UI replacement for World of Warcraft Classic (1.12) inspired by the Dra
 ## Screenshots
 ![Screenshot 1](https://i.ibb.co/spMXBRV9/1.png)
 
-![Screenshot 2](https://i.ibb.co/S12FS8g/3.png)
+![Screenshot 2](https://i.postimg.cc/MTsvPBKH/3.png)
 
-![Screenshot 3](https://i.ibb.co/zvRDm8j/4.png)
+![Screenshot 3](https://i.ibb.co/S12FS8g/3.png)
 
 ![Screenshot 4](https://i.ibb.co/B5hSbbvC/5.png)
 
 ![Screenshot 5](https://i.ibb.co/RpzzgpnD/prev0.gif)
-
-![Screenshot 6](https://i.ibb.co/5hVS3ZLB/prev2-lvl60.png)
 
 ## Installation
 
