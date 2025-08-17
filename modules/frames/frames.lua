@@ -47,6 +47,8 @@ DFRL:NewMod("Frames", 2, function()
             TempEnchant1,
             BuffButton16,
             BuffButton32,
+            -- questtimer
+            QuestTimerFrame,
 
             -- PWB
             DFRL.PWB_Panel,

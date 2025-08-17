@@ -181,7 +181,6 @@ DFRL:NewMod("Ui", 5, function()
 
         WhoFrameTotals:SetDrawLayer("OVERLAY", 10)
         GuildFrameNotesText:SetDrawLayer("OVERLAY", 10)
-
         GuildFrameTotals:SetDrawLayer("OVERLAY", 10)
         GuildFrameOnlineTotals:SetDrawLayer("OVERLAY", 10)
 
@@ -228,7 +227,6 @@ DFRL:NewMod("Ui", 5, function()
                 frame.customBottomRight:SetHeight(256)
                 frame.customBottomRight:SetPoint("TOPLEFT", frame, "TOPLEFT", 253, -256)
 
-                -- spell button bg
                 for i = 1, 12 do
                     local button = _G["SpellButton" .. i]
                     if button then
@@ -262,21 +260,38 @@ DFRL:NewMod("Ui", 5, function()
             UIOptionsFrame:SetWidth(1024)
             UIOptionsFrame:SetHeight(700)
             UIOptionsFrame:SetFrameStrata("DIALOG")
-
             UIOptionsFrame:ClearAllPoints()
             UIOptionsFrame:SetPoint("CENTER", 0, 0)
-
-            -- Fix frame levels - set higher than main frame
             UIOptionsFrameTab1:SetFrameLevel(10)
             UIOptionsFrameTab2:SetFrameLevel(10)
             UIOptionsFrameDefaults:SetFrameLevel(10)
             UIOptionsFrameCancel:SetFrameLevel(10)
             UIOptionsFrameOkay:SetFrameLevel(10)
-
-            -- Fix hit detection
             UIOptionsFrame:SetHitRectInsets(0,0,0,50)
         end)
 
+    end
+
+    -- timer frame
+    do
+        local originalManageFramePositions = _G.UIParent_ManageFramePositions
+        _G.UIParent_ManageFramePositions = function()
+            originalManageFramePositions()
+
+            if DFRL_FRAMEPOS and DFRL_FRAMEPOS['QuestTimerFrame'] then
+                local pos = DFRL_FRAMEPOS['QuestTimerFrame']
+                QuestTimerFrame:ClearAllPoints()
+                QuestTimerFrame:SetPoint('TOPLEFT', UIParent, 'BOTTOMLEFT', pos.x, pos.y)
+            else
+                QuestTimerFrame:ClearAllPoints()
+                QuestTimerFrame:SetPoint('TOPRIGHT', Minimap, 'BOTTOMLEFT', -20, 40)
+            end
+        end
+
+        -- QuestTimerFrame:UnregisterAllEvents()
+        -- QuestTimerFrame:SetScript('OnUpdate', nil)
+        QuestTimerFrame:Show()
+        -- debugframe(QuestTimerFrame)
     end
 
     -- callbacks
