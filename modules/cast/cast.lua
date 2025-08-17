@@ -2,7 +2,6 @@ DFRL:NewDefaults("Cast", {
     enabled = {true},
 
     castDarkMode = {0, "slider", {0, 1}, nil, "appearance", 1, "Adjust dark mode intensity", nil, nil},
-
     setFillDirection = {"left", "dropdown", {"left", "right", "center"}, nil, "castbar Basic", 2, "Set fill direction", nil, nil},
     barWidth = {200, "slider", {120, 350}, nil, "castbar Basic", 4, "Change castbar width", nil, nil},
     barHeight = {16, "slider", {10, 30}, nil, "castbar Basic", 5, "Change castbar height", nil, nil},
@@ -27,8 +26,9 @@ DFRL:NewDefaults("Cast", {
     showSpell = {true, "checkbox", nil, nil, "text settings", 9, "Show spell name text", nil, nil},
     showIcon = {true, "checkbox", nil, nil, "text settings", 10, "Show casting spell icon", "REQUIRES SHAGUTWEAKS", nil},
     fontSize = {12, "slider", {5, 25}, nil, "text settings", 11, "Change castbar font size", nil, nil},
-    fontY = {-16, "slider", {-20, 20}, nil, "text settings", 12, "Change castbar font Y offset", nil, nil},
-
+    spellX = {5, "slider", {-50, 50}, nil, "text settings", 12, "Change spell name X offset", nil, nil},
+    timeX = {-5, "slider", {-50, 50}, nil, "text settings", 13, "Change casting time X offset", nil, nil},
+    fontY = {-16, "slider", {-20, 20}, nil, "text settings", 14, "Change castbar font Y offset", nil, nil},
 })
 
 DFRL:NewMod("Cast", 1, function()
@@ -615,9 +615,21 @@ DFRL:NewMod("Cast", 1, function()
         Setup.timeText:SetFont(fontPath, value, "OUTLINE")
     end
 
+    callbacks.spellX = function(value)
+        local currentY = DFRL:GetTempDB('Cast', 'fontY')
+        Setup.text:SetPoint('LEFT', Setup.frame, 'LEFT', value, currentY)
+    end
+
+    callbacks.timeX = function(value)
+        local currentY = DFRL:GetTempDB('Cast', 'fontY')
+        Setup.timeText:SetPoint('RIGHT', Setup.frame, 'RIGHT', value, currentY)
+    end
+
     callbacks.fontY = function(value)
-        Setup.text:SetPoint("LEFT", Setup.frame, "LEFT", 5, value)
-        Setup.timeText:SetPoint("RIGHT", Setup.frame, "RIGHT", -5, value)
+        local spellX = DFRL:GetTempDB('Cast', 'spellX')
+        local timeX = DFRL:GetTempDB('Cast', 'timeX')
+        Setup.text:SetPoint('LEFT', Setup.frame, 'LEFT', spellX, value)
+        Setup.timeText:SetPoint('RIGHT', Setup.frame, 'RIGHT', timeX, value)
     end
 
     Setup.targetIcon = CreateFrame("Frame", nil, Setup.frame)
