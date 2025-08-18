@@ -1,6 +1,5 @@
 DFRL:NewDefaults("Gui-elem", {
     enabled = {true},
-
 })
 
 DFRL:NewMod("Gui-elem", 3, function()

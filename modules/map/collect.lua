@@ -1,8 +1,6 @@
 DFRL:NewDefaults("Collector", {
     enabled = { true },
-
     collectDarkMode = {0, "slider", {0, 1}, nil, "appearance", 1, "Adjust dark mode intensity", nil, nil},
-
 })
 
 DFRL:NewMod("Collector", 1, function()

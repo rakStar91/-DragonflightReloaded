@@ -1,10 +1,7 @@
 DFRL:NewDefaults("Chat", {
     enabled = {true},
-    hidden = {false},
-
     showButtons = {true, "checkbox", nil, nil, "appearance", 1, "Show or hide chat buttons", "BUG: blizzards highlight blinks at the wrong position - fix soon", nil},
     chatDarkMode = {0, "slider", {0, 1}, "showButtons", "appearance", 2, "Adjust dark mode intensity", nil, nil},
-
     blizzardButtons = {false, "checkbox", nil, "showButtons", "chat basic", 3, "Use original Blizzard chat buttons", nil, nil},
     fadeChat = {false, "checkbox", nil, nil, "chat basic", 4, "Fade out chat text after 10 seconds", nil, nil}
 

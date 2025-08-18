@@ -1,15 +1,11 @@
 DFRL:NewDefaults("Micro", {
     enabled = {true},
-
     microDarkMode = {0, "slider", {0, 1}, nil, "appearance", 1, "Adjust dark mode intensity", nil, nil},
-
     switchColor = {true, "checkbox", nil, nil, "micro basic", 2, "Switch between gray and colorfull micro menu", nil, nil},
     microScale = {0.85, "slider", {0.5, 1.5}, nil, "micro basic", 3, "Adjusts the scale of the micro menu", nil, nil},
     microAlpha = {1, "slider", {0.1, 1}, nil, "micro basic", 4, "Adjusts the transparency of the micro menu", nil, nil},
     microSpacing = {3, "slider", {0.5, 15}, nil, "micro basic", 5, "Adjusts spacing between micro menu buttons", nil, nil},
-
     smallFPS = {false, "checkbox", nil, nil, "tweaks", 6, "Show smaller FPS/MS watcher (CTRL+R)", nil, nil},
-
 })
 
 DFRL:NewMod("Micro", 1, function()

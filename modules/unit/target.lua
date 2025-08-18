@@ -1,6 +1,5 @@
 DFRL:NewDefaults("Target", {
     enabled = {true},
-
     targetDarkMode = {0, "slider", {0, 1}, nil, "target appearance", 1, "Adjust dark mode intensity", nil, nil},
     textShow = {true, "checkbox", nil, nil, "target text settings", 2, "Show health and mana text", nil, nil},
     noPercent = {true, "checkbox", nil, nil, "target text settings", 3, "Show only current values without percentages", nil, nil},

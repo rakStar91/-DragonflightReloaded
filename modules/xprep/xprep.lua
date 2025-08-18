@@ -1,8 +1,6 @@
 DFRL:NewDefaults("Xprep", {
     enabled = { true },
-
     xprepDarkMode = {0, "slider", {0, 1}, nil, "appearance", 1, "Adjust dark mode intensity", nil, nil},
-
     showXpBar = {true, "checkbox", nil, nil, "experience Bar", 1, "Show or hide the XP bar", nil, nil},
     showXpText = {true, "checkbox", nil, nil, "experience Bar", 2, "Show or hide XP text on the XP bar", nil, nil},
     hoverXP = {true, "checkbox", nil, "showXpText", "experience Bar", 3, "Show XP text when hovering over the XP bar", nil, nil},
@@ -10,7 +8,6 @@ DFRL:NewDefaults("Xprep", {
     xpBarTextSize = {12, "slider", {8, 20}, "showXpText", "experience Bar", 5, "Adjusts the font size of the XP bar text", nil, nil},
     xpBarHeight = {12, "slider", {5, 20}, "showXpBar", "experience Bar", 6, "Adjusts the height of the XP bar", nil, nil},
     xpBarWidth = {400, "slider", {200, 700}, "showXpBar", "experience Bar", 7, "Adjusts the width of the XP bar", nil, nil},
-
     barFont = {"Myriad-Pro", "dropdown", {
         "FRIZQT__.TTF",
         "Expressway",
@@ -25,8 +22,6 @@ DFRL:NewDefaults("Xprep", {
         "Continuum",
         "DieDieDie"
     }, nil, "font", 8, "Change the font used for the experience and reputation bar", nil, nil},
-
-
     showRepText = {true, "checkbox", nil, nil, "reputation Bar", 9, "Show or hide reputation text on the reputation bar", nil, nil},
     autoTrack = {true, "checkbox", nil, nil, "reputation Bar", 10, "Automatically track reputation for factions you gain reputation with", nil, nil},
     hoverRep = {true, "checkbox", nil, nil, "reputation Bar", 11, "Show reputation text when hovering over the reputation bar", nil, nil},
@@ -34,7 +29,6 @@ DFRL:NewDefaults("Xprep", {
     repBarTextSize = {11, "slider", {8, 20}, nil, "reputation Bar", 13, "Adjusts the font size of the reputation bar text", nil, nil},
     repBarHeight = {10, "slider", {5, 20}, nil, "reputation Bar", 14, "Adjusts the height of the reputation bar", nil, nil},
     repBarWidth = {300, "slider", {200, 700}, nil, "reputation Bar", 15, "Adjusts the width of the reputation bar", nil, nil},
-
 })
 
 DFRL:NewMod("Xprep", 1, function()

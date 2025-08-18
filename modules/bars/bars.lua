@@ -1,33 +1,27 @@
 DFRL:NewDefaults("Bars", {
     enabled = {true},
     movable = {true},
-
     barsDarkMode = {0, "slider", {0, 1}, nil, "appearance", 1, "Adjust dark mode intensity", nil, nil},
-
     mainBarBG = {true, "checkbox", nil, nil, "mainbar", 2, "Show or hide main action bar background", nil, nil},
     mainBarScale = {1, "slider", {0.5, 2}, nil, "mainbar", 3, "Adjusts the scale of the main action bar", nil, nil},
     mainBarSpacing = {6, "slider", {0, 20}, nil, "mainbar", 4, "Adjusts spacing between main action bar buttons", nil, nil},
     mainBarAlpha = {1, "slider", {0.1, 1}, nil, "mainbar", 5, "Adjusts transparency of main action bar", nil, nil},
     highlightColor = {{1, 0.82, 0}, "colour", nil, nil, "mainbar", 6, "Changes the colour of action button highlights", nil, nil},
-
     multiBarOneShow = {false, "checkbox", nil, nil, "multibar 1", 7, "Show or hide bottom left action bar", nil, nil},
     multiBarOneScale = {1, "slider", {0.2, 2}, nil, "multibar 1", 8, "Adjusts scale of bottom left action bar", nil, nil},
     multiBarOneSpacing = {6, "slider", {0.1, 20}, nil, "multibar 1", 9, "Adjusts spacing between bottom left action bar buttons", nil, nil},
     multiBarOneAlpha = {1, "slider", {0.1, 1}, nil, "multibar 1", 10, "Adjusts transparency of bottom left action bar", nil, nil},
     multiBarOneGrid = {1, "slider", {1, 6}, nil, "multibar 1", 11, "Changes the grid layout of bottom left action bar", nil, nil},
-
     multiBarTwoShow = {false, "checkbox", nil, nil, "multibar 2", 12, "Show or hide bottom right action bar", nil, nil},
     multiBarTwoScale = {1, "slider", {0.2, 2}, nil, "multibar 2", 13, "Adjusts scale of bottom right action bar", nil, nil},
     multiBarTwoSpacing = {6, "slider", {0.1, 20}, nil, "multibar 2", 14, "Adjusts spacing between bottom right action bar buttons", nil, nil},
     multiBarTwoAlpha = {1, "slider", {0.1, 1}, nil, "multibar 2", 15, "Adjusts transparency of bottom right action bar", nil, nil},
     multiBarTwoGrid = {1, "slider", {1, 6}, nil, "multibar 2", 16, "Changes the grid layout of bottom right action bar", nil, nil},
-
     multiBarThreeShow = {false, "checkbox", nil, nil, "multibar 3", 17, "Show or hide left side action bar", nil, nil},
     multiBarThreeScale = {0.8, "slider", {0.2, 2}, nil, "multibar 3", 18, "Adjusts scale of left action bar", nil, nil},
     multiBarThreeSpacing = {6, "slider", {0.1, 20}, nil, "multibar 3", 19, "Adjusts spacing between left action bar buttons", nil, nil},
     multiBarThreeAlpha = {1, "slider", {0.1, 1}, nil, "multibar 3", 20, "Adjusts transparency of left action bar", nil, nil},
     multiBarThreeGrid = {6, "slider", {1, 6}, nil, "multibar 3", 21, "Changes the grid layout of left action bar", nil, nil},
-
     multiBarFourShow = {true, "checkbox", nil, nil, "multibar 4", 22, "Show or hide right side action bar", nil, nil},
     multiBarFourScale = {0.8, "slider", {0.2, 2}, nil, "multibar 4", 23, "Adjusts scale of right action bar", nil, nil},
     multiBarFourSpacing = {6, "slider", {0.1, 20}, nil, "multibar 4", 24, "Adjusts spacing between right action bar buttons", nil, nil},
@@ -39,12 +33,10 @@ DFRL:NewDefaults("Bars", {
     gryphoonScale = {1, "slider", {0.2, 2}, nil, "mainbar deco", 30, "Adjusts the size of the gryphon/wyvern decorations", nil, nil},
     gryphoonX = {-48, "slider", {-200, 200, 3}, nil, "mainbar deco", 31, "Adjusts horizontal position of gryphon/wyvern decorations", nil, nil},
     gryphoonY = {10, "slider", {-200, 200, 3}, nil, "mainbar deco", 32, "Adjusts vertical position of gryphon/wyvern decorations", nil, nil},
-
     pagingShow = {true, "checkbox", nil, nil, "mainbar paging", 33, "Show or hide the action bar paging buttons", nil, nil},
     pagingSwap = {true, "checkbox", nil, nil, "mainbar paging", 34, "Swap the anchorpoint of the paging buttons", nil, nil},
     pagingX = {15, "slider", {0, 150}, nil, "mainbar paging", 35, "Adjusts horizontal position of paging buttons", nil, nil},
     pagingScale = {0.9, "slider", {0.7, 1.8}, nil, "mainbar paging", 36, "Adjusts the scale of the paging buttons", nil, nil},
-
     hotkeyFont = {"BigNoodleTitling", "dropdown", {
         "FRIZQT__.TTF",
         "Expressway",
@@ -59,23 +51,19 @@ DFRL:NewDefaults("Bars", {
         "Continuum",
         "DieDieDie"
     }, nil, "text settings", 37, "Change the font used for the hotkeys and macros", nil, nil},
-
     hotkeyColour = {{1, 0.82, 0}, "colour", nil, nil, "text settings", 38, "Changes the colour of keybind text on action buttons", nil, nil},
     hotkeyShow = {true, "checkbox", nil, nil, "text settings", 39, "Show or hide keybind text on action buttons", nil, nil},
     hotkeyScale = {1.4, "slider", {0.5, 2}, nil, "text settings", 40, "Adjusts the size of keybind text on action buttons", nil, nil},
     hotkeyX = {0, "slider", {-50, 50}, nil, "text settings", 41, "Adjusts horizontal position of keybind text", nil, nil},
     hotkeyY = {-2, "slider", {-50, 50}, nil, "text settings", 42, "Adjusts vertical position of keybind text", nil, nil},
-
     macroColour = {{1, 1, 1}, "colour", nil, nil, "text settings", 43, "Changes the colour of macro text on action buttons", nil, nil},
     macroShow = {true, "checkbox", nil, nil, "text settings", 44, "Show or hide macro text on action buttons", nil, nil},
     macroScale = {1.3, "slider", {0.5, 2}, nil, "text settings", 45, "Adjusts the size of macro text on action buttons", nil, nil},
     macroX = {0, "slider", {-50, 50}, nil, "text settings", 46, "Adjusts horizontal position of macro text", nil, nil},
     macroY = {2, "slider", {-50, 50}, nil, "text settings", 47, "Adjusts vertical position of macro text", nil, nil},
-
     petbarScale = {0.8, "slider", {0.2, 2}, nil, "pet bar", 48, "Adjusts the scale of the pet action bar", nil, nil},
     petbarSpacing = {6, "slider", {0.1, 20}, nil, "pet bar", 49, "Adjusts spacing between pet action bar buttons", nil, nil},
     petbarAlpha = {1, "slider", {0.1, 1}, nil, "pet bar", 50, "Adjusts transparency of pet action bar", nil, nil},
-
     shapeshiftScale = {0.8, "slider", {0.2, 2}, nil, "shapeshift bar", 51, "Adjusts the scale of the shapeshift bar", nil, nil},
     shapeshiftSpacing = {6, "slider", {0.1, 20}, nil, "shapeshift bar", 52, "Adjusts spacing between shapeshift buttons", nil, nil},
     shapeshiftAlpha = {1, "slider", {0.1, 1}, nil, "shapeshift bar", 53, "Adjusts transparency of shapeshift bar", nil, nil},

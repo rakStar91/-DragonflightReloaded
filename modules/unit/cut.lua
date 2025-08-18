@@ -1,6 +1,5 @@
 DFRL:NewDefaults("Cut-Out", {
     enabled = {true},
-
 })
 
 DFRL:NewMod("Cut-Out", 1, function()

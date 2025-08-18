@@ -1,6 +1,5 @@
 DFRL:NewDefaults("Player", {
     enabled = {true},
-
     playerDarkMode = {0, "slider", {0, 1}, nil, "appearance", 1, "Adjust dark mode intensity", nil, nil},
     eliteBorder = {"standard", "dropdown", {"standard", "rare", "elite", "rare-elite", "boss", "dfrl evolved", "dfrl nebula"}, nil, "appearance", 2, "Changes the texture of the playerframe", nil, nil},
     textShow = {true, "checkbox", nil, nil, "text settings", 3, "Show health and mana text", nil, nil},
@@ -22,7 +21,6 @@ DFRL:NewDefaults("Player", {
         "Continuum",
         "DieDieDie"
     }, nil, "text settings", 8, "Change the font used for the playerframe", nil, nil},
-
     classColor = {false, "checkbox", nil, nil, "bar color", 9, "Color health bar based on class", nil, nil},
     classPortrait = {false, "checkbox", nil, nil, "tweaks", 10, "Activate 2D class portrait icons", nil, nil},
     frameHide = {false, "checkbox", nil, nil, "tweaks", 11, "Hide frame at full HP when not in combat", nil, nil},

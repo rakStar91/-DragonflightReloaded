@@ -1,26 +1,20 @@
 DFRL:NewDefaults("Map", {
     enabled = {true},
-
     mapDarkMode = {0, "slider", {0, 1}, nil, "appearance", 1, "Adjust dark mode intensity", nil, nil},
-
     mapSquare = {false, "checkbox", nil, nil, "map basic", 2, "Show the Minimap Square design", nil, nil},
     showSunMoon = {false, "checkbox", nil, nil, "map basic", 3, "Show Blzzards sun/moon indicator", nil, nil},
     mapSize = {180, "slider", {140, 350}, nil, "map basic", 4, "Adjusts the overall size of the minimap", "BUG: MOVE CHAR AFTER SETTING MAPSIZE WHEN OUTDOORS (UNFIXABLE)", nil},
     mapAlpha = {1, "slider", {0.1, 1}, nil, "map basic", 5, "Adjusts transparency of the entire minimap", nil, nil},
-
     mapShadow = {true, "checkbox", nil, nil, "map shadow", 6, "Show or hide the shadow inside the minimap", nil, nil},
     alphaShadow = {0.3, "slider", {0.1, 1}, nil, "map shadow", 7, "Adjusts transparency of the minimap shadow", nil, nil},
-
     showZoom = {true, "checkbox", nil, nil, "map zoom", 8, "Show or hide zoom buttons on the minimap", nil, nil},
     scaleZoom = {0.8, "slider", {0.2, 2}, nil, "map zoom", 9, "Adjusts size of zoom buttons", nil, nil},
     alphaZoom = {1, "slider", {0.1, 1}, nil, "map zoom", 10, "Adjusts transparency of zoom buttons", nil, nil},
     zoomX = {-5, "slider", {-100, 100}, nil, "map zoom", 11, "Adjusts horizontal position of zoom buttons", nil, nil},
     zoomY = {40, "slider", {-100, 100}, nil, "map zoom", 12, "Adjusts vertical position of zoom buttons", nil, nil},
-
     showTopPanel = {true, "checkbox", nil, nil, "top panel", 13, "Show or hide the top information panel", nil, nil},
     topPanelWidth = {180, "slider", {100, 600}, nil, "top panel", 14, "Adjusts the width of the top panel", nil, nil},
     topPanelHeight = {12, "slider", {5, 50}, nil, "top panel", 15, "Adjusts the height of the top panel", nil, nil},
-
     topPanelFont = {"BigNoodleTitling", "dropdown", {
         "FRIZQT__.TTF",
         "Expressway",
@@ -35,18 +29,14 @@ DFRL:NewDefaults("Map", {
         "Continuum",
         "DieDieDie"
     }, nil, "mini text settings", 16, "Change the font used for the minimap", nil, nil},
-
     zoneTextSize = {10, "slider", {6, 30}, nil, "top panel zone", 17, "Adjusts font size of the zone text", nil, nil},
     zoneTextY = {-3, "slider", {-50, 50}, nil, "top panel zone", 18, "Adjusts vertical position of the zone text", nil, nil},
     zoneTextX = {4, "slider", {-50, 50}, nil, "top panel zone", 19, "Adjusts horizontal position of the zone text", nil, nil},
-
     mapTime = {true, "checkbox", nil, nil, "top panel time", 20, "Show or hide the time display on the minimap", nil, nil},
     timeSize = {10, "slider", {6, 30}, nil, "top panel time", 21, "Adjusts font size of the time display", nil, nil},
     timeY = {-3, "slider", {-50, 50}, nil, "top panel time", 22, "Adjusts vertical position of the time display", nil, nil},
     timeX = {-4, "slider", {-50, 50}, nil, "top panel time", 23, "Adjusts horizontal position of the time display", nil, nil},
-
     textColor = {false, "checkbox", nil, nil, "ext. PizzaWorldBuffs", 24, "Colorize the PizzaWorldBuffs Alliance/Horde text", "BUG: slash commands not implemented yet - fix soon", nil},
-
 })
 
 DFRL:NewMod("Map", 1, function()

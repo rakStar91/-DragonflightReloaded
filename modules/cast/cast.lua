@@ -1,13 +1,11 @@
 DFRL:NewDefaults("Cast", {
     enabled = {true},
-
     castDarkMode = {0, "slider", {0, 1}, nil, "appearance", 1, "Adjust dark mode intensity", nil, nil},
     setFillDirection = {"left", "dropdown", {"left", "right", "center"}, nil, "castbar Basic", 2, "Set fill direction", nil, nil},
     barWidth = {200, "slider", {120, 350}, nil, "castbar Basic", 4, "Change castbar width", nil, nil},
     barHeight = {16, "slider", {10, 30}, nil, "castbar Basic", 5, "Change castbar height", nil, nil},
     showShadow = {true, "checkbox", nil, nil, "castbar Basic", 3, "Show drop shadow below the castbar", nil, nil},
     castColor = {{1, 0.82, 0}, "colour", nil, nil, "castbar Basic", 4, "Change castbar color", nil, nil},
-
     castFont = {"BigNoodleTitling", "dropdown", {
         "FRIZQT__.TTF",
         "Expressway",
@@ -32,15 +30,11 @@ DFRL:NewDefaults("Cast", {
 })
 
 DFRL:NewMod("Cast", 1, function()
-    -- locals
     local string = string
     local FAILED = FAILED
     local GetTime = GetTime
     local INTERRUPTED = INTERRUPTED
 
-    --=================
-    -- SETUP
-    --=================
     local Setup = {
         frame       = nil,
         barTexture  = nil,
@@ -505,18 +499,15 @@ DFRL:NewMod("Cast", 1, function()
         return false
     end
 
-    local checkFrame = CreateFrame("Frame")
-    checkFrame:RegisterEvent("ADDON_LOADED")
-    checkFrame:SetScript("OnEvent", function()
+    local f = CreateFrame("Frame")
+    f:RegisterEvent("ADDON_LOADED")
+    f:SetScript("OnEvent", function()
         if event == "ADDON_LOADED" and arg1 == "ShaguTweaks" then
             InitShaguTweaks()
-            checkFrame:UnregisterEvent("ADDON_LOADED")
+            f:UnregisterEvent("ADDON_LOADED")
         end
     end)
 
-    --=================
-    -- INIT
-    --=================
     Setup:Castbar()
 
     --=================
@@ -632,6 +623,7 @@ DFRL:NewMod("Cast", 1, function()
         Setup.timeText:SetPoint('RIGHT', Setup.frame, 'RIGHT', timeX, value)
     end
 
+    -- shagu stuff
     Setup.targetIcon = CreateFrame("Frame", nil, Setup.frame)
     Setup.targetIcon:SetPoint("RIGHT", Setup.frame, "LEFT", -2, 0)
     Setup.targetIcon:SetHeight(20)
@@ -656,9 +648,9 @@ DFRL:NewMod("Cast", 1, function()
                 targetUpdateFrame = CreateFrame("Frame")
                 targetUpdateFrame:SetScript("OnUpdate", function()
                     if UnitCastingInfo then
-                        local cast, nameSubtext, text, texture = UnitCastingInfo("player")
+                        local cast, _, _, texture = UnitCastingInfo("player")
                         if not cast then
-                            cast, nameSubtext, text, texture = UnitChannelInfo("player")
+                            cast, _, _, texture = UnitChannelInfo("player")
                         end
 
                         if cast and texture and Setup.frame:IsShown() then

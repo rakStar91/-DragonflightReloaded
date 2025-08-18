@@ -1,6 +1,5 @@
 DFRL:NewDefaults("Gui-info", {
     enabled = {true},
-
 })
 
 DFRL:NewMod("Gui-info", 5, function()

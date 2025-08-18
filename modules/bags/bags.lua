@@ -1,15 +1,12 @@
 DFRL:NewDefaults("Bags", {
     enabled = {true},
-
     bagDarkMode = {0, "slider", {0, 1}, "showBags", "appearance", 1, "Adjust dark mode intensity", nil, nil},
     showBags = {true, "checkbox", nil, nil, "appearance", 2, "Show or hide the bag frame", nil, nil},
-
     hoverShow = {false, "checkbox", nil, "showBags", "bag basic", 3, "Show or hide bags on mouse hover", nil, nil},
     toggleBags = {true, "checkbox", nil, "showBags", "bag basic", 4, "Show or hide the small bag slots", nil, nil},
     showToggle = {true, "checkbox", nil, "showBags", "bag basic", 5, "Show or hide the bag toggle button", nil, nil},
     bagScale = {1.5, "slider", {0.5, 2.5}, "showBags", "bag basic", 6, "Adjusts the scale of the main backpack", nil, nil},
     bagAlpha = {1, "slider", {0.1, 1}, "showBags", "bag basic", 7, "Adjusts the transparency of all bags", nil, nil},
-
     freeSlots = {true, "checkbox", nil, "showBags", "tweaks", 8, "Show or hide free bag slots", nil, nil},
 })
 

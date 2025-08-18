@@ -1,6 +1,5 @@
 DFRL:NewDefaults("Mini", {
     enabled = {true},
-
     miniDarkMode = {0, "slider", {0, 1}, nil, "mini appearance", 1, "Adjust dark mode intensity", nil, nil},
     miniTextShow = {true, "checkbox", nil, nil, "mini text settings", 2, "Show pet health and mana text", nil, nil},
     noPercent = {true, "checkbox", nil, nil, "mini text settings", 3, "Hide pet health and mana percent text", nil, nil},

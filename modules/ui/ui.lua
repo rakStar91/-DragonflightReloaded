@@ -1,6 +1,5 @@
 DFRL:NewDefaults("Ui", {
     enabled = {true},
-
     questLog = {false, "checkbox", nil, nil, "appearance", 1, "Enable dark mode for the questlog", nil, nil},
     gameMenu = {false, "checkbox", nil, nil, "appearance", 2, "Enable dark mode for the game menu", nil, nil},
     characterPanel = {false, "checkbox", nil, nil, "appearance", 3, "Enable dark mode for the character panel", nil, nil},
@@ -9,7 +8,6 @@ DFRL:NewDefaults("Ui", {
     lowHpThreshold = {70, "slider", {5, 95}, nil, "tweaks", 6, "Health threshold for low HP warning", nil, nil},
     cameraDistanceFactor = {3, "slider", {1, 5}, nil, "tweaks", 7, "Extended maximum camera distance", nil, nil},
     showPlates = {false, "checkbox", nil, nil, "tweaks", 8, "Show nameplates only in combat", nil, nil},
-
 })
 
 DFRL:NewMod("Ui", 5, function()
