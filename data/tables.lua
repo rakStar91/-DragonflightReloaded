@@ -277,6 +277,10 @@ local darkMode = {
     ["Gui-mods"] = {
         ["enabled"] = true,
     },
+    ["Errors"] = {
+        ["enabled"] = true,
+        ["hideErrors"] = false,
+    },
 }
 
 local lightMode = {
@@ -582,6 +586,10 @@ local lightMode = {
         ["showButtons"] = true,
         ["hidden"] = false,
         ["blizzardButtons"] = false,
+    },
+    ["Errors"] = {
+        ["enabled"] = true,
+        ["hideErrors"] = false,
     },
 }
 

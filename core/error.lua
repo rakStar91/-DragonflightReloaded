@@ -37,12 +37,10 @@ local function ErrorHandler(msg)
     end
 end
 
-local f = CreateFrame('Frame')
-f:RegisterEvent('ADDON_LOADED')
-f:RegisterEvent('PLAYER_ENTERING_WORLD')
-f:SetScript('OnEvent', function(event)
-    seterrorhandler(function(err) ErrorHandler(err) end)
-    if event == 'PLAYER_ENTERING_WORLD' then
-        f:UnregisterAllEvents()
-    end
+seterrorhandler(ErrorHandler)
+
+local f = CreateFrame'Frame'
+f:RegisterEvent'ADDON_LOADED'
+f:SetScript('OnEvent', function()
+    seterrorhandler(ErrorHandler)
 end)
