@@ -1,3 +1,10 @@
+
+  <br>
+
+> **Note:** Currently taking a break from development - issues and pull requests may not be processed for a while. Thank you for your understanding.
+
+  <br>
+
 # Dragonflight: Reloaded 2
 ![Logo](https://i.ibb.co/V0FDH29h/logo.png)
 
