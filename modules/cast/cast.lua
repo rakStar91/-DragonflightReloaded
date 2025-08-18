@@ -24,9 +24,9 @@ DFRL:NewDefaults("Cast", {
     showSpell = {true, "checkbox", nil, nil, "text settings", 9, "Show spell name text", nil, nil},
     showIcon = {true, "checkbox", nil, nil, "text settings", 10, "Show casting spell icon", "REQUIRES SHAGUTWEAKS", nil},
     fontSize = {12, "slider", {5, 25}, nil, "text settings", 11, "Change castbar font size", nil, nil},
-    spellX = {5, "slider", {-50, 50}, nil, "text settings", 12, "Change spell name X offset", nil, nil},
-    timeX = {-5, "slider", {-50, 50}, nil, "text settings", 13, "Change casting time X offset", nil, nil},
-    fontY = {-16, "slider", {-20, 20}, nil, "text settings", 14, "Change castbar font Y offset", nil, nil},
+    spellX = {5, "slider", {-100, 300}, nil, "text settings", 12, "Change spell name X offset", nil, nil},
+    timeX = {-5, "slider", {-300, 100}, nil, "text settings", 13, "Change casting time X offset", nil, nil},
+    fontY = {-16, "slider", {-40, 40}, nil, "text settings", 14, "Change castbar font Y offset", nil, nil},
 })
 
 DFRL:NewMod("Cast", 1, function()

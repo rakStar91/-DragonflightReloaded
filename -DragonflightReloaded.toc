@@ -19,38 +19,26 @@ data\tables.lua
 # MODULES
 modules\bars\bars.lua
 modules\bars\range.lua
-
 modules\cast\cast.lua
-
 modules\chat\chat.lua
-
 modules\bags\bags.lua
-
 modules\map\map.lua
 modules\map\collect.lua
-
 modules\menu\menu.lua
 modules\menu\addons.lua
-
 modules\micro\micro.lua
-
 modules\frames\frames.lua
-
 modules\ui\ui.lua
 modules\ui\tooltip.lua
 modules\ui\talents.lua
 modules\ui\errorHandler.lua
-
 modules\unit\player.lua
 modules\unit\target.lua
 modules\unit\mini.lua
 modules\unit\cut.lua
 modules\unit\pvp.lua
-
 modules\xprep\xprep.lua
-
 modules\track\track.lua
-
 # modules\test.lua
 
 # GUI
