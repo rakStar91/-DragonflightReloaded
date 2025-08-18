@@ -3,22 +3,19 @@ DFRL:NewDefaults("Frames", {
 })
 
 DFRL:NewMod("Frames", 2, function()
-    local hookEvent = CreateFrame("Frame")
-    hookEvent:RegisterEvent("PLAYER_ENTERING_WORLD")
-    hookEvent:SetScript("OnEvent", function()
-        -- table
+    local f = CreateFrame("Frame")
+    f:RegisterEvent("PLAYER_ENTERING_WORLD")
+    f:SetScript("OnEvent", function()
+        f:UnregisterEvent("PLAYER_ENTERING_WORLD")
+
         local framesToMakeMovable = {
-            -- playerframes module
             PlayerFrame,
-            -- targetframes module
             TargetFrame,
             TargetofTargetFrame,
-            -- partframes
             PartyMemberFrame1,
             PartyMemberFrame2,
             PartyMemberFrame3,
             PartyMemberFrame4,
-            -- actionbars module
             DFRL.mainBar,
             MultiBarBottomLeft,
             MultiBarBottomRight,
@@ -26,35 +23,27 @@ DFRL:NewMod("Frames", 2, function()
             MultiBarRight,
             DFRL.newPetBar,
             DFRL.newShapeshiftBar,
-            -- xprep module
             DFRL.xpBar,
             DFRL.repBar,
-            -- castingbar module
             DFRL.castbar,
-            -- bags module
             MainMenuBarBackpackButton,
-            -- micromenu module
             DFRL.microMenuContainer,
             DFRL.netStatsFrame,
-            -- minimap module
             Minimap,
             DFRL.topPanel,
-            -- questlog
             DFRL.questframe,
-            -- independent
             BuffButton0,
             BuffButton8,
             TempEnchant1,
             BuffButton16,
             BuffButton32,
-            -- questtimer
             QuestTimerFrame,
 
-            -- PWB
+            -- 3rd party
             DFRL.PWB_Panel,
         }
 
-        function SaveFramePosition(frame)
+        local function SaveFramePosition(frame)
             local name = frame:GetName()
             if not name then return end
 
@@ -62,7 +51,7 @@ DFRL:NewMod("Frames", 2, function()
             DFRL_FRAMEPOS[name] = {x = x, y = y}
         end
 
-        function RestoreFramePositions()
+        local function RestoreFramePositions()
             if not DFRL_FRAMEPOS then return end
             for name, pos in pairs(DFRL_FRAMEPOS) do
                 local frame = _G[name]
@@ -118,7 +107,7 @@ DFRL:NewMod("Frames", 2, function()
         end
 
         local flag -- flag to hide/show certain elements like castbar etc.
-        function MakeFrameMovable(frame)
+        local function MakeFrameMovable(frame)
             if not frame then return end
 
             frame:EnableMouse(true)
@@ -141,7 +130,6 @@ DFRL:NewMod("Frames", 2, function()
             })
             overlay:SetBackdropColor(1, 0.82, 0, 0.5)
             overlay:SetBackdropBorderColor(1, 0.82, 0, 1)
-
             overlay:Hide()
 
             -- overlay drags the frame
@@ -156,7 +144,6 @@ DFRL:NewMod("Frames", 2, function()
                 if frameName == "MultiBarBottomLeft" or frameName == "MultiBarBottomRight" then
                     DFRL:SetTempDBNoCallback("actionbars", "movable", false)
                 end
-
                 frame:StopMovingOrSizing()
                 SaveFramePosition(frame)
             end)
@@ -258,7 +245,6 @@ DFRL:NewMod("Frames", 2, function()
 
         -- init
         RestoreFramePositions()
-        hookEvent:UnregisterEvent("PLAYER_ENTERING_WORLD")
     end)
 
     DFRL.activeScripts["FrameControlScript"] = false
