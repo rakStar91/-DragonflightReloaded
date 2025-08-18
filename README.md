@@ -1,5 +1,3 @@
-<h2 style="color: red;">⚠️ NOTICE: Issues cannot be processed at the moment. (18. August 2025)</h2>
-
 # Dragonflight: Reloaded 2
 ![Logo](https://i.ibb.co/V0FDH29h/logo.png)
 
