@@ -15,9 +15,9 @@ end
 
 local function FormatErrorMessage(addon, msg, throttled)
     if throttled then
-        return '|cffff0000DFRL: |cffffffff[|cffffffffERROR - ADDON: |cffff0000' .. addon .. '|cffffffff] : [|cffff0000ERROR SPAM THROTTLED|cffffffff]'
+        return '|cffff0000DFRL: Error: |cffffffff[|cffffffffSource: |cffff0000' .. addon .. '|cffffffff] : [|cffff0000ERROR SPAM THROTTLED|cffffffff]'
     else
-        return '|cffff0000DFRL: |cffffffff[|cffffffffERROR - ADDON: |cffff0000' .. addon .. '|cffffffff] : |cffffffff' .. (msg or 'nil')
+        return '|cffff0000DFRL: Error: |cffffffff[|cffffffffSource: |cffff0000' .. addon .. '|cffffffff] : |cffffffff' .. (msg or 'nil')
     end
 end
 
