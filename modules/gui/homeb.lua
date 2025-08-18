@@ -4,7 +4,7 @@ DFRL:NewDefaults("GUI-Dragonflight", {
     sideView = {.3, "slider", {.1, .8}, nil, "Home Screen", 2, "Changes the alpha of the side view", "", nil},
     homeMinMaxColor = {{1, .82, 0}, "colour", nil, nil, "Home Screen", 3, "Changes the color of the close and min button", nil, nil},
     homeTimeColor = {{1, .82, 0}, "colour", nil, nil, "Home Screen", 4, "Changes the color of the time on the home screen", nil, nil},
-    noDonation = {false, "checkbox", nil, nil, "Home Screen", 5, "Do not show the donation button", "Re-Enabling requires reload due to animation", nil},
+    -- noDonation = {false, "checkbox", nil, nil, "Home Screen", 5, "Do not show the donation button", "Re-Enabling requires reload due to animation", nil},
 })
 
 DFRL:NewMod("GUI-Dragonflight", 4, function()
@@ -34,9 +34,11 @@ DFRL:NewMod("GUI-Dragonflight", 4, function()
             self.frame:SetPoint("CENTER", Base.scrollChildren[1], "CENTER", 2, 0)
             self.frame:EnableMouse(true)
             T.GradientLine(self.frame, "BOTTOM", 0)
-            self.button = T.CreateButton(self.frame, "Donate", 80, 35, true)
+            self.button = CreateFrame("Button", nil, self.frame)
+            self.button:SetWidth(80)
+            self.button:SetHeight(35)
             self.button:SetPoint("CENTER", self.frame, "CENTER", 0, 0)
-            self.button:SetScript("OnClick", function() Setup:Donate() end)
+            -- self.button:SetScript("OnClick", function() Setup:Donate() end)
 
             self.timeText = DFRL.tools.CreateFont(Base.scrollChildren[1], 24, "")
             self.timeText:SetPoint("CENTER", Base.scrollChildren[1], "CENTER", 2, 60)
@@ -59,9 +61,9 @@ DFRL:NewMod("GUI-Dragonflight", 4, function()
                 if Home.logoStarted then
                     self.animComplete = true
                     animFrame:SetScript("OnUpdate", nil)
-                    DFRL.activeScripts["GUI NoDonateScript"] = false
+                    -- DFRL.activeScripts["GUI NoDonateScript"] = false
                 else
-                    DFRL.activeScripts["GUI NoDonateScript"] = true
+                    -- DFRL.activeScripts["GUI NoDonateScript"] = true
                 end
             end
             animFrame:SetScript("OnUpdate", script)
@@ -84,7 +86,7 @@ DFRL:NewMod("GUI-Dragonflight", 4, function()
             if not started and Home.logoStarted then
                 started = true
                 self.frame:Show()
-                DFRL.activeScripts["GUI DonateScript"] = true
+                -- DFRL.activeScripts["GUI DonateScript"] = true
             end
 
             if started and not heightDone then
@@ -103,7 +105,7 @@ DFRL:NewMod("GUI-Dragonflight", 4, function()
                     buttonDone = true
                     animFrame:SetScript("OnUpdate", nil)
                     self.animComplete = true
-                    DFRL.activeScripts["GUI DonateScript"] = false
+                    -- DFRL.activeScripts["GUI DonateScript"] = false
                 end
             end
         end
@@ -168,25 +170,25 @@ DFRL:NewMod("GUI-Dragonflight", 4, function()
     end
 
     function Setup:Donate()
-        if not self.donateText then
-            self.donateText = DFRL.tools.CreateFont(Base.scrollChildren[1], 16, "greetings turtles =)\n\n\ni hope you like |cFFFFD700dragonflight:|r reloaded,\n\nI'm a solo basement developer working on this addon.\nif you want to support me,\nyou can send me a Giftcard or paysafecard to my email.\n\n\n|cFFFFD700guzruul.live @ gmail.com - Discord @Guzruul|r\n\n\notherwise - Enjoy |cFFFFD700Dragonflight:|r Reloaded.\n\n\nsafe travels,\n\nGuzruul")
-            self.donateText:SetPoint("TOP", Base.scrollChildren[1], "TOP", 1, -50)
-            self.donateText:Hide()
-        end
+        -- if not self.donateText then
+        --     self.donateText = DFRL.tools.CreateFont(Base.scrollChildren[1], 16, "greetings turtles =)\n\n\ni hope you like |cFFFFD700dragonflight:|r reloaded,\n\nI'm a solo basement developer working on this addon.\nif you want to support me,\nyou can send me a Giftcard or paysafecard to my email.\n\n\n|cFFFFD700guzruul.live @ gmail.com - Discord @Guzruul|r\n\n\notherwise - Enjoy |cFFFFD700Dragonflight:|r Reloaded.\n\n\nsafe travels,\n\nGuzruul")
+        --     self.donateText:SetPoint("TOP", Base.scrollChildren[1], "TOP", 1, -50)
+        --     self.donateText:Hide()
+        -- end
 
-        if self.donateText:IsShown() then
-            self.donateText:Hide()
-            Home.logoTex:Show()
-            Home.logoText:Show()
-            Home.leftLine:Show()
-            Home.rightLine:Show()
-        else
-            self.donateText:Show()
-            Home.logoTex:Hide()
-            Home.logoText:Hide()
-            Home.leftLine:Hide()
-            Home.rightLine:Hide()
-        end
+        -- if self.donateText:IsShown() then
+        --     self.donateText:Hide()
+        --     Home.logoTex:Show()
+        --     Home.logoText:Show()
+        --     Home.leftLine:Show()
+        --     Home.rightLine:Show()
+        -- else
+        --     self.donateText:Show()
+        --     Home.logoTex:Hide()
+        --     Home.logoText:Hide()
+        --     Home.leftLine:Hide()
+        --     Home.rightLine:Hide()
+        -- end
     end
 
     function Setup:MinMaxClose()
@@ -283,22 +285,22 @@ DFRL:NewMod("GUI-Dragonflight", 4, function()
 
     Setup:Run()
 
-    DFRL.activeScripts["GUI DonateScript"] = false
-    DFRL.activeScripts["GUI NoDonateScript"] = false
+    -- DFRL.activeScripts["GUI DonateScript"] = false
+    -- DFRL.activeScripts["GUI NoDonateScript"] = false
     DFRL.activeScripts["GUI TimeScript"] = false
 
     -- callbacks
     local callbacks = {}
 
-    callbacks.noDonation = function (value)
-        if value then
-            Setup.frame:Hide()
-            Setup.button:Hide()
-        else
-            Setup.frame:Show()
-            Setup.button:Show()
-        end
-    end
+    -- callbacks.noDonation = function (value)
+    --     if value then
+    --         Setup.frame:Hide()
+    --         Setup.button:Hide()
+    --     else
+    --         Setup.frame:Show()
+    --         Setup.button:Show()
+    --     end
+    -- end
 
     callbacks.homeTimeColor = function (value)
         Setup.timeText:SetTextColor(value[1], value[2], value[3])

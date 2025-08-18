@@ -1,3 +1,5 @@
+<h2 style="color: red;">⚠️ NOTICE: Issues cannot be processed at the moment. (18. August 2025)</h2>
+
 # Dragonflight: Reloaded 2
 ![Logo](https://i.ibb.co/V0FDH29h/logo.png)
 
@@ -44,12 +46,8 @@ A modern UI replacement for World of Warcraft Classic (1.12) inspired by the Dra
 
 ## Credits
 
+- Blizzard (obviously)
+
+- Shagu (pfUI / ShaguTweaks)
 - DragonflightUI by Karl-Heinz Schneider
-- Shagu my master (pfUI / ShaguTweaks)
 - TurtleDragonflight
-- Inspired by World of Warcraft: Dragonflight UI
-
-## Support
-
-- If you like Dragonflight:Reloaded and you want
-to support my work, you can send me a giftcard or paysafecard to: guzruul.live@gmail.com
