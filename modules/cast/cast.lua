@@ -24,9 +24,10 @@ DFRL:NewDefaults("Cast", {
     showSpell = {true, "checkbox", nil, nil, "text settings", 9, "Show spell name text", nil, nil},
     showIcon = {true, "checkbox", nil, nil, "text settings", 10, "Show casting spell icon", "REQUIRES SHAGUTWEAKS", nil},
     fontSize = {12, "slider", {5, 25}, nil, "text settings", 11, "Change castbar font size", nil, nil},
-    spellX = {5, "slider", {-100, 300}, nil, "text settings", 12, "Change spell name X offset", nil, nil},
-    timeX = {-5, "slider", {-300, 100}, nil, "text settings", 13, "Change casting time X offset", nil, nil},
-    fontY = {-16, "slider", {-40, 40}, nil, "text settings", 14, "Change castbar font Y offset", nil, nil},
+    textAlign = {"LEFT", "dropdown", {"LEFT", "CENTER", "RIGHT"}, nil, "text settings", 12, "Change spell text alignment", nil, nil},
+    spellX = {5, "slider", {-100, 300}, nil, "text settings", 13, "Change spell name X offset", nil, nil},
+    timeX = {-5, "slider", {-300, 100}, nil, "text settings", 14, "Change casting time X offset", nil, nil},
+    fontY = {-16, "slider", {-40, 40}, nil, "text settings", 15, "Change castbar font Y offset", nil, nil},
 })
 
 DFRL:NewMod("Cast", 1, function()
@@ -160,6 +161,7 @@ DFRL:NewMod("Cast", 1, function()
         local ts = f:CreateFontString(nil, "OVERLAY")
         ts:SetFont(self.config.font, self.config.fontSizeName, "OUTLINE")
         ts:SetPoint("LEFT", f, "LEFT", 5, -16)
+        ts:SetPoint("RIGHT", f, "RIGHT", -5, -16)
         ts:SetTextColor(self.config.textColorName.r, self.config.textColorName.g, self.config.textColorName.b)
         self.text = ts
 
@@ -705,6 +707,10 @@ DFRL:NewMod("Cast", 1, function()
     callbacks.castColor = function(value)
         Setup.config.barColor = {r = value[1], g = value[2], b = value[3]}
         Setup.barTexture:SetVertexColor(value[1], value[2], value[3])
+    end
+
+    callbacks.textAlign = function(value)
+        Setup.text:SetJustifyH(value)
     end
 
     DFRL.activeScripts["CastbarScript"] = false
