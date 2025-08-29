@@ -3,10 +3,11 @@ DFRL:NewDefaults("Player", {
     playerDarkMode = {0, "slider", {0, 1}, nil, "appearance", 1, "Adjust dark mode intensity", nil, nil},
     eliteBorder = {"standard", "dropdown", {"standard", "rare", "elite", "rare-elite", "boss", "dfrl evolved", "dfrl nebula"}, nil, "appearance", 2, "Changes the texture of the playerframe", nil, nil},
     textShow = {true, "checkbox", nil, nil, "text settings", 3, "Show health and mana text", nil, nil},
-    noPercent = {true, "checkbox", nil, nil, "text settings", 4, "Show only current values without percentages", nil, nil},
-    textColoring = {false, "checkbox", nil, nil, "text settings", 5, "Color text based on health/mana percentage from white to red", nil, nil},
-    healthSize = {15, "slider", {8, 20}, nil, "text settings", 6, "Health text font size", nil, nil},
-    manaSize = {9, "slider", {8, 20}, nil, "text settings", 7, "Mana text font size", nil, nil},
+    textMaxShow = {true, "checkbox", nil, nil, "text settings", 4, "Show max health and mana text", nil, nil},
+    noPercent = {true, "checkbox", nil, nil, "text settings", 5, "Show only current values without percentages", nil, nil},
+    textColoring = {false, "checkbox", nil, nil, "text settings", 6, "Color text based on health/mana percentage from white to red", nil, nil},
+    healthSize = {15, "slider", {8, 20}, nil, "text settings", 7, "Health text font size", nil, nil},
+    manaSize = {9, "slider", {8, 20}, nil, "text settings", 8, "Mana text font size", nil, nil},
     frameFont = {"BigNoodleTitling", "dropdown", {
         "FRIZQT__.TTF",
         "Expressway",
@@ -20,18 +21,18 @@ DFRL:NewDefaults("Player", {
         "BigNoodleTitling",
         "Continuum",
         "DieDieDie"
-    }, nil, "text settings", 8, "Change the font used for the playerframe", nil, nil},
-    classColor = {false, "checkbox", nil, nil, "bar color", 9, "Color health bar based on class", nil, nil},
-    classPortrait = {false, "checkbox", nil, nil, "tweaks", 10, "Activate 2D class portrait icons", nil, nil},
-    frameHide = {false, "checkbox", nil, nil, "tweaks", 11, "Hide frame at full HP when not in combat", nil, nil},
-    frameScale = {1, "slider", {0.7, 1.3}, nil, "tweaks", 12, "Adjust frame size", nil, nil},
-    combatGlow = {true, "checkbox", nil, nil, "effects", 13, "Enable combat pulse animation", nil, nil},
-    glowSpeed = {1, "slider", {0.4, 5}, nil, "effects", 14, "Adjust the speed of the combat pulsing", nil, nil},
-    glowAlpha = {1, "slider", {0.1, 1}, nil, "effects", 15, "Adjust the maximum alpha of the combat pulsing", nil, nil},
-    restingGlow = {true, "checkbox", nil, nil, "effects", 16, "Enable resting glow animation", nil, nil},
-    restingSpeed = {1, "slider", {0.4, 5}, nil, "effects", 17, "Adjust the speed of the resting pulsing", nil, nil},
-    restingAlpha = {1, "slider", {0.1, 1}, nil, "effects", 18, "Adjust the maximum alpha of the resting pulsing", nil, nil},
-    restingColor = {{0, 1, 1}, "colour", nil, nil, "effects", 19, "Changes the colour of the resting glow animation", nil, nil},
+    }, nil, "text settings", 9, "Change the font used for the playerframe", nil, nil},
+    classColor = {false, "checkbox", nil, nil, "bar color", 10, "Color health bar based on class", nil, nil},
+    classPortrait = {false, "checkbox", nil, nil, "tweaks", 11, "Activate 2D class portrait icons", nil, nil},
+    frameHide = {false, "checkbox", nil, nil, "tweaks", 12, "Hide frame at full HP when not in combat", nil, nil},
+    frameScale = {1, "slider", {0.7, 1.3}, nil, "tweaks", 13, "Adjust frame size", nil, nil},
+    combatGlow = {true, "checkbox", nil, nil, "effects", 14, "Enable combat pulse animation", nil, nil},
+    glowSpeed = {1, "slider", {0.4, 5}, nil, "effects", 15, "Adjust the speed of the combat pulsing", nil, nil},
+    glowAlpha = {1, "slider", {0.1, 1}, nil, "effects", 16, "Adjust the maximum alpha of the combat pulsing", nil, nil},
+    restingGlow = {true, "checkbox", nil, nil, "effects", 17, "Enable resting glow animation", nil, nil},
+    restingSpeed = {1, "slider", {0.4, 5}, nil, "effects", 18, "Adjust the speed of the resting pulsing", nil, nil},
+    restingAlpha = {1, "slider", {0.1, 1}, nil, "effects", 19, "Adjust the maximum alpha of the resting pulsing", nil, nil},
+    restingColor = {{0, 1, 1}, "colour", nil, nil, "effects", 20, "Changes the colour of the resting glow animation", nil, nil},
 })
 
 DFRL:NewMod("Player", 1, function()
@@ -279,6 +280,11 @@ DFRL:NewMod("Player", 1, function()
         PlayerFrameBackground:SetVertexColor(color[1], color[2], color[3])
     end
 
+    callbacks.textMaxShow = function(value)
+        Setup.texts.showMaxValues = value
+        callbacks.textShow(DFRL:GetTempDB("Player", "textShow"))
+    end
+
     callbacks.textShow = function(value)
         if value then
             local health = UnitHealth("player")
@@ -305,8 +311,8 @@ DFRL:NewMod("Player", 1, function()
                 Setup.texts.manaPercent:Hide()
             end
 
-            Setup.texts.healthValue:SetText(health)
-            Setup.texts.manaValue:SetText(mana)
+            Setup.texts.healthValue:SetText(health .. (Setup.texts.showMaxValues and "/" .. maxHealth or ""))
+            Setup.texts.manaValue:SetText(mana .. (Setup.texts.showMaxValues and "/" .. maxMana or ""))
             Setup.texts.healthValue:Show()
             Setup.texts.manaValue:Show()
 
