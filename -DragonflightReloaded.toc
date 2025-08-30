@@ -1,5 +1,5 @@
 ## Interface: 11200
-## Title: Dragonflight: |cFFFFFFFFReloaded
+## Title: Dragonflight: |cFFFFFFFFReloaded |cFFFF00002
 ## Notes: The Dragonflight UI for Turtle WoW (1.18).
 ## Version: 2.1.6
 ## Author: Guzruul
