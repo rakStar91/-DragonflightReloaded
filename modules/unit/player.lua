@@ -8,6 +8,8 @@ DFRL:NewDefaults("Player", {
     textColoring = {false, "checkbox", nil, nil, "text settings", 6, "Color text based on health/mana percentage from white to red", nil, nil},
     healthSize = {15, "slider", {8, 20}, nil, "text settings", 7, "Health text font size", nil, nil},
     manaSize = {9, "slider", {8, 20}, nil, "text settings", 8, "Mana text font size", nil, nil},
+    nameSize = {9, "slider", {6, 16}, nil, "text settings", 9, "Name text font size", nil, nil},
+    levelSize = {9, "slider", {6, 16}, nil, "text settings", 10, "Level text font size", nil, nil},
     frameFont = {"BigNoodleTitling", "dropdown", {
         "FRIZQT__.TTF",
         "Expressway",
@@ -21,18 +23,18 @@ DFRL:NewDefaults("Player", {
         "BigNoodleTitling",
         "Continuum",
         "DieDieDie"
-    }, nil, "text settings", 9, "Change the font used for the playerframe", nil, nil},
-    classColor = {false, "checkbox", nil, nil, "bar color", 10, "Color health bar based on class", nil, nil},
-    classPortrait = {false, "checkbox", nil, nil, "tweaks", 11, "Activate 2D class portrait icons", nil, nil},
-    frameHide = {false, "checkbox", nil, nil, "tweaks", 12, "Hide frame at full HP when not in combat", nil, nil},
-    frameScale = {1, "slider", {0.7, 1.3}, nil, "tweaks", 13, "Adjust frame size", nil, nil},
-    combatGlow = {true, "checkbox", nil, nil, "effects", 14, "Enable combat pulse animation", nil, nil},
-    glowSpeed = {1, "slider", {0.4, 5}, nil, "effects", 15, "Adjust the speed of the combat pulsing", nil, nil},
-    glowAlpha = {1, "slider", {0.1, 1}, nil, "effects", 16, "Adjust the maximum alpha of the combat pulsing", nil, nil},
-    restingGlow = {true, "checkbox", nil, nil, "effects", 17, "Enable resting glow animation", nil, nil},
-    restingSpeed = {1, "slider", {0.4, 5}, nil, "effects", 18, "Adjust the speed of the resting pulsing", nil, nil},
-    restingAlpha = {1, "slider", {0.1, 1}, nil, "effects", 19, "Adjust the maximum alpha of the resting pulsing", nil, nil},
-    restingColor = {{0, 1, 1}, "colour", nil, nil, "effects", 20, "Changes the colour of the resting glow animation", nil, nil},
+    }, nil, "text settings", 11, "Change the font used for the playerframe", nil, nil},
+    classColor = {false, "checkbox", nil, nil, "bar color", 12, "Color health bar based on class", nil, nil},
+    classPortrait = {false, "checkbox", nil, nil, "tweaks", 13, "Activate 2D class portrait icons", nil, nil},
+    frameHide = {false, "checkbox", nil, nil, "tweaks", 14, "Hide frame at full HP when not in combat", nil, nil},
+    frameScale = {1, "slider", {0.7, 1.3}, nil, "tweaks", 15, "Adjust frame size", nil, nil},
+    combatGlow = {true, "checkbox", nil, nil, "effects", 16, "Enable combat pulse animation", nil, nil},
+    glowSpeed = {1, "slider", {0.4, 5}, nil, "effects", 17, "Adjust the speed of the combat pulsing", nil, nil},
+    glowAlpha = {1, "slider", {0.1, 1}, nil, "effects", 18, "Adjust the maximum alpha of the combat pulsing", nil, nil},
+    restingGlow = {true, "checkbox", nil, nil, "effects", 19, "Enable resting glow animation", nil, nil},
+    restingSpeed = {1, "slider", {0.4, 5}, nil, "effects", 20, "Adjust the speed of the resting pulsing", nil, nil},
+    restingAlpha = {1, "slider", {0.1, 1}, nil, "effects", 21, "Adjust the maximum alpha of the resting pulsing", nil, nil},
+    restingColor = {{0, 1, 1}, "colour", nil, nil, "effects", 22, "Changes the colour of the resting glow animation", nil, nil},
 })
 
 DFRL:NewMod("Player", 1, function()
@@ -423,6 +425,16 @@ DFRL:NewMod("Player", 1, function()
         Setup.texts.config.manaFontSize = value
         Setup.texts.manaPercent:SetFont(Setup.texts.config.font, value, "OUTLINE")
         Setup.texts.manaValue:SetFont(Setup.texts.config.font, value, "OUTLINE")
+    end
+
+    callbacks.nameSize = function(value)
+        Setup.texts.config.nameFontSize = value
+        PlayerFrame.name:SetFont(Setup.texts.config.font, value, Setup.texts.config.outline)
+    end
+
+    callbacks.levelSize = function(value)
+        Setup.texts.config.levelFontSize = value
+        PlayerLevelText:SetFont(Setup.texts.config.font, value, Setup.texts.config.outline)
     end
 
     callbacks.classColor = function(value)

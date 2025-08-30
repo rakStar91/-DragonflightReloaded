@@ -1,20 +1,12 @@
-
-  <br>
-
-> **Note:** Currently taking a break from development - issues and pull requests may not be processed for a while. Thank you for your understanding.
-
-  <br>
-
 # Dragonflight: Reloaded 2
 ![Logo](https://i.ibb.co/V0FDH29h/logo.png)
 
-A modern UI replacement for World of Warcraft Classic (1.12) inspired by the Dragonflight UI.
+The Dragonflight UI for Turtle WoW (1.18).
 
 ## Features
 - 100% dynamically scripted - no reloading required
 - Profile system
-- Extensive GUI
-- Over 210 settings combined with ShaguTweaks + ShaguTweaks-extras
+- Over 230 settings combined with ShaguTweaks + ShaguTweaks-extras
 
   <br>
 
@@ -52,7 +44,6 @@ A modern UI replacement for World of Warcraft Classic (1.12) inspired by the Dra
 ## Credits
 
 - Blizzard (obviously)
-
-- Shagu (pfUI / ShaguTweaks)
+- Shagu (teacher, learned from pfUI / ShaguTweaks)
 - DragonflightUI by Karl-Heinz Schneider
 - TurtleDragonflight

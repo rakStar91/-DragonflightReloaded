@@ -7,6 +7,8 @@ DFRL:NewDefaults("Target", {
     textColoring = {false, "checkbox", nil, nil, "target text settings", 5, "Color text based on health/mana percentage", nil, nil},
     healthSize = {15, "slider", {8, 20}, nil, "target text settings", 6, "Health text font size", nil, nil},
     manaSize = {9, "slider", {8, 20}, nil, "target text settings", 7, "Mana text font size", nil, nil},
+    nameSize = {9, "slider", {6, 16}, nil, "target text settings", 8, "Target name text font size", nil, nil},
+    levelSize = {9, "slider", {6, 16}, nil, "target text settings", 9, "Target level text font size", nil, nil},
     frameFont = {"BigNoodleTitling", "dropdown", {
         "FRIZQT__.TTF",
         "Expressway",
@@ -20,10 +22,10 @@ DFRL:NewDefaults("Target", {
         "BigNoodleTitling",
         "Continuum",
         "DieDieDie"
-    }, nil, "text settings", 8, "Change the font used for the targetframe", nil, nil},
-    colorReaction = {true, "checkbox", nil, nil, "target bar color", 9, "Color health bar based on target reaction", nil, nil},
-    colorClass = {false, "checkbox", nil, nil, "target bar color", 10, "Color health bar based on target class", nil, nil},
-    frameScale = {1, "slider", {0.7, 1.3}, nil, "target tweaks", 11, "Adjust frame size", nil, nil},
+    }, nil, "text settings", 10, "Change the font used for the targetframe", nil, nil},
+    colorReaction = {true, "checkbox", nil, nil, "target bar color", 11, "Color health bar based on target reaction", nil, nil},
+    colorClass = {false, "checkbox", nil, nil, "target bar color", 12, "Color health bar based on target class", nil, nil},
+    frameScale = {1, "slider", {0.7, 1.3}, nil, "target tweaks", 13, "Adjust frame size", nil, nil},
 })
 
 DFRL:NewMod("Target", 1, function()
@@ -391,6 +393,16 @@ DFRL:NewMod("Target", 1, function()
         Setup.texts.manaValue:SetFont(Setup.texts.config.font, value, Setup.texts.config.outline)
     end
 
+    callbacks.nameSize = function(value)
+        Setup.texts.config.nameFontSize = value
+        TargetFrame.name:SetFont(Setup.texts.config.font, value, "")
+    end
+
+    callbacks.levelSize = function(value)
+        Setup.texts.config.levelFontSize = value
+        TargetLevelText:SetFont(Setup.texts.config.font, value, "")
+    end
+
     callbacks.frameFont = function(value)
         local fontPath
         if value == "Expressway" then
@@ -470,6 +482,17 @@ DFRL:NewMod("Target", 1, function()
             f:UnregisterEvent("PLAYER_ENTERING_WORLD")
         end
     end)
+
+    -- turtle challenge function
+    local originalFunc = _G.TargetFrame_UpdateChallenges
+    if originalFunc then
+        _G.TargetFrame_UpdateChallenges = function(player)
+            originalFunc(player)
+            if string.find(TargetFrameTexture:GetTexture() or '', 'UI%-TargetingFrame_HC') then
+                TargetFrameTexture:SetTexture(Setup.texpath .. 'UI-TargetingFrameDF1_HC.blp')
+            end
+        end
+    end
 
     -- execute callbacks
     DFRL:NewCallbacks("Target", callbacks)
